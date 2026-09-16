@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lumina | Experiencia Gastronómica</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #d4af37; /* Gold */
+            --primary-hover: #f1c40f;
+            --bg-dark: #0a0a0a;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --text-main: #f5f5f5;
+            --text-muted: #a0a0a0;
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-title: 'Cinzel', serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 50% -20%, #1a1a1a 0%, #0a0a0a 100%);
+        }
+
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-dark);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s ease;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--bg-card);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 0;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.7rem;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        #app-container {
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+
+        .screen {
+            position: absolute;
+            inset: 0;
+            padding: 40px 20px 100px 20px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+            transition: var(--transition);
+            overflow-y: auto;
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+
+        #home {
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero-visual {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+        }
+
+        .hero-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(10,10,10,0.3), rgba(10,10,10,0.9));
+        }
+
+        .hero-text {
+            z-index: 1;
+            padding: 0 20px;
+        }
+
+        .hero-text h1 {
+            font-family: var(--font-title);
+            font-size: 3.5rem;
+            letter-spacing: 8px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .hero-text p {
+            font-weight: 300;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 30px;
+        }
+
+        .btn-premium {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 15px 30px;
+            font-family: var(--font-title);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-radius: 0;
+        }
+
+        .btn-premium:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        .screen-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .screen-header h2 {
+            font-family: var(--font-title);
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .screen-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .menu-categories {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .cat-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: var(--transition);
+            font-family: var(--font-body);
+        }
+
+        .cat-btn.active {
+            background: var(--primary);
+            color: var(--bg-dark);
+            border-color: var(--primary);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .menu-item {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: var(--transition);
+            animation: slideUp 0.5s ease forwards;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+        }
+
+        .menu-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .menu-item-content {
+            padding: 20px;
+        }
+
+        .menu-item-content h3 {
+            font-family: var(--font-title);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-item-content .price {
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .menu-item-content p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 30px;
+        }
+
+        .reservation-card {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+            padding: 12px;
+            color: var(--text-main);
+            border-radius: 10px;
+            font-family: var(--font-body);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--primary);
+            color: var(--bg-dark);
+            border: none;
+            padding: 15px;
+            font-family: var(--font-title);
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+            transform: scale(1.02);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .info-item strong {
+            display: block;
+            font-size: 0.9rem;
+        }
+
+        .info-item p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .map-placeholder {
+            height: 300px;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .fade-in { animation: fadeIn 1s ease forwards; opacity: 0; }
+        .delay-1 { animation-delay: 0.3s; }
+        .delay-2 { animation-delay: 0.6s; }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .hidden { display: none; }
+
+        @media (min-width: 768px) {
+            .contact-grid { grid-template-columns: 1fr 1fr; }
+            .hero-text h1 { font-size: 5rem; }
+            .bottom-nav { width: 600px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="ambient-bg"></div>
+
+    <nav class="bottom-nav">
+        <a href="#home" class="nav-item active" data-target="home">
+            <i class="fa-solid fa-house"></i>
+            <span>Inicio</span>
+        </a>
+        <a href="#menu" class="nav-item" data-target="menu">
+            <i class="fa-solid fa-utensils"></i>
+            <span>Menú</span>
+        </a>
+        <a href="#reserve" class="nav-item" data-target="reserve">
+            <i class="fa-solid fa-calendar-check"></i>
+            <span>Reserva</span>
+        </a>
+        <a href="#contact" class="nav-item" data-target="contact">
+            <i class="fa-solid fa-envelope"></i>
+            <span>Contacto</span>
+        </a>
+    </nav>
+
+    <main id="app-container">
+        <section id="home" class="screen active">
+            <div class="hero-visual">
+                <div class="overlay"></div>
+                <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1200&auto=format&fit=crop" alt="Lumina Hero">
+            </div>
+            <div class="hero-text">
+                <h1 class="fade-in">LUMINA</h1>
+                <p class="fade-in delay-1">Donde el arte culinario se encuentra con la sofisticación.</p>
+                <button class="btn-premium fade-in delay-2" onclick="navigateTo('reserve')">Reservar Experiencia</button>
+            </div>
+        </section>
+
+        <section id="menu" class="screen">
+            <div class="screen-header">
+                <h2>Nuestro Menú</h2>
+                <p>Selecciones curadas por el Chef</p>
+            </div>
+            <div class="menu-categories">
+                <button class="cat-btn active" data-cat="entradas">Entradas</button>
+                <button class="cat-btn" data-cat="fuertes">Platos Fuertes</button>
+                <button class="cat-btn" data-cat="postres">Postres</button>
+                <button class="cat-btn" data-cat="vinos">Cava de Vinos</button>
+            </div>
+            <div id="menu-grid" class="menu-grid"></div>
+        </section>
+
+        <section id="reserve" class="screen">
+            <div class="screen-header">
+                <h2>Reservaciones</h2>
+                <p>Asegure su lugar en nuestra mesa</p>
+            </div>
+            <div class="glass-card reservation-card">
+                <form id="premiumReserveForm">
+                    <div class="input-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" placeholder="Ej. Alexander Dumas" required>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Fecha</label>
+                            <input type="date" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Hora</label>
+                            <input type="time" required>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Invitados</label>
+                        <select required>
+                            <option value="1">1 Persona</option>
+                            <option value="2" selected>2 Personas</option>
+                            <option value="4">4 Personas</option>
+                            <option value="6">6 Personas</option>
+                            <option value="8+">Evento Especial (8+)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Preferencias Especiales</label>
+                        <textarea placeholder="Alergias, aniversarios o peticiones..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit">Confirmar Reserva</button>
+                </form>
+                <div id="reservaFeedback" class="hidden"></div>
+            </div>
+        </section>
+
+        <section id="contact" class="screen">
+            <div class="screen-header">
+                <h2>Contacto</h2>
+                <p>Estamos listos para recibirle</p>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-info glass-card">
+                    <div class="info-item">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <div>
+                            <strong>Ubicación</strong>
+                            <p>Av. Paseo de la Reforma, CDMX</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fa-solid fa-phone"></i>
+                        <div>
+                            <strong>Teléfono</strong>
+                            <p>+52 55 9876 5432</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fa-solid fa-envelope"></i>
+                        <div>
+                            <strong>Email</strong>
+                            <p>concierge@lumina.com</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="map-placeholder glass-card">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.485!2d-99.16!3d19.42!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0!2zMTnCsDI1JzEyLjAiT4yKTkxSzM2LDBf!5e0!3m2!1ses!2smx!4v1600000000000" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const MENU_DATA = {
+            entradas: [
+                { name: 'Carpaccio de Res', price: '$24', desc: 'Láminas de solomillo con alcaparras, parmesano y aceite de trufa.', img: 'https://images.unsplash.com/photo-1519708227418-c8f3f67a697c?q=80&w=600&auto=format&fit=crop' },
+                { name: 'Tártaro de Atún', price: '$22', desc: 'Atún rojo marinado en cítricos y jengibre con aguacate.', img: 'https://images.unsplash.com/photo-1546069901-ba95968aee2a?q=80&w=600&auto=format&fit=crop' },
+                { name: 'Burrata Gourmet', price: '$18', desc: 'Burrata cremosa con tomates cherry confitados y pesto de albahaca.', img: 'https://images.unsplash.com/photo-1595295333956-758f3523e823?q=80&w=600&auto=format&fit=crop' },
+            ],
+            fuertes: [
+                { name: 'Wagyu A5', price: '$85', desc: 'Corte selecto de Wagyu japonés, puré de coliflor y reducción de vino tinto.', img: 'https://images.unsplash.com/photo-1546241072-48766f27a27d?q=80&w=600&auto=format&fit=crop' },
+                { name: 'Lubina Salvaje', price: '$42', desc: 'Lubina al horno con costra de hierbas y emulsión de limón.', img: 'https://images.unsplash.com/photo-1519708227418-c8f3f67a697c?q=80&w=600&auto=format&fit=crop' },
+                { name: 'Risotto Trufado', price: '$38', desc: 'Arroz carnaroli con trufa negra fresca y queso pecorino.', img: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?q=80&w=600&auto=format&fit=crop' },
+            ],
+            postres: [
+                { name: 'Sufle de Chocolate', price: '$16', desc: 'Chocolate belga 70% cacao con corazón fundente y frutos rojos.', img: 'https://images.unsplash.com/photo-1563805042-7684c095757d?q=80&w=600&auto=format&fit=crop' },
+                { name: 'Pavlova Tropical', price: '$14', desc: 'Merengue suizo, crema ligera y selección de frutas exóticas.', img: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=600&auto=format&fit=crop' },
+            ],
+            vinos: [
+                { name: 'Château Margaux', price: '$120', desc: 'Vino tinto francés, notas de frutos negros y taninos elegantes.', img: 'https://images.unsplash.com/photo-1510812431401-41d2bd27253e?q=80&w=600&auto=format&fit=crop' },
+                { name: 'Dom Pérignon', price: '$150', desc: 'Champagne vintage, burbuja fina y notas cítricas.', img: 'https://images.unsplash.com/photo-1594465919760-447a73756677?q=80&w=600&auto=format&fit=crop' },
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.classList.add('hidden'), 600);
+            }, 1500);
+
+            const navItems = document.querySelectorAll('.nav-item');
+            const screens = document.querySelectorAll('.screen');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('data-target');
+                    navItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    screens.forEach(screen => {
+                        screen.classList.remove('active');
+                        if (screen.id === targetId) screen.classList.add('active');
+                    });
+                });
+            });
+
+            const catButtons = document.querySelectorAll('.cat-btn');
+            const menuGrid = document.getElementById('menu-grid');
+
+            function renderMenu(category) {
+                menuGrid.innerHTML = '';
+                const items = MENU_DATA[category];
+                items.forEach((item, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'menu-item';
+                    card.style.animationDelay = `${index * 0.1}s`;
+                    card.innerHTML = `
+                        <img src="${item.img}" alt="${item.name}">
+                        <div class="menu-item-content">
+                            <h3>${item.name} <span class="price">${item.price}</span></h3>
+                            <p>${item.desc}</p>
+                        </div>
+                    `;
+                    menuGrid.appendChild(card);
+                });
+            }
+
+            catButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    catButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderMenu(btn.getAttribute('data-cat'));
+                });
+            });
+
+            renderMenu('entradas');
+
+            const reserveForm = document.getElementById('premiumReserveForm');
+            const feedback = document.getElementById('reservaFeedback');
+            reserveForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const submitBtn = reserveForm.querySelector('.btn-submit');
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Procesando...';
+                setTimeout(() => {
+                    feedback.innerHTML = `
+                        <div style="text-align:center; color: var(--primary); margin-top:20px;">
+                            <i class="fa-solid fa-circle-check" style="font-size:2rem;"></i>
+                            <p>Reservación confirmada. Esperamos verle pronto en Lumina.</p>
+                        </div>
+                    `;
+                    feedback.classList.remove('hidden');
+                    submitBtn.innerText = 'Reservado';
+                    reserveForm.reset();
+                }, 2000);
+            });
+        });
+
+        function navigateTo(target) {
+            const navItem = document.querySelector(`.nav-item[data-target="${target}"]`);
+            if (navItem) navItem.click();
+        }
+    </script>
+</body>
+</html>

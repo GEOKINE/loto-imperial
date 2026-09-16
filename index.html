@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Loto Imperial | Alta Cocina Oriental</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#58211C">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="gsap-enabled">
+
+    <div class="ambient-bg"></div>
+
+    <canvas id="hero-canvas"></canvas>
+
+    <header class="top-bar">
+        <!-- Limpio según solicitud anterior -->
+    </header>
+
+    <main>
+        <section id="home" class="section hero">
+            <div class="hero-visual">
+                <div class="overlay"></div>
+                <img src="https://www.pagodared.com/blog/wp-content/uploads/2018/02/WonFun-InteriorPR-copy.jpg" alt="Loto Imperial Interior" class="hero-img">
+            </div>
+            <div class="hero-text">
+                <div class="hero-logo-container">
+                    <img src="LOGO.svg" alt="Loto Imperial Logo" class="hero-logo">
+                </div>
+                <h1 class="hero-title">LOTO IMPERIAL</h1>
+                <p>Una armonía de sabores milenarios: el corazón de Asia en un solo lugar.</p>
+                <a href="#reserve" class="btn-premium">Reservar Experiencia</a>
+            </div>
+        </section>
+
+        <section id="menu" class="section">
+            <div class="section-header">
+                <h2>Gastronomía Oriental</h2>
+                <p>Un viaje sensorial desde Japón hasta Tailandia</p>
+            </div>
+
+            <div class="menu-categories">
+                <button class="cat-btn active" data-cat="japones">Japón</button>
+                <button class="cat-btn" data-cat="chino">China</button>
+                <button class="cat-btn" data-cat="sudeste">Sudeste Asiático</button>
+                <button class="cat-btn" data-cat="infantil">Menú Infantil</button>
+                <button class="cat-btn" data-cat="bebidas">Elixir y Vinos</button>
+            </div>
+
+            <div id="menu-grid" class="menu-grid">
+                <!-- Renderizado dinámico por JS -->
+            </div>
+        </section>
+
+        <section id="reserve" class="section">
+            <div class="section-header">
+                <h2>Reservaciones</h2>
+                <p>Asegure su lugar en nuestra mesa</p>
+            </div>
+
+            <div class="glass-card reservation-card">
+                <form id="premiumReserveForm">
+                    <div class="input-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" placeholder="Ej. Kenji Sato" required>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Fecha</label>
+                            <input type="date" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Hora</label>
+                            <input type="time" required>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Invitados</label>
+                        <select required>
+                            <option value="1">1 Persona</option>
+                            <option value="2" selected>2 Personas</option>
+                            <option value="4">4 Personas</option>
+                            <option value="6">6 Personas</option>
+                            <option value="8+">Banquete Imperial (8+)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Peticiones Especiales</label>
+                        <textarea placeholder="Alergias o preferencias culinarias..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit">Confirmar Reserva</button>
+                </form>
+                <div id="reservaFeedback" class="hidden"></div>
+            </div>
+        </section>
+
+        <section id="contact" class="section">
+            <div class="section-header">
+                <h2>Contacto</h2>
+                <p>Estamos listos para recibirle</p>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-info glass-card">
+                    <div class="info-item">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <div>
+                            <strong>Ubicación</strong>
+                            <p>Distrito Gastronómico Oriental, Ciudad de México</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fa-solid fa-phone"></i>
+                        <div>
+                            <strong>Teléfono</strong>
+                            <p>+52 55 8877 6655</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fa-solid fa-envelope"></i>
+                        <div>
+                            <strong>Email</strong>
+                            <p>concierge@lotoimperial.com</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="map-placeholder glass-card">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.485!2d-99.16!3d19.42!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0!2zMTnCsDI1JzEyLjAiT4yKTkxSzM2LDBf!5e0!3m2!1ses!2smx!4v1600000000000" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="#home" class="nav-item active" data-target="home">
+            <i class="fa-solid fa-house"></i>
+            <span>Inicio</span>
+        </a>
+        <a href="#menu" class="nav-item" data-target="menu">
+            <i class="fa-solid fa-utensils"></i>
+            <span>Menú</span>
+        </a>
+        <a href="#reserve" class="nav-item" data-target="reserve">
+            <i class="fa-solid fa-calendar-check"></i>
+            <span>Reserva</span>
+        </a>
+        <a href="#contact" class="nav-item" data-target="contact">
+            <i class="fa-solid fa-envelope"></i>
+            <span>Contacto</span>
+        </a>
+    </nav>
+
+    <!-- GSAP CORE -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- SCROLLTO PLUGIN FOR AUTOMATIC ANIMATIONS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

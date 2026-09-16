@@ -1,0 +1,16 @@
+{
+    "name": "Loto Imperial | Alta Cocina China",
+    "short_name": "Loto Imperial",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#1a0a0a",
+    "theme_color": "#58211C",
+    "icons": [
+        {
+            "src": "LOGO.svg",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}
