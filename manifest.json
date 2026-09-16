@@ -7,22 +7,10 @@
     "theme_color": "#58211C",
     "icons": [
         {
-            "src": "favi.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "any"
-        },
-        {
-            "src": "favi.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
             "src": "LOGO.svg",
             "sizes": "512x512",
             "type": "image/svg+xml",
-            "purpose": "any"
+            "purpose": "any maskable"
         }
     ]
 }
