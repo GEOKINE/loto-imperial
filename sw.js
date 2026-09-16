@@ -1,9 +1,9 @@
 const CACHE_NAME = 'loto-imperial-v1';
 const ASSETS = [
-    '/index.html',
-    '/style.css',
-    '/app.js',
-    '/manifest.json',
+    'index.html',
+    'style.css',
+    'app.js',
+    'manifest.json',
     'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap'
 ];
 
