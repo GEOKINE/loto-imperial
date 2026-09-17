@@ -186,9 +186,9 @@ async function initializeApp() {
             trigger: '#home',
             start: 'top top',
             end: 'bottom top',
-            scrub: 1, // Smooth scrub
+            scrub: true, // Respuesta instantánea al scroll
         },
-        ease: 'power2.inOut',
+        ease: 'none', // Eliminamos el retraso inicial (entrada lenta)
         onUpdate: () => {
             manager.setFrame('home-to-menu', Math.round(homeProxy.frame));
         }
