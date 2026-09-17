@@ -187,6 +187,7 @@ async function initializeApp() {
             onUpdate: (self) => {
                 const frame = Math.floor(self.progress * manager.sequences['home-to-menu'].frameCount);
                 manager.setFrame('home-to-menu', frame);
+                console.log(`Updating frame: ${frame}`);
             }
         }
     });
