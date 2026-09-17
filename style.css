@@ -41,7 +41,6 @@ body {
     z-index: -1;
     object-fit: cover;
     pointer-events: none;
-    mix-blend-mode: multiply;
 }
 
 .ambient-bg {
@@ -132,7 +131,7 @@ body {
     position: absolute;
     inset: 0;
     z-index: -2;
-    background: linear-gradient(to bottom, rgba(26, 10, 10, 0.3), rgba(26, 10, 10, 0.9));
+    background: linear-gradient(to bottom, rgba(26, 10, 10, 0.2), rgba(26, 10, 10, 0.7));
 }
 
 .hero-text {
