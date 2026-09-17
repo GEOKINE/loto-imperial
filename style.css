@@ -24,7 +24,7 @@ html {
 }
 
 body {
-    background-color: var(--primary);
+    background-color: #3a0d0d;
     color: var(--text-main);
     font-family: var(--font-body);
     line-height: 1.6;
@@ -132,7 +132,7 @@ body {
     position: absolute;
     inset: 0;
     z-index: -2;
-    background: linear-gradient(to bottom, rgba(26, 10, 10, 0.2), rgba(26, 10, 10, 0.7));
+    background: linear-gradient(to bottom, rgba(26, 10, 10, 0.4), rgba(26, 10, 10, 0.8));
 }
 
 .hero-text {
