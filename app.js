@@ -172,7 +172,7 @@ async function initializeApp() {
         prefix: 'frame_',
         frameCount: 145,
         padding: 5,
-        extension: 'jpg'
+        extension: 'png'
     });
 
     // Set initial sequence
