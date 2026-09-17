@@ -165,8 +165,8 @@ async function initializeApp() {
 
     // Home to Menu Transition
     await manager.addSequence('home-to-menu', {
-        url: 'imagenes/background/Comp 1',
-        prefix: 'Comp 1_',
+        url: 'imagenes/background/comp1',
+        prefix: 'frame_',
         frameCount: 145,
         padding: 5,
         extension: 'jpg'
