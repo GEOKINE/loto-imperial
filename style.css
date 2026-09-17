@@ -24,7 +24,7 @@ html {
 }
 
 body {
-    background-color: #3a0d0d;
+    background-color: #4a0a0a;
     color: var(--text-main);
     font-family: var(--font-body);
     line-height: 1.6;
@@ -41,7 +41,7 @@ body {
     z-index: -1;
     object-fit: cover;
     pointer-events: none;
-    mix-blend-mode: screen;
+    mix-blend-mode: lighten;
 }
 
 .ambient-bg {
