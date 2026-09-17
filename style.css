@@ -24,7 +24,7 @@ html {
 }
 
 body {
-    background-color: #2a0a0a;
+    background-color: var(--primary);
     color: var(--text-main);
     font-family: var(--font-body);
     line-height: 1.6;
@@ -41,6 +41,7 @@ body {
     z-index: -1;
     object-fit: cover;
     pointer-events: none;
+    mix-blend-mode: screen;
 }
 
 .ambient-bg {
@@ -49,8 +50,8 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -2; /* Ahora está al fondo de todo */
-    background: radial-gradient(circle at 50% -20%, #2a0a0a 0%, #0a0a0a 100%);
+    z-index: -2;
+    background: radial-gradient(circle at 50% -20%, var(--primary) 0%, #1a0a0a 100%);
     pointer-events: none;
 }
 
