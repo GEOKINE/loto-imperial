@@ -178,19 +178,27 @@ async function initializeApp() {
     // Set initial sequence
     await manager.transitionTo('home-to-menu');
 
-    gsap.to({}, {
+    // Animation Proxy for Home sequence to allow easing
+    const homeProxy = { frame: 0 };
+    gsap.to(homeProxy, {
+        frame: manager.sequences['home-to-menu'].frameCount - 1,
         scrollTrigger: {
             trigger: '#home',
             start: 'top top',
             end: 'bottom top',
-            scrub: true,
-            onUpdate: (self) => {
-                const frame = Math.floor(self.progress * manager.sequences['home-to-menu'].frameCount);
-                manager.setFrame('home-to-menu', frame);
-                console.log(`Updating frame: ${frame}`);
-            }
+            scrub: 1, // Smooth scrub
+        },
+        ease: 'power2.inOut',
+        onUpdate: () => {
+            manager.setFrame('home-to-menu', Math.round(homeProxy.frame));
         }
     });
+
+    // PLACEHOLDERS FOR FUTURE TRANSITIONS
+    // Once images are provided, we will add sequences here:
+    // - 'menu-to-reserve'
+    // - 'reserve-to-contact'
+    // And set up their ScrollTriggers similarly to homeProxy.
 
     // 2. Menu Animations
     gsap.fromTo('#menu .section-header',
