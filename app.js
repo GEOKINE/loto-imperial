@@ -1,15 +1,21 @@
 // LOTO IMPERIAL - Advanced Pan-Asian Logic, Choreography & Dynamic Data
 
 class ImageSequence {
-    constructor(canvasId, framesUrl, frameCount) {
+    constructor(canvasId, config) {
         this.canvas = document.getElementById(canvasId);
         if (!this.canvas) return;
         this.ctx = this.canvas.getContext('2d');
-        this.framesUrl = framesUrl;
-        this.frameCount = frameCount;
+
+        this.baseUrl = config.url;
+        this.prefix = config.prefix || '';
+        this.frameCount = config.frameCount;
+        this.padding = config.padding || 0;
+        this.extension = config.extension || 'png';
+
         this.images = [];
         this.currentFrame = 0;
         this.isLoaded = false;
+        this.opacity = 1;
 
         this.init();
     }
@@ -17,8 +23,9 @@ class ImageSequence {
     async init() {
         try {
             const loadPromises = [];
-            for (let i = 1; i <= this.frameCount; i++) {
-                loadPromises.push(this.loadImage(`${this.framesUrl}/${i}.png`));
+            for (let i = 0; i < this.frameCount; i++) {
+                const frameNum = i.toString().padStart(this.padding, '0');
+                loadPromises.push(this.loadImage(`${this.baseUrl}/${this.prefix}${frameNum}.${this.extension}`));
             }
             this.images = await Promise.all(loadPromises);
             this.isLoaded = true;
@@ -34,7 +41,7 @@ class ImageSequence {
         return new Promise((resolve, reject) => {
             const img = new Image();
             img.onload = () => resolve(img);
-            img.onerror = reject;
+            img.onerror = (err) => reject(new Error(`Failed to load: ${url}`));
             img.src = url;
         });
     }
@@ -47,6 +54,11 @@ class ImageSequence {
 
     setFrame(frame) {
         this.currentFrame = Math.max(0, Math.min(frame, this.frameCount - 1));
+        this.render();
+    }
+
+    setOpacity(val) {
+        this.opacity = val;
         this.render();
     }
 
@@ -70,7 +82,61 @@ class ImageSequence {
         }
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.globalAlpha = this.opacity;
         this.ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+        this.ctx.globalAlpha = 1.0;
+    }
+}
+
+class SequenceManager {
+    constructor(canvasId) {
+        this.canvasId = canvasId;
+        this.sequences = {};
+        this.currentSeqId = null;
+    }
+
+    async addSequence(id, config) {
+        const seq = new ImageSequence(this.canvasId, config);
+        this.sequences[id] = seq;
+        await seq.init();
+        return seq;
+    }
+
+    setFrame(id, frame) {
+        if (this.sequences[id]) {
+            this.sequences[id].setFrame(frame);
+        }
+    }
+
+    setOpacity(id, opacity) {
+        if (this.sequences[id]) {
+            this.sequences[id].setOpacity(opacity);
+        }
+    }
+
+    async transitionTo(id) {
+        if (this.currentSeqId === id) return;
+
+        const prevId = this.currentSeqId;
+        this.currentSeqId = id;
+
+        if (prevId && this.sequences[prevId]) {
+            gsap.to(this.sequences[prevId], {
+                opacity: 0,
+                duration: 0.5,
+                onUpdate: () => this.sequences[prevId].setOpacity(this.sequences[prevId].opacity)
+            });
+        }
+
+        if (this.sequences[id]) {
+            this.sequences[id].opacity = 0;
+            this.sequences[id].render();
+            gsap.to(this.sequences[id], {
+                opacity: 1,
+                duration: 0.5,
+                onUpdate: () => this.sequences[id].setOpacity(this.sequences[id].opacity)
+            });
+        }
     }
 }
 
@@ -94,12 +160,20 @@ async function fetchMenuData() {
 async function initializeApp() {
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-    // 1. Sequence Animation (Home)
-    const sequence = new ImageSequence(
-        'hero-canvas',
-        'https://raw.githubusercontent.com/USER/REPO/main/frames',
-        100
-    );
+    // 1. Sequence Animation System
+    const manager = new SequenceManager('hero-canvas');
+
+    // Home to Menu Transition
+    await manager.addSequence('home-to-menu', {
+        url: 'imagenes/background/Comp 1',
+        prefix: 'Comp 1_',
+        frameCount: 145,
+        padding: 5,
+        extension: 'jpg'
+    });
+
+    // Set initial sequence
+    await manager.transitionTo('home-to-menu');
 
     gsap.to({}, {
         scrollTrigger: {
@@ -108,8 +182,8 @@ async function initializeApp() {
             end: 'bottom top',
             scrub: true,
             onUpdate: (self) => {
-                const frame = Math.floor(self.progress * sequence.frameCount);
-                sequence.setFrame(frame);
+                const frame = Math.floor(self.progress * manager.sequences['home-to-menu'].frameCount);
+                manager.setFrame('home-to-menu', frame);
             }
         }
     });
