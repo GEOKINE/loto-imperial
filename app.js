@@ -21,19 +21,22 @@ class ImageSequence {
     }
 
     async init() {
+        console.log(`Initializing sequence: ${this.baseUrl}`);
         try {
             const loadPromises = [];
             for (let i = 0; i < this.frameCount; i++) {
                 const frameNum = i.toString().padStart(this.padding, '0');
-                loadPromises.push(this.loadImage(`${this.baseUrl}/${this.prefix}${frameNum}.${this.extension}`));
+                const url = `${this.baseUrl}/${this.prefix}${frameNum}.${this.extension}`;
+                loadPromises.push(this.loadImage(url));
             }
             this.images = await Promise.all(loadPromises);
             this.isLoaded = true;
+            console.log(`Sequence loaded successfully: ${this.frameCount} frames`);
             this.resize();
             this.render();
             window.addEventListener('resize', () => this.resize());
         } catch (e) {
-            console.error("Error loading image sequence:", e);
+            console.error("CRITICAL ERROR loading image sequence:", e);
         }
     }
 
