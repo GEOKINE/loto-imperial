@@ -485,6 +485,184 @@ body {
     transform: translateY(-5px);
 }
 
+/* ... (mantener todo lo anterior) ... */
+
+/* AUTH MODAL */
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+    transition: var(--transition);
+}
+
+.modal.hidden {
+    display: none;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-content {
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    animation: modalAppear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalAppear {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.close-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    z-index: 10;
+}
+
+.auth-tabs {
+    display: flex;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.auth-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 15px;
+    cursor: pointer;
+    font-family: var(--font-title);
+    text-transform: uppercase;
+    transition: var(--transition);
+    border-bottom: 3px solid transparent;
+}
+
+.auth-tab.active {
+    color: var(--primary-highlight);
+    border-bottom-color: var(--primary-highlight);
+}
+
+/* PROFILE & ADMIN SECTIONS */
+.section.hidden {
+    display: none;
+}
+
+.profile-card, .admin-card {
+    background: rgba(26, 10, 10, 0.6);
+    border: 1px solid var(--primary-highlight);
+    box-shadow: 0 0 30px rgba(255, 218, 116, 0.1);
+}
+
+.user-info-summary h3 {
+    font-size: 2rem;
+    margin-bottom: 5px;
+    text-shadow: 0 0 10px rgba(255, 218, 116, 0.3);
+}
+
+.reservation-entry {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    transition: var(--transition);
+}
+
+.reservation-entry:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: var(--primary-highlight);
+}
+
+.res-code-badge {
+    background: var(--primary);
+    color: var(--primary-highlight);
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-family: var(--font-title);
+    font-weight: bold;
+    letter-spacing: 2px;
+    border: 1px solid var(--primary-highlight);
+}
+
+.admin-res-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 20px;
+    padding: 15px;
+    border-bottom: 1px solid var(--glass-border);
+    transition: var(--transition);
+}
+
+.admin-res-item:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+/* ... (mantener todo lo anterior) ... */
+
+/* TOAST NOTIFICATIONS */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 3000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    background: rgba(26, 10, 10, 0.95);
+    border: 1px solid var(--primary-highlight);
+    color: var(--text-main);
+    padding: 15px 25px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: toastIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.3s ease;
+}
+
+.toast.error {
+    border-color: #ff4444;
+}
+
+.toast.error i {
+    color: #ff4444;
+}
+
+.toast i {
+    color: var(--primary-highlight);
+    font-size: 1.2rem;
+}
+
+@keyframes toastIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.toast.fade-out {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
 /* RESPONSIVE */
 @media (min-width: 768px) {
     .contact-grid { grid-template-columns: 1fr 1fr; }

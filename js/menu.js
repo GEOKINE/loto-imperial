@@ -1,15 +1,43 @@
-// LOTO IMPERIAL - Menu Logic & Dynamic Data
+import { supabase } from './supabaseClient.js';
 
 export async function fetchMenuData() {
-    console.log('Fetching menu data...');
+    console.log('Fetching menu data from Supabase...');
     try {
-        const response = await fetch('menu.json');
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-        console.log('Menu data loaded successfully:', data);
-        return data;
+        // Fetch menu items and their associated categories
+        const { data, error } = await supabase
+            .from('menu_items')
+            .select(`
+                name,
+                price,
+                description,
+                image_url,
+                menu_categories (name)
+            `);
+
+        if (error) throw error;
+
+        console.log('Menu data fetched successfully:', data);
+
+        // Transform the flat list into a grouped object: { categoryName: [items] }
+        const groupedMenu = {};
+
+        data.forEach(item => {
+            const categoryName = item.menu_categories?.name || 'others';
+            if (!groupedMenu[categoryName]) {
+                groupedMenu[categoryName] = [];
+            }
+
+            groupedMenu[categoryName].push({
+                name: item.name,
+                price: item.price,
+                desc: item.description,
+                img: item.image_url
+            });
+        });
+
+        return groupedMenu;
     } catch (error) {
-        console.error('CRITICAL ERROR loading menu data:', error);
+        console.error('CRITICAL ERROR loading menu from Supabase:', error);
         return null;
     }
 }

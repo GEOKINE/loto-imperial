@@ -17,6 +17,7 @@
 </head>
 <body class="gsap-enabled">
 
+    <div class="toast-container" id="toastContainer"></div>
     <div class="ambient-bg"></div>
 
     <canvas id="hero-canvas"></canvas>
@@ -131,7 +132,47 @@
                     </div>
                 </div>
                 <div class="map-placeholder glass-card">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.485!2d-99.16!3d19.42!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0!2zMTnCsDI1JzEyLjAiT4yKTkxSzM2LDBf!5e0!3m2!1ses!2smx!4v1600000000000" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.485!2d-99.16!3d19.42!2m3!1f0!2f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0!2zMTnCsDI1JzEyLjAiT4yKTkxSzM2LDBf!5e0!3m2!1ses!2smx!4v1600000000000" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </section>
+
+        <!-- User Profile Section (Hidden by default) -->
+        <section id="profile" class="section hidden">
+            <div class="section-header">
+                <h2 id="profileTitle">Mi Cuenta</h2>
+                <p>Gestione sus reservaciones y datos personales</p>
+            </div>
+            <div class="glass-card profile-card" style="width: 100%; max-width: 800px;">
+                <div id="userInfo" class="user-info-summary" style="text-align: center; margin-bottom: 30px;">
+                    <h3 id="userName" style="font-family: var(--font-title); color: var(--primary-highlight);">Cargando...</h3>
+                    <p id="userEmail" style="color: var(--text-muted);"></p>
+                </div>
+                <div class="reservations-list">
+                    <h4 style="margin-bottom: 20px; text-align: center; font-family: var(--font-title);">Mis Reservaciones</h4>
+                    <div id="userReservationsGrid" class="menu-grid">
+                        <!-- Reservaciones dinámicas -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Panel Section (Hidden by default) -->
+        <section id="admin" class="section hidden">
+            <div class="section-header">
+                <h2>Panel de Control Imperial</h2>
+                <p>Administración de reservaciones y acceso</p>
+            </div>
+            <div class="glass-card admin-card" style="width: 100%; max-width: 1000px;">
+                <div class="admin-controls" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <h3 style="font-family: var(--font-title);">Reservaciones Pendientes</h3>
+                    <div class="search-box" style="display: flex; gap: 10px;">
+                        <input type="text" id="adminSearchCode" placeholder="Buscar código..." style="background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: white; padding: 8px; border-radius: 8px;">
+                        <button id="btnSearchCode" class="btn-premium" style="padding: 8px 15px; font-size: 0.8rem;">Buscar</button>
+                    </div>
+                </div>
+                <div id="adminReservationsGrid" class="menu-grid">
+                    <!-- Reservaciones administrables -->
                 </div>
             </div>
         </section>
@@ -154,13 +195,49 @@
             <i class="fa-solid fa-envelope"></i>
             <span>Contacto</span>
         </a>
+        <a href="#" id="navAccount" class="nav-item">
+            <i class="fa-solid fa-user"></i>
+            <span id="accountLabel">Cuenta</span>
+        </a>
     </nav>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal hidden">
+        <div class="modal-content glass-card">
+            <span class="close-modal">&times;</span>
+            <div class="auth-tabs">
+                <button id="tabLogin" class="auth-tab active">Ingresar</button>
+                <button id="tabRegister" class="auth-tab">Registrarse</button>
+            </div>
+
+            <form id="authForm">
+                <div class="input-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="authEmail" required>
+                </div>
+                <div class="input-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="authPassword" required>
+                </div>
+                <div id="registerFields" class="hidden">
+                    <div class="input-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" id="authFullName">
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit" id="authSubmitBtn">Ingresar</button>
+            </form>
+            <div id="authFeedback" class="hidden"></div>
+        </div>
+    </div>
 
     <!-- GSAP CORE -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <!-- SCROLLTO PLUGIN FOR AUTOMATIC ANIMATIONS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+    <!-- SUPABASE CLIENT -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="app.js"></script>
 </body>
 </html>

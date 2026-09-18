@@ -1,0 +1,4 @@
+export const SUPABASE_CONFIG = {
+    url: 'https://dtmtpzsryrurqrfjbzpj.supabase.co',
+    anonKey: 'sb_publishable__ljQrzI0r1OLV4Tcl0xlhA_u_dTNmZ7'
+};
