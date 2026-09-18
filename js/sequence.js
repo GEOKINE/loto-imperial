@@ -57,7 +57,9 @@ export class ImageSequence {
 
     setFrame(frame) {
         this.currentFrame = Math.max(0, Math.min(frame, this.frameCount - 1));
-        this.render();
+        if (this.isLoaded) {
+            this.render();
+        }
     }
 
     setOpacity(val) {
