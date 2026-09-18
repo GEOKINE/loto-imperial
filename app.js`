@@ -1,179 +1,147 @@
-// LOTO IMPERIAL - Advanced Pan-Asian Logic, Choreography & Expanded Menu
-const MENU_DATA = {
-    japones: [
-        { name: 'Omakase Premium', price: '$120', desc: 'Selección del Chef: 12 piezas de sushi y sashimi de la temporada.', img: 'https://images.unsplash.com/photo-1579871494447-1c2818f4d46f?q=80&w=600&auto=format&fit=crop' },
-        { name: 'Ramen Tonkotsu', price: '$22', desc: 'Caldo cremoso de cerdo cocinado por 18h, chashu y huevo marinado.', img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?q=80&w=600&auto=format&fit=crop' },
-        { name: 'Tempura Imperial', price: '$18', desc: 'Langostinos y vegetales rebozados en masa ligera y crujiente.', img: 'https://images.unsplash.com/photo-1581184720182-7b2937757796?q=80&w=600&auto=format&fit=crop' },
-        { name: 'Sashimi Deluxe', price: '$35', desc: 'Cortes finos de atún, salmón y pulpo con wasabi fresco.', img: 'https://images.unsplash.com/photo-1534422477776-7500dcaec867?q=80&w=600&auto=format&fit=crop' },
-        { name: 'Yakitori Mix', price: '$20', desc: 'Brochetas de pollo y vegetales asadas al carbón japonés.', img: 'https://images.unsplash.com/photo-1534422477776-7500dcaec867?q=80&w=600&auto=format&fit=crop' },
-        { name: 'Unagi Don', price: '$32', desc: 'Anguila glaseada sobre una cama de arroz premium.', img: 'https://images.unsplash.com/photo-1581184720182-7b2937757796?q=80&w=600&auto=format&fit=crop' },
-    ],
-    chino: [
-        { name: 'Pato Pekín', price: '$45', desc: 'El clásico imperial con crepas, cebollino y salsa hoisin.', img: 'https://images.unsplash.com/photo-1585032226651-759ba4cb3674?q=80&w=600&auto=format&fit=crop' },
-        { name: 'Dim Sum Platter', price: '$24', desc: 'Variedad de dumplings al vapor, bollos y gyozas.', img: 'https://images.unsplash.com/photo-1496116218417-1a782f7772ca?q=80&w=600&auto=format&fit=crop' },
-        { name: 'Mapo Tofu', price: '$20', desc: 'Tofu picante estilo Szechuan con carne molida y pimienta.', img: 'https://images.unsplash.com/photo-1541696497730-7c8be7f64736?q=80&w=600&auto=format&fit=crop' },
-        { name: 'Pollo Kung Pao', price: '$22', desc: 'Pollo salteado con cacahuates, chiles secos y pimientos.', img: 'https://images.unsplash.com/photo-1525755662778-98979d97383a?q=80&w=600&auto=format&fit=crop' },
-        { name: 'Sopa Agripicante', price: '$14', desc: 'Sopa tradicional con tofu, hongos y brotes de bambú.', img: 'https://images.unsplash.com/photo-1547592166-2ud8ebc678b?q=80&w=600&auto=format&fit=crop' },
-        { name: 'Arroz Chaufa Imperial', price: '$18', desc: 'Arroz salteado al wok con carnes seleccionadas y huevo.', img: 'https://images.unsplash.com/photo-1512058560366-c8065675966d?q=80&w=600&auto=//LOTO IMPERIAL - Advanced Pan-Asian Logic
-        this.ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-    }
-}
+import { SequenceManager } from './js/sequence.js';
+import { fetchMenuData, renderMenu } from './js/menu.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-
+async function initializeApp() {
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-    // 1. Sequence Animation (Home)
-    const sequence = new ImageSequence(
-        'hero-canvas',
-        'https://raw.githubusercontent.com/USER/REPO/main/frames',
-        100
-    );
+    // 1. Sequence Animation System
+    const manager = new SequenceManager('hero-canvas');
 
-    gsap.to({}, {
+    // Home to Menu Transition
+    await manager.addSequence('home-to-menu', {
+        url: 'imagenes/background/comp2',
+        prefix: 'Comp 2_',
+        frameCount: 144,
+        padding: 5,
+        extension: 'png'
+    });
+
+    await manager.transitionTo('home-to-menu');
+
+    const homeProxy = { frame: 0 };
+    gsap.to(homeProxy, {
+        frame: manager.sequences['home-to-menu'].frameCount - 1,
         scrollTrigger: {
             trigger: '#home',
             start: 'top top',
             end: 'bottom top',
             scrub: true,
-            onUpdate: (self) => {
-                const frame = Math.floor(self.progress * sequence.frameCount);
-                sequence.setFrame(frame);
-            }
+        },
+        ease: 'none',
+        onUpdate: () => {
+            manager.setFrame('home-to-menu', Math.round(homeProxy.frame));
         }
     });
 
     // 2. Menu Animations
-    gsap.from('#menu .section-header', {
-        scrollTrigger: {
-            trigger: '#menu',
-            start: 'top 80%',
-        },
-        y: 50,
-        opacity: 0,
-        duration: 1,
-        ease: 'power3.out'
-    });
+    gsap.fromTo('#menu .section-header',
+        { y: 50, opacity: 0 },
+        {
+            scrollTrigger: {
+                trigger: '#menu',
+                start: 'top 80%',
+            },
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: 'power3.out'
+        }
+    );
 
-    gsap.from('#menu .cat-btn', {
-        scrollTrigger: {
-            trigger: '#menu',
-            start: 'top 70%',
-        },
-        scale: 0,
-        opacity: 0,
-        duration: 0.5,
-        stagger: 0.1,
-        ease: 'back.out(1.7)'
-    });
+    gsap.fromTo('#menu .cat-btn',
+        { scale: 0, opacity: 0 },
+        {
+            scrollTrigger: {
+                trigger: '#menu',
+                start: 'top 70%',
+            },
+            scale: 1,
+            opacity: 1,
+            duration: 0.5,
+            stagger: 0.1,
+            ease: 'back.out(1.7)'
+        }
+    );
 
     // 3. Reserve Animations
-    gsap.from('#reserve .reservation-card', {
-        scrollTrigger: {
-            trigger: '#reserve',
-            start: 'top 70%',
-        },
-        scale: 0.8,
-        opacity: 0,
-        duration: 1.2,
-        ease: 'expo.out'
-    });
+    gsap.fromTo('#reserve .reservation-card',
+        { scale: 0.8, opacity: 0 },
+        {
+            scrollTrigger: {
+                trigger: '#reserve',
+                start: 'top 70%',
+            },
+            scale: 1,
+            opacity: 1,
+            duration: 1.2,
+            ease: 'expo.out'
+        }
+    );
 
     // 4. Contact Animations
-    gsap.from('#contact .contact-info', {
-        scrollTrigger: {
-            trigger: '#contact',
-            start: 'top 80%',
-        },
-        x: -100,
-        opacity: 0,
-        duration: 1,
-        ease: 'power2.out'
-    });
+    gsap.fromTo('#contact .contact-info',
+        { x: -100, opacity: 0 },
+        {
+            scrollTrigger: {
+                trigger: '#contact',
+                start: 'top 80%',
+            },
+            x: 0,
+            opacity: 1,
+            duration: 1,
+            ease: 'power2.out'
+        }
+    );
 
-    gsap.from('#contact .map-placeholder', {
-        scrollTrigger: {
-            trigger: '#contact',
-            start: 'top 80%',
-        },
-        x: 100,
-        opacity: 0,
-        duration: 1,
-        ease: 'power2.out'
-    });
+    gsap.fromTo('#contact .map-placeholder',
+        { x: 100, opacity: 0 },
+        {
+            scrollTrigger: {
+                trigger: '#contact',
+                start: 'top 80%',
+            },
+            x: 0,
+            opacity: 1,
+            duration: 1,
+            ease: 'power2.out'
+        }
+    );
 
-    // ==========================================
-    // HYBRID NAVIGATION SYSTEM (Automatic Animations)
-    // ==========================================
+    // Hybrid Navigation System
     const navItems = document.querySelectorAll('.nav-item');
-    const sections = document.querySelectorAll('.section');
-
     navItems.forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             const targetId = item.getAttribute('data-target');
-
-            // Update Nav UI
             navItems.forEach(i => i.classList.remove('active'));
             item.classList.add('active');
-
-            // AUTOMATIC ANIMATION:
-            // Use GSAP ScrollTo to move the page.
-            // This automatically triggers the ScrollTrigger sequence and animations.
             gsap.to(window, {
                 duration: 1.5,
-                scrollTo: {
-                    y: `#${targetId}`,
-                    offsetY: 0
-                },
+                scrollTo: { y: `#${targetId}`, offsetY: 0 },
                 ease: 'power3.inOut'
             });
         });
     });
 
-    // ==========================================
-    // CORE MENU LOGIC (Expanded)
-    // ==========================================
+    // Core Menu Logic
     const catButtons = document.querySelectorAll('.cat-btn');
     const menuGrid = document.getElementById('menu-grid');
+    const menuData = await fetchMenuData();
 
-    function renderMenu(category) {
-        if (!menuGrid) return;
-        menuGrid.innerHTML = '';
-        const items = MENU_DATA[category];
-
-        items.forEach((item, index) => {
-            const card = document.createElement('div');
-            card.className = 'menu-item';
-            card.innerHTML = `
-                <img src="${item.img}" alt="${item.name}">
-                <div class="menu-item-content">
-                    <h3>${item.name} <span class="price">${item.price}</span></h3>
-                    <p>${item.desc}</p>
-                </div>
-            `;
-            menuGrid.appendChild(card);
+    function handleCategoryChange(category) {
+        catButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-cat') === category);
         });
-
-        gsap.from('.menu-item', {
-            y: 50,
-            opacity: 0,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: 'power2.out'
-        });
+        renderMenu(menuGrid, menuData, category);
     }
 
     catButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            catButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            renderMenu(btn.getAttribute('data-cat'));
-        });
+        btn.addEventListener('click', () => handleCategoryChange(btn.getAttribute('data-cat')));
     });
 
-    renderMenu('japones');
+    renderMenu(menuGrid, menuData, 'japones');
 
+    // Reservation Form
     const reserveForm = document.getElementById('premiumReserveForm');
     const feedback = document.getElementById('reservaFeedback');
 
@@ -197,28 +165,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Update active nav on manual scroll
+    // Active Nav Item on Scroll
+    const sectionsScroll = document.querySelectorAll('.section');
     window.addEventListener('scroll', () => {
         let current = '';
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            if (window.pageYOffset >= sectionTop - 100) {
+        sectionsScroll.forEach(section => {
+            if (window.pageYOffset >= section.offsetTop - 100) {
                 current = section.getAttribute('id');
             }
         });
         navItems.forEach(item => {
-            item.classList.remove('active');
-            if (item.getAttribute('href') === `#${current}`) {
-                item.classList.add('active');
-            }
+            item.classList.toggle('active', item.getAttribute('href') === `#${current}`);
         });
     });
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
+            navigator.serviceWorker.register('sw.js')
                 .then(reg => console.log('SW Registered'))
                 .catch(err => console.log('SW Error', err));
         });
     }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initializeApp().catch(err => console.error('Critical app init error:', err));
 });
