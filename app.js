@@ -7,7 +7,42 @@ async function initializeApp() {
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
     // ==========================================
-    // 0. SISTEMA DE AUTENTICACIÓN (Activación Prioritaria)
+    // 0. SISTEMA DE ANIMACIÓN (Carga Prioritaria)
+    // ==========================================
+    const manager = new SequenceManager('hero-canvas');
+
+    // Cargamos la secuencia y configuramos el frame inicial
+    await manager.addSequence('home-to-menu', {
+        url: 'imagenes/background/comp2',
+        prefix: 'Comp 2_',
+        frameCount: 144,
+        padding: 5,
+        extension: 'png'
+    });
+
+    // EMPIEZA DESDE EL FRAME 9
+    const START_FRAME = 9;
+    const END_FRAME = 143;
+    manager.setFrame('home-to-menu', START_FRAME);
+    await manager.transitionTo('home-to-menu');
+
+    const homeProxy = { frame: START_FRAME };
+    gsap.to(homeProxy, {
+        frame: END_FRAME,
+        scrollTrigger: {
+            trigger: '#home',
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+        },
+        ease: 'none',
+        onUpdate: () => {
+            manager.setFrame('home-to-menu', Math.round(homeProxy.frame));
+        }
+    });
+
+    // ==========================================
+    // 1. SISTEMA DE AUTENTICACIÓN
     // ==========================================
     const authModal = document.getElementById('authModal');
     const closeModal = document.querySelector('.close-modal');
@@ -25,18 +60,11 @@ async function initializeApp() {
 
     let currentAuthMode = 'login';
 
-    console.log('✅ Eventos de Auth configurados');
-
     navAccount.addEventListener('click', async (e) => {
         e.preventDefault();
-        console.log('🔑 Intentando abrir cuenta...');
-
         try {
             const { data: { session } } = await supabase.auth.getSession();
-            console.log('Supabase session status:', session ? 'Logged in' : 'Logged out');
-
             if (!session) {
-                console.log('Abre modal de Login');
                 authModal.classList.remove('hidden');
             } else {
                 const { data: profile } = await supabase
@@ -52,8 +80,6 @@ async function initializeApp() {
                 }
             }
         } catch (err) {
-            console.error('Error en navAccount:', err);
-            // Fallback: Abrir el modal aunque falle la conexión
             authModal.classList.remove('hidden');
         }
     });
@@ -127,6 +153,12 @@ async function initializeApp() {
         const target = document.getElementById(sectionId);
         if (target) {
             target.classList.remove('hidden');
+
+            // ESTÁTICO FRAME 143 PARA PANEL DE USUARIO Y ADMIN
+            if (sectionId === 'profile' || sectionId === 'admin') {
+                manager.setFrame('home-to-menu', 143);
+            }
+
             if (sectionId === 'profile') await loadUserProfile();
             else if (sectionId === 'admin') await loadAdminPanel();
         }
@@ -200,36 +232,6 @@ async function initializeApp() {
         const { data, error } = await supabase.from('reservations').select('*, profiles(full_name)').eq('special_code', code).single();
         if (error || !data) showNotification('Reservación no encontrada', 'error');
         else showNotification(`Encontrado: ${data.profiles?.full_name}`, 'success');
-    });
-
-    // ==========================================
-    // 1. Sequence Animation System (Carga en segundo plano)
-    // ==========================================
-    const manager = new SequenceManager('hero-canvas');
-
-    manager.addSequence('home-to-menu', {
-        url: 'imagenes/background/comp2',
-        prefix: 'Comp 2_',
-        frameCount: 144,
-        padding: 5,
-        extension: 'png'
-    }).then(async () => {
-        console.log('🎨 Secuencia cargada. Iniciando animación...');
-        await manager.transitionTo('home-to-menu');
-        const homeProxy = { frame: 0 };
-        gsap.to(homeProxy, {
-            frame: manager.sequences['home-to-menu'].frameCount - 1,
-            scrollTrigger: {
-                trigger: '#home',
-                start: 'top top',
-                end: 'bottom top',
-                scrub: true,
-            },
-            ease: 'none',
-            onUpdate: () => {
-                manager.setFrame('home-to-menu', Math.round(homeProxy.frame));
-            }
-        });
     });
 
     // 2. Menu Animations
