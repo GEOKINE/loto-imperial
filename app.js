@@ -170,7 +170,7 @@ async function initializeApp() {
     await manager.addSequence('home-to-menu', {
         url: 'imagenes/background/comp2',
         prefix: 'Comp 2_',
-        frameCount: 720,
+        frameCount: 144,
         padding: 5,
         extension: 'png'
     });
