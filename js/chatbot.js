@@ -14,7 +14,7 @@ export const CHAT_TREE = {
         text: "Nuestra gastronomía es un viaje sensorial. ¿Cuál de nuestras regiones desea explorar?",
         options: [
             { text: "Cocina Japonesa", next: "menu_japones" },
-            { text: "Cocina China",, next: "menu_chino" },
+            { text: "Cocina China", next: "menu_chino" },
             { text: "Sudeste Asiático", next: "menu_sudeste" },
             { text: "Volver al inicio", next: "start" }
         ]
