@@ -98,7 +98,8 @@ export class LotoChat {
         });
 
         windowEl.querySelector('.close-chat').addEventListener('click', (e) => {
-            e.stopPropagation();
+            e.preventDefault();
+            e.stopImmediatePropagation();
             windowEl.classList.add('hidden');
         });
     }
