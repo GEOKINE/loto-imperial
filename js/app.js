@@ -5,6 +5,19 @@ import { LotoChat } from './chatbot.js';
 
 async function initializeApp() {
     console.log('🚀 Loto Imperial: Iniciando aplicación...');
+
+    const loaderBar = document.getElementById('loaderBar');
+    const loadingScreen = document.getElementById('loadingScreen');
+
+    // Simulación de progreso (Sensación de lujo)
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        if (progress < 90) {
+            progress += Math.random() * 5;
+            if (loaderBar) loaderBar.style.width = `${progress}%`;
+        }
+    }, 200);
+
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
     // ==========================================
@@ -21,11 +34,27 @@ async function initializeApp() {
         extension: 'png'
     });
 
+    // Detenemos la simulación y completamos la barra
+    clearInterval(progressInterval);
+    if (loaderBar) loaderBar.style.width = '100%';
+
     // EMPIEZA DESDE EL FRAME 9
     const START_FRAME = 9;
     const END_FRAME = 143;
     manager.setFrame('home-to-menu', START_FRAME);
     await manager.transitionTo('home-to-menu');
+
+    // Desvanecimiento suave de la pantalla de carga
+    setTimeout(() => {
+        gsap.to(loadingScreen, {
+            opacity: 0,
+            duration: 1.2,
+            ease: 'power2.inOut',
+            onComplete: () => {
+                if (loadingScreen) loadingScreen.classList.add('hidden');
+            }
+        });
+    }, 500);
 
     const homeProxy = { frame: START_FRAME };
     gsap.to(homeProxy, {
