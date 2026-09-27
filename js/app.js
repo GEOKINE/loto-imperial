@@ -13,7 +13,7 @@ async function initializeApp() {
 
     // Cargamos la secuencia y configuramos el frame inicial
     await manager.addSequence('home-to-menu', {
-        url: 'imagenes/background/comp2',
+        url: 'img/background/comp2',
         prefix: 'Comp 2_',
         frameCount: 144,
         padding: 5,
