@@ -781,6 +781,10 @@ body {
     transition: var(--transition);
 }
 
+#chat-window.hidden {
+    display: none !important;
+}
+
 .chat-header {
     background: var(--primary);
     padding: 15px;
