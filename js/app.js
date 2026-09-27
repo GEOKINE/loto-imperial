@@ -1,6 +1,7 @@
 import { SequenceManager } from './sequence.js';
 import { fetchMenuData, renderMenu } from './menu.js';
 import { supabase } from './supabaseClient.js';
+import { LotoChat } from './chatbot.js';
 
 async function initializeApp() {
     console.log('🚀 Loto Imperial: Iniciando aplicación...');
