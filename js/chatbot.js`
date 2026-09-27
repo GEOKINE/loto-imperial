@@ -1,0 +1,166 @@
+// LOTO IMPERIAL - AI Chatbot System
+// Using a decision-tree "neural network" for guided luxury interaction
+
+export const CHAT_TREE = {
+    start: {
+        text: "Bienvenido a Loto Imperial, el corazón de Asia en la Ciudad de México. Soy su asistente virtual. ¿En qué puedo asistirle hoy?",
+        options: [
+            { text: "Ver Menú", next: "menu" },
+            { text: "Hacer Reserva", next: "reserve" },
+            { text: "Ubicación y Contacto", next: "location" }
+        ]
+    },
+    menu: {
+        text: "Nuestra gastronomía es un viaje sensorial. ¿Cuál de nuestras regiones desea explorar?",
+        options: [
+            { text: "Cocina Japonesa", next: "menu_japones" },
+            { text: "Cocina China",, next: "menu_chino" },
+            { text: "Sudeste Asiático", next: "menu_sudeste" },
+            { text: "Volver al inicio", next: "start" }
+        ]
+    },
+    menu_japones: {
+        text: "La cocina japonesa es la esencia de la pureza. Le recomiendo nuestro Omakase Premium y el Ramen Tonkotsu. ¿Desea ver el menú completo?",
+        options: [
+            { text: "Ir al Menú", action: () => { window.location.hash = 'menu'; document.getElementById('menu').scrollIntoView({behavior: 'smooth'}); } },
+            { text: "Volver", next: "menu" }
+        ]
+    },
+    menu_chino: {
+        text: "Nuestra cocina china es imperial y audaz. El Pato Pekín es nuestra especialidad más solicitada. ¿Desea ver los platos?",
+        options: [
+            { text: "Ir al Menú", action: () => { window.location.hash = 'menu'; document.getElementById('menu').scrollIntoView({behavior: 'smooth'}); } },
+            { text: "Volver", next: "menu" }
+        ]
+    },
+    menu_sudeste: {
+        text: "El Sudeste Asiático ofrece una explosión de sabores cítricos y picantes, como nuestro Pad Thai Real. ¿Desea explorar más?",
+        options: [
+            { text: "Ir al Menú", action: () => { window.location.hash = 'menu'; document.getElementById('menu').scrollIntoView({behavior: 'smooth'}); } },
+            { text: "Volver", next: "menu" }
+        ]
+    },
+    reserve: {
+        text: "Será un honor recibirle en nuestras mesas. Le redirigiré ahora mismo a nuestro sistema de reservas imperiales.",
+        options: [
+            { text: "Ir a Reservas", action: () => { window.location.hash = 'reserve'; document.getElementById('reserve').scrollIntoView({behavior: 'smooth'}); } },
+            { text: "Volver al inicio", next: "start" }
+        ]
+    },
+    location: {
+        text: "Nos encontramos en el Distrito Gastronómico Oriental, Ciudad de México. Esperamos su visita muy pronto.",
+        options: [
+            { text: "Ir a Contacto", action: () => { window.location.hash = 'contact'; document.getElementById('contact').scrollIntoView({behavior: 'smooth'}); } },
+            { text: "Volver al inicio", next: "start" }
+        ]
+    }
+};
+
+export class LotoChat {
+    constructor(config) {
+        this.apiKey = config.apiKey;
+        this.voiceId = config.voiceId; // Voice ID for a luxury female voice
+        this.modelId = 'eleven_multilingual_v2';
+        this.currentNodo = 'start';
+        this.initUI();
+    }
+
+    initUI() {
+        // Create Chat Bubble
+        const bubble = document.createElement('div');
+        bubble.id = 'chat-bubble';
+        bubble.innerHTML = `<i class="fa-solid fa-comment-dots"></i>`;
+        document.body.appendChild(bubble);
+
+        // Create Chat Window
+        const windowEl = document.createElement('div');
+        windowEl.id = 'chat-window';
+        windowEl.classList.add('hidden');
+        windowEl.innerHTML = `
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <img src="LOGO.svg" style="width: 30px; height: 30px;">
+                    <span>Asistente Imperial</span>
+                </div>
+                <span class="close-chat">&times;</span>
+            </div>
+            <div class="chat-body" id="chat-body"></div>
+            <div class="chat-footer" id="chat-footer"></div>
+        `;
+        document.body.appendChild(windowEl);
+
+        // Events
+        bubble.addEventListener('click', () => {
+            windowEl.classList.toggle('hidden');
+            if (!windowEl.classList.contains('hidden')) {
+                this.renderNode('start');
+            }
+        });
+
+        windowEl.querySelector('.close-chat').addEventListener('click', () => {
+            windowEl.classList.add('hidden');
+        });
+    }
+
+    async renderNode(nodeId) {
+        this.currentNodo = nodeId;
+        const node = CHAT_TREE[nodeId];
+        const body = document.getElementById('chat-body');
+        const footer = document.getElementById('chat-footer');
+
+        // 1. Display Text
+        const msg = document.createElement('div');
+        msg.className = 'chat-msg ai-msg';
+        msg.innerText = node.text;
+        body.appendChild(msg);
+        body.scrollTop = body.scrollHeight;
+
+        // 2. Speak text with ElevenLabs
+        await this.speak(node.text);
+
+        // 3. Render Options
+        footer.innerHTML = '';
+        node.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'chat-opt-btn';
+            btn.innerText = opt.text;
+            btn.onclick = async () => {
+                if (opt.action) {
+                    opt.action();
+                } else {
+                    this.renderNode(opt.next);
+                }
+            };
+            footer.appendChild(btn);
+        });
+    }
+
+    async speak(text) {
+        try {
+            const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${this.voiceId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'xi-api-key': this.apiKey
+                },
+                body: JSON.stringify({
+                    text: text,
+                    model_id: this.modelId,
+                    voice_settings: {
+                        stability: 0.5,
+                        similarity_boost: 0.75
+                    }
+                })
+            });
+
+            if (!response.ok) throw new Error('ElevenLabs API error');
+
+            const audioBlob = await response.blob();
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const audio = new Audio(audioUrl);
+            audio.play();
+        } catch (e) {
+            console.error('Voice error:', e);
+        }
+    }
+}
