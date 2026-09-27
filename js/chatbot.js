@@ -79,8 +79,8 @@ export class LotoChat {
         windowEl.innerHTML = `
             <div class="chat-header">
                 <div class="chat-header-info">
-                    <img src="LOGO.svg" style="width: 30px; height: 30px;">
-                    <span>Asistente Imperial</span>
+                    <img src="img/icons/LOGO.svg" style="width: 30px; height: 30px;">
+                    <span>Togui - Asistente Imperial</span>
                 </div>
                 <span class="close-chat">&times;</span>
             </div>
