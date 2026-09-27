@@ -97,7 +97,7 @@ export class LotoChat {
             }
         });
 
-        windowEl.querySelector('.close-chat').addEventListener('click', (e) => {
+        windowEl.querySelector('.close-chat').addEventListener('mousedown', (e) => {
             e.preventDefault();
             e.stopImmediatePropagation();
             windowEl.classList.add('hidden');
