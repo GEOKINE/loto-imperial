@@ -1,6 +1,6 @@
-import { SequenceManager } from './js/sequence.js';
-import { fetchMenuData, renderMenu } from './js/menu.js';
-import { supabase } from './js/supabaseClient.js';
+import { SequenceManager } from './sequence.js';
+import { fetchMenuData, renderMenu } from './menu.js';
+import { supabase } from './supabaseClient.js';
 
 async function initializeApp() {
     console.log('🚀 Loto Imperial: Iniciando aplicación...');
