@@ -60,7 +60,7 @@ export class LotoChat {
     constructor(config) {
         this.apiKey = config.apiKey;
         this.voiceId = config.voiceId; // Voice ID for a luxury female voice
-        this.modelId = 'eleven_v3';
+        this.modelId = 'eleven_multilingual_v2';
         this.currentNodo = 'start';
         this.initUI();
     }
