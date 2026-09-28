@@ -147,11 +147,7 @@ export class LotoChat {
                 },
                 body: JSON.stringify({
                     text: text,
-                    model_id: this.modelId,
-                    voice_settings: {
-                        stability: 0.5,
-                        similarity_boost: 0.75
-                    }
+                    model_id: this.modelId
                 })
             });
 
