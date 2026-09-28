@@ -117,7 +117,7 @@ export class LotoChat {
         body.appendChild(msg);
         body.scrollTop = body.scrollHeight;
 
-        // 2. Speak text with ElevenLabs
+        // 2. Speak text with Web Speech API (FREE & UNLIMITED)
         await this.speak(node.text);
 
         // 3. Render Options
@@ -139,26 +139,29 @@ export class LotoChat {
 
     async speak(text) {
         try {
-            const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${this.voiceId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'xi-api-key': this.apiKey
-                },
-                body: JSON.stringify({
-                    text: text,
-                    model_id: this.modelId
-                })
-            });
+            const utterance = new SpeechSynthesisUtterance(text);
+            const voices = window.speechSynthesis.getVoices();
 
-            if (!response.ok) throw new Error('ElevenLabs API error');
+            // Find a female Spanish voice
+            const spanishVoice = voices.find(voice =>
+                (voice.lang === 'es-ES' || voice.lang === 'es-MX') &&
+                (voice.name.toLowerCase().includes('female') ||
+                 voice.name.toLowerCase().includes('google') ||
+                 voice.name.toLowerCase().includes('microsoft') ||
+                 voice.name.toLowerCase().includes('zira'))
+            );
 
-            const audioBlob = await response.blob();
-            const audioUrl = URL.createObjectURL(audioBlob);
-            const audio = new Audio(audioUrl);
-            audio.play();
+            if (spanishVoice) {
+                utterance.voice = spanishVoice;
+            }
+
+            utterance.pitch = 1.1;
+            utterance.rate = 0.9;
+            utterance.volume = 1;
+
+            window.speechSynthesis.speak(utterance);
         } catch (e) {
-            console.error('Voice error:', e);
+            console.error('System Voice error:', e);
         }
     }
 }
