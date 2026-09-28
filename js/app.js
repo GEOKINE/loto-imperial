@@ -74,7 +74,7 @@ async function initializeApp() {
     // ==========================================
     // 1. SISTEMA DE CHATBOT (AI + ElevenLabs)
     new LotoChat({
-        apiKey: 'sk_45bfb08703fc8dacd27cb881a606a831c53c4e6169e9d3c1',
+        apiKey: 'sk_d1e1098a7626b0bf1be8120bc1a783195935295f46178daf',
         voiceId: 'RWZ1lnBIIgPBTpyCnKn2' // Voz femenina de lujo seleccionada
     });
     // ==========================================
