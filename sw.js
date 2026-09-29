@@ -54,7 +54,7 @@ self.addEventListener('fetch', event => {
       return fetch(event.request).catch(async () => {
         // 3. Si la red falla Y es una petición de navegación (HTML), devolver offline.html
         if (event.request.mode === 'navigate') {
-          const offlinePage = await caches.match('offline.html');
+          const offlinePage = await caches.match('https://geokine.github.io/loto-imperial/offline.html');
           if (offlinePage) return offlinePage;
 
           const indexPage = await caches.match('index.html');
