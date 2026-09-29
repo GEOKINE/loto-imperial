@@ -1,7 +1,8 @@
-const CACHE_NAME = 'loto-imperial-v2'; // Incrementamos versión para forzar actualización
+const CACHE_NAME = 'loto-imperial-v3'; // Incrementamos versión para forzar actualización
 const ASSETS = [
     './',
     './index.html',
+    './offline.html',
     './css/style.css',
     './js/app.js',
     './manifest.json',
@@ -18,7 +19,6 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// Limpieza de cachés antiguos
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -34,18 +34,11 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request).then((response) => {
             // Retorna el archivo en caché o hace la petición a la red
-            return response || fetch(event.request).then((fetchRes) => {
-                // Solo guardamos en caché respuestas exitosas
-                if (!fetchRes || fetchRes.status !== 200 || fetchRes.type !== 'basic') {
-                    return fetchRes;
+            return response || fetch(event.request).catch(() => {
+                // Si no hay red y no está en caché, mostramos la página offline
+                if (event.request.mode === 'navigate') {
+                    return caches.match('/offline.html');
                 }
-
-                const responseToCache = fetchRes.clone();
-                caches.open(CACHE_NAME).then((cache) => {
-                    cache.put(event.request, responseToCache);
-                });
-
-                return fetchRes;
             });
         })
     );

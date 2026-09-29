@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loto Imperial | Conexión Interrumpida</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #1a0a0a;
+            color: var(--text-main);
+            font-family: var(--font-body);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .offline-container {
+            padding: 40px;
+            max-width: 600px;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        .offline-logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 0 15px var(--primary-highlight));
+            animation: floatLogo 3s ease-in-out infinite;
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            color: var(--primary-highlight);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            letter-spacing: 4px;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .btn-retry {
+            background: transparent;
+            border: 1px solid var(--primary-highlight);
+            color: var(--primary-highlight);
+            padding: 15px 30px;
+            font-family: var(--font-title);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-retry:hover {
+            background: var(--primary-highlight);
+            color: #1a0a0a;
+            box-shadow: 0 0 20px rgba(255, 218, 116, 0.4);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes floatLogo {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <img src="img/icons/LOGO.svg" alt="Loto Imperial" class="offline-logo">
+        <h1>Conexión Interrumpida</h1>
+        <p>Lamentamos informarle que su conexión con el Imperio se ha perdido.<br>
+        Por favor, verifique su conexión a internet para retomar su experiencia sensorial.</p>
+        <button class="btn-retry" onclick="window.location.reload()">Reintentar Conexión</button>
+    </div>
+</body>
+</html>
