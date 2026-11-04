@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Loto Imperial | Alta Cocina Oriental</title>
 
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" href="favi.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="img/icons/maskable_icon_x192 (2).png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#58211C">
 
@@ -16,6 +16,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="gsap-enabled">
+    <div id="loadingScreen">
+        <div class="loader-content">
+            <img src="img/icons/LOGO.svg" alt="Loto Imperial" class="loader-logo">
+            <div class="loader-bar-container">
+                <div id="loaderBar" class="loader-bar"></div>
+            </div>
+            <p class="loader-text">Preparando su Experiencia Imperial...</p>
+        </div>
+    </div>
 
     <div class="toast-container" id="toastContainer"></div>
     <div class="ambient-bg"></div>
@@ -33,7 +42,7 @@
             </div>
             <div class="hero-text">
                 <div class="hero-logo-container">
-                    <img src="LOGO.svg" alt="Loto Imperial Logo" class="hero-logo">
+                    <img src="img/icons/LOGO.svg" alt="Loto Imperial Logo" class="hero-logo">
                 </div>
                 <h1 class="hero-title">LOTO IMPERIAL</h1>
                 <p>Una armonía de sabores milenarios: el corazón de Asia en un solo lugar.</p>
@@ -238,6 +247,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
     <!-- SUPABASE CLIENT -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="app.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
