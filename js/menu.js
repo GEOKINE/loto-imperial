@@ -18,6 +18,7 @@ export async function fetchMenuData() {
                     price,
                     description,
                     image_url,
+                    category_id,
                     menu_categories (name)
                 `);
 
@@ -28,7 +29,12 @@ export async function fetchMenuData() {
             if (data && data.length > 0) {
                 const groupedMenu = {};
                 data.forEach(item => {
-                    const categoryName = item.menu_categories?.name || 'others';
+                    const categoryName = item.menu_categories?.name ||
+                        (item.category_id === 1 ? 'japones' :
+                         item.category_id === 2 ? 'chino' :
+                         item.category_id === 3 ? 'sudeste' :
+                         item.category_id === 4 ? 'infantil' :
+                         item.category_id === 5 ? 'bebidas' : 'others');
                     if (!groupedMenu[categoryName]) {
                         groupedMenu[categoryName] = [];
                     }
@@ -865,6 +871,8 @@ function getPeekChapter(direction) {
   return catalogChapters[targetIdx];
 }
 
+let bookInitialized = false;
+
 // ============================================================
 // 5. INICIALIZADOR PRINCIPAL DEL MENÚ DE ALTA GAMA
 // ============================================================
@@ -873,29 +881,6 @@ export function initBookMenu(menuData) {
   const curlCanvas = document.getElementById("page-curl-canvas");
   if (!catalogBookEl || !curlCanvas) return;
   const ctx = curlCanvas.getContext("2d");
-
-  const leftDishesEl = document.getElementById("left-page-dishes");
-  const rightDishesEl = document.getElementById("right-page-dishes");
-  const tabButtons = document.querySelectorAll(".menu-tab");
-  const chapterRomanEl = document.getElementById("chapter-roman");
-  const chapterRomanSubEl = document.getElementById("chapter-roman-sub");
-  const chapterOriginEl = document.getElementById("chapter-origin");
-  const chapterTitleEl = document.getElementById("chapter-title");
-  const chapterSubtitleEl = document.getElementById("chapter-subtitle");
-  const chapterRightHeadingEl = document.getElementById("chapter-right-heading");
-  const chapterPairingEl = document.getElementById("chapter-pairing");
-  const folioNumbersEl = document.getElementById("folio-numbers");
-  const leftFolioLabelEl = document.getElementById("left-folio-label");
-  const rightFolioLabelEl = document.getElementById("right-folio-label");
-  const catalogDotsEl = document.getElementById("catalog-dots");
-
-  const prevPageBtn = document.getElementById("prev-page-btn");
-  const nextPageBtn = document.getElementById("next-page-btn");
-  const grabLeftZone = document.getElementById("grab-corner-left");
-  const grabRightZone = document.getElementById("grab-corner-right");
-  const soundToggleBtn = document.getElementById("paper-sound-toggle");
-  const soundIconEl = document.getElementById("paper-sound-icon");
-  const soundLabelEl = document.getElementById("paper-sound-label");
 
   // Si Supabase contiene datos, enriquecemos los capítulos
   if (menuData && typeof menuData === "object") {
@@ -920,6 +905,29 @@ export function initBookMenu(menuData) {
       }
     });
   }
+
+  const leftDishesEl = document.getElementById("left-page-dishes");
+  const rightDishesEl = document.getElementById("right-page-dishes");
+  const tabButtons = document.querySelectorAll(".menu-tab");
+  const chapterRomanEl = document.getElementById("chapter-roman");
+  const chapterRomanSubEl = document.getElementById("chapter-roman-sub");
+  const chapterOriginEl = document.getElementById("chapter-origin");
+  const chapterTitleEl = document.getElementById("chapter-title");
+  const chapterSubtitleEl = document.getElementById("chapter-subtitle");
+  const chapterRightHeadingEl = document.getElementById("chapter-right-heading");
+  const chapterPairingEl = document.getElementById("chapter-pairing");
+  const folioNumbersEl = document.getElementById("folio-numbers");
+  const leftFolioLabelEl = document.getElementById("left-folio-label");
+  const rightFolioLabelEl = document.getElementById("right-folio-label");
+  const catalogDotsEl = document.getElementById("catalog-dots");
+
+  const prevPageBtn = document.getElementById("prev-page-btn");
+  const nextPageBtn = document.getElementById("next-page-btn");
+  const grabLeftZone = document.getElementById("grab-corner-left");
+  const grabRightZone = document.getElementById("grab-corner-right");
+  const soundToggleBtn = document.getElementById("paper-sound-toggle");
+  const soundIconEl = document.getElementById("paper-sound-icon");
+  const soundLabelEl = document.getElementById("paper-sound-label");
 
   function updateCatalogNavigationUI(index) {
     tabButtons.forEach((tab, idx) => {
@@ -980,6 +988,13 @@ export function initBookMenu(menuData) {
     resizeCurlCanvas(catalogBookEl, curlCanvas, ctx);
     if (window.lucide) lucide.createIcons();
   }
+
+  // Si ya se habían vinculado los eventos previamente, sólo refrescamos el pliego actual y salimos
+  if (bookInitialized) {
+    renderChapterSpread(currentChapterIndex);
+    return;
+  }
+  bookInitialized = true;
 
   function completeAnimatedPageTurn(targetIndex, direction, alreadyStarted = false) {
     if (isAnimatingTurn || targetIndex === currentChapterIndex) return;
