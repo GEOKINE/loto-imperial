@@ -2,221 +2,468 @@
   "japones": [
     {
       "name": "SASHIMI DELUXE",
-      "price": "$35",
+      "price": "$350 MXN",
       "tag": "Chef's Selection",
       "desc": "Selección fresca del día de salmón, atún aleta azul y hamachi con wasabi fresco.",
-      "img": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Pescado",
+      "ingredients": [
+        "Atún aleta azul de pesca fresca",
+        "Salmón sustentable",
+        "Pulpo baby pochado",
+        "Rábano daikon en espiral",
+        "Wasabi natural",
+        "Jengibre gari encurtido",
+        "Salsa de soya añejada"
+      ]
     },
     {
       "name": "RAMEN TONKOTSU",
-      "price": "$22",
+      "price": "$220 MXN",
       "tag": "12h Cocción",
       "desc": "Caldo cremoso de cerdo cocido por 12 horas con chashu tierno, huevo marinado y alga nori.",
-      "img": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Carne",
+      "ingredients": [
+        "Fideos alcalinos frescos",
+        "Caldo tonkotsu de 18 horas",
+        "Panceta de cerdo chashu tierna",
+        "Huevo ajitsuke marinado con yema cremosa",
+        "Alga nori tostada",
+        "Brotes de bambú menma",
+        "Cebollín fresco"
+      ]
     },
     {
       "name": "UNAGI DON",
-      "price": "$32",
+      "price": "$320 MXN",
       "tag": "Especialidad",
       "desc": "Anguila glaseada en salsa tare artesanal sobre una cama de arroz al vapor premium.",
-      "img": "https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Pescado",
+      "ingredients": [
+        "Anguila de agua dulce (Unagi)",
+        "Salsa dulce kabayaki reducida al mirin",
+        "Arroz Koshihikari al vapor",
+        "Semillas de ajonjolí tostado",
+        "Pimienta sansho japonesa"
+      ]
     },
     {
       "name": "YAKITORI MIX",
-      "price": "$20",
+      "price": "$200 MXN",
       "tag": "Binchotan",
       "desc": "Brochetas de pollo y vegetales asadas al auténtico carbón binchotan japonés.",
-      "img": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Carne",
+      "ingredients": [
+        "Pechuga y muslo de pollo orgánico",
+        "Cebollín tierno negi",
+        "Pimientos shishito",
+        "Glaseado tare centenario",
+        "Brasas de carbón blanco binchotan"
+      ]
     },
     {
       "name": "TEMPURA IMPERIAL",
-      "price": "$25",
+      "price": "$250 MXN",
       "tag": "Crujiente",
       "desc": "Selección de langostinos y vegetales de temporada rebozados en masa ligera y crujiente.",
-      "img": "https://images.unsplash.com/photo-1581781870027-04212e231e96?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1581781870027-04212e231e96?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Mariscos",
+      "ingredients": [
+        "Camarones tigre jumbo",
+        "Flor de loto",
+        "Camote dulce japonés",
+        "Hongos shiitake",
+        "Rebozado ligero y crujiente tempura",
+        "Sal marina de matcha",
+        "Salsa tentsuyu con daikon rallado"
+      ]
     },
     {
       "name": "OMAKASE PREMIUM",
-      "price": "$120",
+      "price": "$120 MXN",
       "tag": "12 Tiempos",
       "desc": "Experiencia del Chef: 12 tiempos de sushi artesanal y bocados de temporada.",
-      "img": "https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Pescado & Mariscos",
+      "ingredients": [
+        "Nigiri de atún toro con caviar de soya",
+        "Vieiras de Hokkaido braseadas",
+        "Salmón con trufa negra",
+        "Anguila glaseada",
+        "Erizo de mar uni",
+        "Pesca blanca del día",
+        "Arroz shari sazonado"
+      ]
     }
   ],
   "chino": [
     {
       "name": "PATO PEKÍN IMPERIAL",
-      "price": "$48",
+      "price": "$480 MXN",
       "tag": "Clásico Imperial",
       "desc": "Pato laqueado crujiente servido con crepas artesanales, cebollín y salsa hoisin de la casa.",
-      "img": "https://images.unsplash.com/photo-1518492104633-130d0cc84637?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1518492104633-130d0cc84637?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Carne / Aves",
+      "ingredients": [
+        "Pato laqueado con piel ultra-crujiente y carne jugosa",
+        "Crepas artesanales al vapor hechas a mano",
+        "Pepino persa en juliana",
+        "Cebollín fresco",
+        "Salsa hoisin imperial de ciruela"
+      ]
     },
     {
       "name": "DIM SUM DE LOTO",
-      "price": "$24",
+      "price": "$240 MXN",
       "tag": "Al Vapor",
       "desc": "Canasta de bambú con har gow de camarón cristal, siu mai de cerdo ibérico y trufa negra.",
-      "img": "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Mariscos & Carne",
+      "ingredients": [
+        "Har gow de camarón cristal en masa translúcida",
+        "Siu mai de cerdo con esencia de trufa",
+        "Xiao long bao aromatizado",
+        "Aceite puro de sésamo tostado"
+      ]
     },
     {
       "name": "RES MONGOLIANA WOK",
-      "price": "$34",
+      "price": "$340 MXN",
       "tag": "Fuego Alto",
       "desc": "Láminas de rib-eye selladas al wok con ajo negro, jengibre fresco y glaseado de soya dulce.",
-      "img": "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Carne",
+      "ingredients": [
+        "Láminas de rib-eye selladas al wok a fuego vivo",
+        "Ajo negro fermentado",
+        "Jengibre fresco",
+        "Cebolleta tierna",
+        "Reducción de soya dulce",
+        "Aceite de ajonjolí puro"
+      ]
     },
     {
       "name": "LANGOSTA AL JENGIBRE",
-      "price": "$65",
+      "price": "$650 MXN",
       "tag": "Reserva Especial",
       "desc": "Cola de langosta salteada con cebollín tierno, jengibre joven y reducción de vino Shaoxing.",
-      "img": "https://images.unsplash.com/photo-1559737558-2f5a35f4523b?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1559737558-2f5a35f4523b?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Mariscos",
+      "ingredients": [
+        "Cola de langosta troceada y salteada al wok",
+        "Jengibre fresco en juliana",
+        "Cebollín tierno",
+        "Reducción de vino de arroz Shaoxing",
+        "Caldo concentrado de crustáceos"
+      ]
     },
     {
       "name": "BAOZI DE CERDO CHAR SIU",
-      "price": "$19",
+      "price": "$190 MXN",
       "tag": "Artesanal",
       "desc": "Bollos esponjosos al vapor rellenos de panceta glaseada a la miel y especias orientales.",
-      "img": "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Carne",
+      "ingredients": [
+        "Bollos de trigo al vapor esponjosos",
+        "Panceta de cerdo marinada al estilo cantonés char siu",
+        "Miel de agave",
+        "Cinco especias chinas tradicionales",
+        "Salsa soya oscura"
+      ]
     },
     {
       "name": "ARROZ FRITO CANTONÉS",
-      "price": "$21",
+      "price": "$210 MXN",
       "tag": "Aroma Wok",
       "desc": "Arroz jazmín salteado con camarones tigre, huevo orgánico, jamón curado y aceite de sésamo.",
-      "img": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Mariscos & Carne",
+      "ingredients": [
+        "Arroz jazmín salteado a fuego alto",
+        "Camarones tigre frescos",
+        "Dados de jamón curado",
+        "Huevo batido al wok",
+        "Cebollín tierno y sésamo tostado"
+      ]
     }
   ],
   "sudeste": [
     {
       "name": "PAD THAI REAL",
-      "price": "$26",
+      "price": "$260 MXN",
       "tag": "Tailandia",
       "desc": "Fideos de arroz salteados en tamarindo añejo, camarones jumbo, cacahuate tostado y lima fresca.",
-      "img": "https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Mariscos",
+      "ingredients": [
+        "Fideos planos de arroz",
+        "Camarones jumbo frescos",
+        "Tofu salteado",
+        "Huevo",
+        "Germinado de soya crujiente",
+        "Cacahuate tostado molido",
+        "Pulpa pura de tamarindo",
+        "Lima fresca"
+      ]
     },
     {
       "name": "CURRY VERDE DE WAGYU",
-      "price": "$39",
+      "price": "$390 MXN",
       "tag": "Bangkok",
       "desc": "Leche de coco artesanal, albahaca tailandesa, berenjena bebé y cortes tiernos de Wagyu.",
-      "img": "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Carne",
+      "ingredients": [
+        "Cortes tiernos de res Wagyu",
+        "Leche de coco fresca artesanal",
+        "Pasta de curry verde molida en mortero",
+        "Albahaca tailandesa sagrada",
+        "Berenjena tailandesa",
+        "Hojas de lima kaffir"
+      ]
     },
     {
       "name": "SOPA TOM YUM GOONG",
-      "price": "$23",
+      "price": "$230 MXN",
       "tag": "Aromática",
       "desc": "Caldo vibrante de hierba limón, galanga, hojas de lima kaffir y langostinos frescos.",
-      "img": "https://images.unsplash.com/photo-1548943487-a2e4e43b4853?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1548943487-a2e4e43b4853?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Mariscos",
+      "ingredients": [
+        "Langostinos tigre enteros",
+        "Hierba limón (lemongrass)",
+        "Galanga fresca",
+        "Hojas de lima kaffir",
+        "Chiles ojo de pájaro",
+        "Hongos paja",
+        "Jugo recién exprimido de lima"
+      ]
     },
     {
       "name": "BULGOGI COREANO",
-      "price": "$33",
+      "price": "$330 MXN",
       "tag": "Seúl",
       "desc": "Filete de res marinado en pera asiática y soya, servido en piedra caliente con kimchi artesanal.",
-      "img": "https://images.unsplash.com/photo-1590301157890-4810ed352733?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1590301157890-4810ed352733?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Carne",
+      "ingredients": [
+        "Finas láminas de filete de res",
+        "Marinado de pera asiática nashi",
+        "Ajo fresco y soya añejada",
+        "Aceite puro de sésamo",
+        "Kimchi casero sobre piedra caliente",
+        "Arroz al vapor"
+      ]
     },
     {
       "name": "ROLLITOS VIETNAMITAS",
-      "price": "$18",
+      "price": "$180 MXN",
       "tag": "Fresco",
       "desc": "Papel de arroz relleno de camarón, mango ataulfo, menta fresca y salsa nuoc cham.",
-      "img": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Mariscos & Verduras",
+      "ingredients": [
+        "Obleas transparentes de papel de arroz",
+        "Camarones pochados al punto",
+        "Láminas de mango ataulfo dulce",
+        "Fideos de arroz vermicelli",
+        "Menta fresca",
+        "Cilantro",
+        "Salsa nuoc cham agridulce"
+      ]
     },
     {
       "name": "BAO CROCANTE DE PATO",
-      "price": "$24",
+      "price": "$240 MXN",
       "tag": "Fusión",
       "desc": "Pan al vapor relleno de confit de pato, pepino encurtido y mayonesa de yuzu.",
-      "img": "https://images.unsplash.com/photo-1626804475297-41608ea09aeb?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1626804475297-41608ea09aeb?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Carne / Aves",
+      "ingredients": [
+        "Pan bao esponjoso al vapor",
+        "Confit crujiente de pato deshebrado",
+        "Pepino persa encurtido agridulce",
+        "Mayonesa artesanal japonesa de yuzu",
+        "Cebollín tierno"
+      ]
     }
   ],
   "infantil": [
     {
       "name": "MINI BENTO IMPERIAL",
-      "price": "$16",
+      "price": "$160 MXN",
       "tag": "Favorito",
       "desc": "Arroz al vapor con forma de panda, brochetas dulces de pollo teriyaki y edamames.",
-      "img": "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Carne",
+      "ingredients": [
+        "Arroz al vapor moldeado en figura de panda",
+        "Brochetas suaves de pollo en salsa teriyaki dulce",
+        "Vainas de edamame tierno al vapor",
+        "Zanahorias dulces",
+        "Gajos de fruta fresca"
+      ]
     },
     {
       "name": "FIDEOS UDON SUAVES",
-      "price": "$14",
+      "price": "$140 MXN",
       "tag": "Sin Picante",
       "desc": "Fideos gruesos japoneses salteados con pollo orgánico, zanahoria dulce y salsa suave.",
-      "img": "https://images.unsplash.com/photo-1618841557871-b4664fbf0cb3?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1618841557871-b4664fbf0cb3?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Carne",
+      "ingredients": [
+        "Fideos gruesos japoneses udon de trigo",
+        "Caldo dashi suave sin picante",
+        "Pechuga de pollo orgánico deshebrada",
+        "Zanahoria dulce rallada",
+        "Calabacita tierna"
+      ]
     },
     {
       "name": "ROLLITOS CALIFORNIA KIDS",
-      "price": "$15",
+      "price": "$150 MXN",
       "tag": "8 Piezas",
       "desc": "Rollos frescos de surimi de cangrejo, aguacate cremoso y queso crema suave.",
-      "img": "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Mariscos",
+      "ingredients": [
+        "Rollos de arroz con alga nori",
+        "Surimi selecto de cangrejo",
+        "Aguacate Hass mexicano maduro",
+        "Queso crema suave Philadelphia",
+        "Semillas de ajonjolí tostado"
+      ]
     },
     {
       "name": "TORI KARAAGE DORADO",
-      "price": "$15",
+      "price": "$150 MXN",
       "tag": "Crujiente",
       "desc": "Bocados crujientes de pechuga de pollo marinada acompañados de arroz jazmín.",
-      "img": "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Carne",
+      "ingredients": [
+        "Bocados tiernos de pechuga de pollo marinados",
+        "Fécula ligera de papa japonesa ultra-crocante",
+        "Arroz jazmín suave al vapor",
+        "Salsa agridulce infantil de frutas"
+      ]
     },
     {
       "name": "GYOZAS DULCES DE POLLO",
-      "price": "$14",
+      "price": "$140 MXN",
       "tag": "6 Piezas",
       "desc": "Empanadillas japonesas selladas a la plancha con relleno suave de pollo y vegetales.",
-      "img": "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Carne",
+      "ingredients": [
+        "Empanadillas japonesas selladas a la plancha",
+        "Relleno delicado de pollo suave y cebollín",
+        "Masa fina de trigo",
+        "Salsa dulce ponzu infantil"
+      ]
     },
     {
       "name": "MOCHI HELADO TRÍO",
-      "price": "$12",
+      "price": "$120 MXN",
       "tag": "Postre",
       "desc": "Tres esferas de pasta de arroz dulce rellenas de helado de vainilla, fresa y mango.",
-      "img": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Verduras / Postre",
+      "ingredients": [
+        "Tres esferas de masa artesanal de arroz mochigome",
+        "Relleno de helado artesanal de matcha, sésamo negro y mango ataulfo",
+        "Cacao fino"
+      ]
     }
   ],
   "bebidas": [
     {
       "name": "DASSAI 23 JUNMAI DAIGINJO",
-      "price": "$42",
+      "price": "$420 MXN",
       "tag": "Copa / Jarra",
       "desc": "Sake ultra-premium de Yamaguchi con notas florales de melón blanco y final sedoso.",
-      "img": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Bebida / Cava",
+      "ingredients": [
+        "Arroz Yamadanishiki pulido al 23%",
+        "Agua pura de manantial de Yamaguchi",
+        "Koji natural",
+        "Notas aromáticas de melón blanco, durazno y uva moscatel"
+      ]
     },
     {
       "name": "CÓCTEL LOTO DE ORO",
-      "price": "$19",
+      "price": "$190 MXN",
       "tag": "Mixología",
       "desc": "Ginebra japonesa Roku, licor de flor de saúco, yuzu fresco y lámina de oro comestible.",
-      "img": "https://images.unsplash.com/photo-1536935338788-846bb9981813?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1536935338788-846bb9981813?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Bebida / Mixología",
+      "ingredients": [
+        "Ginebra japonesa artesanal Roku",
+        "Licor francés de flor de saúco",
+        "Jugo fresco de yuzu oriental",
+        "Jarabe de jengibre artesanal",
+        "Lámina de oro comestible de 24 quilates"
+      ]
     },
     {
       "name": "KUBOTA MANJU SAKE",
-      "price": "$38",
+      "price": "$380 MXN",
       "tag": "Niigata",
       "desc": "Equilibrio magistral entre acidez sutil y profundidad umami, ideal para sashimi y omakase.",
-      "img": "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Bebida / Cava",
+      "ingredients": [
+        "Arroz Gohyakumangoku pulido al 33%",
+        "Agua de manantial subterráneo de Niigata",
+        "Fermentación lenta a baja temperatura",
+        "Perfil umami sutil y seco"
+      ]
     },
     {
       "name": "CHOYA UMESHU ROYAL",
-      "price": "$18",
+      "price": "$180 MXN",
       "tag": "Ciruela Japonesa",
       "desc": "Licor artesanal de ciruela ume macerada con notas de almendra dulce y miel.",
-      "img": "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Bebida / Cava",
+      "ingredients": [
+        "Ciruelas japonesas verdes ume de Wakayama",
+        "Alcohol puro destilado de caña",
+        "Miel de flores silvestres",
+        "Notas de almendra dulce y acidez equilibrada"
+      ]
     },
     {
       "name": "PINOT NOIR RESERVA IMPERIAL",
-      "price": "$28",
+      "price": "$280 MXN",
       "tag": "Maridaje Pato",
       "desc": "Vino tinto elegante de cuerpo medio con notas de cereza negra, ideal para Pato Pekín.",
-      "img": "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Bebida / Cava",
+      "ingredients": [
+        "Uvas 100% Pinot Noir de viñedo de clima frío",
+        "12 meses de crianza en barrica de roble francés",
+        "Notas de cereza negra, especias y tierra húmeda"
+      ]
     },
     {
       "name": "TÉ OOLONG DE ALTA MONTAÑA",
-      "price": "$14",
+      "price": "$140 MXN",
       "tag": "Sin Alcohol",
       "desc": "Infusión ceremonial servida en tetera de hierro fundido con aroma a orquídea tostada.",
-      "img": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=900&q=80"
+      "img": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=900&q=80",
+      "main_ingredient": "Verduras / Té",
+      "ingredients": [
+        "Hojas seleccionadas de Camellia sinensis semifermentadas",
+        "Agua de manantial a 90°C",
+        "Aroma floral de orquídea silvestre tostada",
+        "Servido en tetera ceremonial de hierro fundido Tetsubin"
+      ]
     }
   ]
 }

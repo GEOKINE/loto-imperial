@@ -24,11 +24,17 @@ CREATE TABLE IF NOT EXISTS menu_items (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   category_id BIGINT REFERENCES menu_categories(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
-  price TEXT NOT NULL,
+  price TEXT NOT NULL, -- Precios en Pesos Mexicanos (MXN)
   description TEXT,
   image_url TEXT,
+  main_ingredient TEXT, -- Ingrediente principal destacado (Carne, Mariscos, Pescado, Verduras, etc.)
+  ingredients TEXT,     -- Lista detallada de ingredientes
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Asegurar columnas si la tabla ya existía
+ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS main_ingredient TEXT;
+ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS ingredients TEXT;
 
 -- Reservations Table
 CREATE TABLE IF NOT EXISTS reservations (
