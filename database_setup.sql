@@ -1,11 +1,11 @@
 -- =============================================================================
--- LOTO IMPERIAL - FULL DATABASE SCHEMA & DATA SEED
+-- LOTO IMPERIAL - FULL DATABASE SCHEMA, SECURITY & DATA SEED
 -- =============================================================================
 
 -- 1. TABLES SETUP
 -- =============================================================================
 
--- Profiles Table
+-- Profiles Table (Asociado con auth.users de Supabase)
 CREATE TABLE IF NOT EXISTS profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
   full_name TEXT,
@@ -44,7 +44,21 @@ CREATE TABLE IF NOT EXISTS reservations (
 );
 
 -- =============================================================================
--- 2. SECURITY (ROW LEVEL SECURITY)
+-- 2. SECURITY DEFINER HELPER (Evita recursión infinita en RLS)
+-- =============================================================================
+
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND role = 'admin'
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- =============================================================================
+-- 3. SECURITY (ROW LEVEL SECURITY POLICIES)
 -- =============================================================================
 
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
@@ -52,27 +66,58 @@ ALTER TABLE menu_categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reservations ENABLE ROW LEVEL SECURITY;
 
--- Public Access to Menu
+-- Acceso Público para lectura del Menú
+DROP POLICY IF EXISTS "Menu categories are public" ON menu_categories;
 CREATE POLICY "Menu categories are public" ON menu_categories FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Menu items are public" ON menu_items;
 CREATE POLICY "Menu items are public" ON menu_items FOR SELECT USING (true);
 
--- Private Access to Profiles and Reservations
-CREATE POLICY "Users can view own profile" ON profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users can view own reservations" ON reservations FOR SELECT USING (auth.uid() = user_id);
+-- Políticas de Perfiles (Lectura propia o por Administrador)
+DROP POLICY IF EXISTS "Users can view own profile" ON profiles;
+CREATE POLICY "Users can view own profile" ON profiles 
+FOR SELECT USING (auth.uid() = id OR public.is_admin());
+
+DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
+CREATE POLICY "Users can update own profile" ON profiles 
+FOR UPDATE USING (auth.uid() = id);
+
+-- Políticas de Reservaciones
+-- A) INSERT: Clientes pueden registrar sus reservaciones
+DROP POLICY IF EXISTS "Users can insert own reservations" ON reservations;
+CREATE POLICY "Users can insert own reservations" ON reservations 
+FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- B) SELECT: Clientes ven sus reservas; Administradores ven TODAS
+DROP POLICY IF EXISTS "Users can view own reservations" ON reservations;
+DROP POLICY IF EXISTS "Users and admins can view reservations" ON reservations;
+CREATE POLICY "Users and admins can view reservations" ON reservations 
+FOR SELECT USING (auth.uid() = user_id OR public.is_admin());
+
+-- C) UPDATE: Administradores pueden cambiar estados (completada, cancelada)
+DROP POLICY IF EXISTS "Admins can update reservations" ON reservations;
+CREATE POLICY "Admins can update reservations" ON reservations 
+FOR UPDATE USING (public.is_admin());
 
 -- =============================================================================
--- 3. DATA SEEDING (MENU)
+-- 4. INSTRUCCIÓN RÁPIDA: CÓMO ASIGNAR ROL ADMINISTRADOR A UN USUARIO
+-- =============================================================================
+-- Para otorgar permisos de administrador al dueño del restaurante, ejecuta:
+-- UPDATE public.profiles SET role = 'admin' WHERE id = 'ID_DEL_USUARIO_AQUI';
+
+-- =============================================================================
+-- 5. DATA SEEDING (MENÚ POR REGIONES DE ASIA)
 -- =============================================================================
 
--- Clean existing data to avoid duplicates
+-- Limpieza preventiva
 TRUNCATE TABLE menu_items CASCADE;
 TRUNCATE TABLE menu_categories CASCADE;
 
--- Insert Categories
+-- Categorías
 INSERT INTO menu_categories (name) VALUES
 ('japones'), ('chino'), ('sudeste'), ('infantil'), ('bebidas');
 
--- Insert Items using subqueries for safe category matching
+-- Platillos
 INSERT INTO menu_items (category_id, name, price, description, image_url) VALUES
 -- Japón
 ((SELECT id FROM menu_categories WHERE name='japones'), 'Omakase Premium', '$120', 'Selección del Chef: 12 piezas de sushi y sashimi de la temporada.', 'https://images.unsplash.com/photo-1579871494447-1c2818f4d46f?q=80&w=600&auto=format&fit=crop'),
@@ -90,18 +135,18 @@ INSERT INTO menu_items (category_id, name, price, description, image_url) VALUES
 ((SELECT id FROM menu_categories WHERE name='chino'), 'Sopa Agripicante', '$14', 'Sopa tradicional con tofu, hongos y brotes de bambú.', 'https://images.unsplash.com/photo-1547592166-2ud8ebc678b?q=80&w=600&auto=format&fit=crop'),
 ((SELECT id FROM menu_categories WHERE name='chino'), 'Arroz Chaufa Imperial', '$18', 'Arroz salteado al wok con carnes seleccionadas y huevo.', 'https://images.unsplash.com/photo-1512058560366-c8065675966d?q=80&w=600&auto=format&fit=crop'),
 
--- Sudeste
+-- Sudeste Asiático
 ((SELECT id FROM menu_categories WHERE name='sudeste'), 'Pad Thai Real', '$22', 'Fideos de arroz con camarones, tofu, cacahuates y lima.', 'https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=600&auto=format&fit=crop'),
 ((SELECT id FROM menu_categories WHERE name='sudeste'), 'Sopa Tom Yum', '$16', 'Sopa tailandesa picante y cítrica con camarones y lemongrass.', 'https://images.unsplash.com/photo-1548946767-aC577772c1fC?q=80&w=600&auto=format&fit=crop'),
 ((SELECT id FROM menu_categories WHERE name='sudeste'), 'Bibimbap Coreano', '$24', 'Arroz mezclado con vegetales, carne, huevo y gochujang.', 'https://images.unsplash.com/photo-1590301157890-481760674682?q=80&w=600&auto=format&fit=crop'),
 ((SELECT id FROM menu_categories WHERE name='sudeste'), 'Satay de Pollo', '$18', 'Brochetas tailandesas con salsa de cacahuate.', 'https://images.unsplash.com/photo-1562607395-726877723452?q=80&w=600&auto=format&fit=crop'),
 
--- Infantil
+-- Menú Infantil
 ((SELECT id FROM menu_categories WHERE name='infantil'), 'Mini Sushi Kit', '$12', 'Piezas pequeñas de sushi seleccionadas para niños.', 'https://images.unsplash.com/photo-1579584425555-c35ca36B42c3?q=80&w=600&auto=format&fit=crop'),
 ((SELECT id FROM menu_categories WHERE name='infantil'), 'Arroz con Pollo Dulce', '$10', 'Arroz suave con trozos de pollo en salsa agridulce.', 'https://images.unsplash.com/photo-1512058560366-c8065675966d?q=80&w=600&auto=format&fit=crop'),
 ((SELECT id FROM menu_categories WHERE name='infantil'), 'Rollito Primavera Kids', '$8', 'Rollitos crujientes con vegetales suaves.', 'https://images.unsplash.com/photo-1541696497730-7c8be7f64736?q=80&w=600&auto=format&fit=crop'),
 
--- Bebidas
+-- Bebidas y Elixires
 ((SELECT id FROM menu_categories WHERE name='bebidas'), 'Té Matcha Imperial', '$8', 'Té verde ceremonial japonés batido a mano.', 'https://images.unsplash.com/photo-1582793988951-9a7557675d7a?q=80&w=600&auto=format&fit=crop'),
-((SELECT id FROM menu_categories WHERE name='bebidas'), 'Sake Premium', '$15', 'Sake filtrado en frío, notas cítricas y suaves.', 'https://images.unsplash.com/photo-1597303263268-736968d998e0?q=80&w=600&auto=format&fit=crop'),
-((SELECT id FROM menu_categories WHERE name='bebidas'), 'Vino Riesling', '$18', 'Blanco alemán, el maridaje perfecto para el picante.', 'https://images.unsplash.com/photo-1510812431234?q=80&w=600&auto=format&fit=crop');
+((SELECT id FROM menu_categories WHERE name='bebidas'), 'Sake Junmai Daiginjo', '$18', 'Sake filtrado en frío, notas cítricas y florales suaves.', 'https://images.unsplash.com/photo-1597303263268-736968d998e0?q=80&w=600&auto=format&fit=crop'),
+((SELECT id FROM menu_categories WHERE name='bebidas'), 'Vino Riesling Imperial', '$20', 'Blanco aromático alemán, maridaje ideal para notas orientales.', 'https://images.unsplash.com/photo-1510812431234?q=80&w=600&auto=format&fit=crop');
