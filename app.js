@@ -146,8 +146,14 @@ async function initializeApp() {
         updateAuthUI(session?.user || null);
     });
 
-    const { data: { session } } = await supabase.auth.getSession();
-    updateAuthUI(session?.user || null);
+    let initialUser = null;
+    try {
+        const { data } = await supabase.auth.getSession();
+        initialUser = data?.session?.user || null;
+    } catch (e) {
+        console.warn('Supabase Auth: Sesión inicial no disponible:', e.message);
+    }
+    updateAuthUI(initialUser);
 
     async function showSection(sectionId) {
         document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
@@ -354,22 +360,34 @@ async function initializeApp() {
         });
     }
 
-    // 3. Reserve Animations
-    gsap.fromTo('#reserve .reservation-card', { scale: 0.8, opacity: 0 }, {
-        scrollTrigger: { trigger: '#reserve', start: 'top 70%' },
-        scale: 1, opacity: 1, duration: 1.2, ease: 'expo.out'
-    });
+    // 3. Reserve Animations (Soporta #reservaciones o #reserve)
+    const reserveSection = document.querySelector('#reservaciones') || document.querySelector('#reserve');
+    const reserveCard = document.querySelector('#reservaciones .reservation-card') || document.querySelector('#reserve .reservation-card');
+    if (reserveSection && reserveCard) {
+        gsap.fromTo(reserveCard, { scale: 0.8, opacity: 0 }, {
+            scrollTrigger: { trigger: reserveSection, start: 'top 70%' },
+            scale: 1, opacity: 1, duration: 1.2, ease: 'expo.out'
+        });
+    }
 
-    // 4. Contact Animations
-    gsap.fromTo('#contact .contact-info', { x: -100, opacity: 0 }, {
-        scrollTrigger: { trigger: '#contact', start: 'top 80%' },
-        x: 0, opacity: 1, duration: 1, ease: 'power2.out'
-    });
+    // 4. Contact Animations (Soporta #contacto o #contact)
+    const contactSection = document.querySelector('#contacto') || document.querySelector('#contact');
+    const contactInfo = document.querySelector('#contacto .contact-info') || document.querySelector('#contact .contact-info');
+    const mapPlaceholder = document.querySelector('#contacto .map-placeholder') || document.querySelector('#contact .map-placeholder');
 
-    gsap.fromTo('#contact .map-placeholder', { x: 100, opacity: 0 }, {
-        scrollTrigger: { trigger: '#contact', start: 'top 80%' },
-        x: 0, opacity: 1, duration: 1, ease: 'power2.out'
-    });
+    if (contactSection && contactInfo) {
+        gsap.fromTo(contactInfo, { x: -100, opacity: 0 }, {
+            scrollTrigger: { trigger: contactSection, start: 'top 80%' },
+            x: 0, opacity: 1, duration: 1, ease: 'power2.out'
+        });
+    }
+
+    if (contactSection && mapPlaceholder) {
+        gsap.fromTo(mapPlaceholder, { x: 100, opacity: 0 }, {
+            scrollTrigger: { trigger: contactSection, start: 'top 80%' },
+            x: 0, opacity: 1, duration: 1, ease: 'power2.out'
+        });
+    }
 
     // Hybrid Navigation System (Barra Flotante Inferior)
     const navItems = document.querySelectorAll('.nav-item');
@@ -458,6 +476,22 @@ async function initializeApp() {
         }
     }
 
+    // Función unificada de estado de red
+    function updateNetworkStatus(isOnline) {
+        if (isOnline) {
+            hideOfflineScreen(false);
+            showNotification('Conexión con el Imperio restablecida.', 'success');
+            syncOfflineReservations();
+            fetchMenuData().then(updatedMenu => {
+                if (updatedMenu) {
+                    initBookMenu(updatedMenu);
+                }
+            });
+        } else {
+            showOfflineScreen();
+        }
+    }
+
     // Botón: REINTENTAR CONEXIÓN (con verificación activa y feedback)
     if (btnRetryConnection) {
         btnRetryConnection.addEventListener('click', async () => {
@@ -465,16 +499,12 @@ async function initializeApp() {
             if (retrySpinner) retrySpinner.classList.add('animate-spin');
 
             try {
+                if (!navigator.onLine) {
+                    throw new Error('Aún sin conexión detectada');
+                }
                 const res = await fetch('index.html', { method: 'HEAD', cache: 'no-store' });
                 if (res.ok || navigator.onLine) {
-                    hideOfflineScreen(false);
-                    showNotification('Conexión con el Imperio restablecida.', 'success');
-                    syncOfflineReservations();
-                    fetchMenuData().then(updatedMenu => {
-                        if (updatedMenu) {
-                            initBookMenu(updatedMenu);
-                        }
-                    });
+                    updateNetworkStatus(true);
                 } else {
                     throw new Error('Aún sin conexión');
                 }
@@ -500,26 +530,6 @@ async function initializeApp() {
         offlinePill.addEventListener('click', () => {
             showOfflineScreen();
         });
-    }
-
-    window.addEventListener('online', () => {
-        hideOfflineScreen(false);
-        showNotification('Conexión con el Imperio restablecida.', 'success');
-        syncOfflineReservations();
-        fetchMenuData().then(updatedMenu => {
-            if (updatedMenu) {
-                initBookMenu(updatedMenu);
-            }
-        });
-    });
-
-    window.addEventListener('offline', () => {
-        showOfflineScreen();
-    });
-
-    // Comprobación inicial de conexión
-    if (!navigator.onLine) {
-        showOfflineScreen();
     }
 
     // Toggle de Menú Móvil
@@ -567,6 +577,7 @@ async function initializeApp() {
         }
     }
 
+    // Listeners de Red
     window.addEventListener('online', () => updateNetworkStatus(true));
     window.addEventListener('offline', () => updateNetworkStatus(false));
 

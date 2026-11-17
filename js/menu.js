@@ -38,14 +38,14 @@ export function priceNum(p) {
  * Carga el menú de forma híbrida (Supabase cuando hay conexión, menu.json / localStorage cuando está offline).
  */
 export async function fetchMenuData() {
-    // 1. Si el dispositivo está online, intentamos consultar Supabase con timeout de seguridad
+    // 1. Si el dispositivo está online, intentamos consultar Supabase con timeout de seguridad (3s)
     if (navigator.onLine) {
         console.log('🌐 Conectado: Intentando obtener menú desde Supabase...');
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 4000); // 4s timeout para no trabar la UI
+            const timeoutId = setTimeout(() => controller.abort(), 3000);
 
-            const { data, error } = await supabase
+            const fetchQuery = supabase
                 .from('menu_items')
                 .select(`
                     name,
@@ -56,8 +56,14 @@ export async function fetchMenuData() {
                     main_ingredient,
                     ingredients,
                     menu_categories (name)
-                `);
+                `)
+                .abortSignal(controller.signal);
 
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Supabase request timeout (3s)')), 3000);
+            });
+
+            const { data, error } = await Promise.race([fetchQuery, timeoutPromise]);
             clearTimeout(timeoutId);
 
             if (error) throw error;
