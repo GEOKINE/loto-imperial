@@ -45,6 +45,7 @@ const CORE_PRECACHE_ASSETS = [
   'LOGO.svg',
   'img/icons/maskable_icon (2).png',
   'imagenes/cat-bell.png',
+  'imagenes/background/comp2/Comp 2_00009.png',
   'js/config.js',
   'js/menu.js',
   'js/sequence.js',

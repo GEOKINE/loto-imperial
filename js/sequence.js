@@ -1,4 +1,5 @@
 // LOTO IMPERIAL - Sequence Animation System
+// Optimizado para carga instantánea del frame inicial y streaming progresivo por lotes
 
 export class ImageSequence {
     constructor(canvasId, config) {
@@ -11,33 +12,76 @@ export class ImageSequence {
         this.frameCount = config.frameCount;
         this.padding = config.padding || 0;
         this.extension = config.extension || 'png';
+        this.onProgress = config.onProgress || null;
+        this.onInitialReady = config.onInitialReady || null;
 
-        this.images = [];
-        this.currentFrame = 0;
+        this.images = new Array(this.frameCount).fill(null);
+        this.currentFrame = 9; // Inicia en el frame clave
         this.isLoaded = false;
         this.opacity = 1;
+        this.initialRenderDone = false;
 
         this.init();
     }
 
+    getFrameUrl(index) {
+        const frameNum = index.toString().padStart(this.padding, '0');
+        return `${this.baseUrl}/${this.prefix}${frameNum}.${this.extension}`;
+    }
+
     async init() {
         console.log(`Initializing sequence: ${this.baseUrl}`);
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+
+        // 1. CARGA PRIORITARIA: Frame inicial (Frame 9) para pintado inmediato
         try {
-            const loadPromises = [];
-            for (let i = 0; i < this.frameCount; i++) {
-                const frameNum = i.toString().padStart(this.padding, '0');
-                const url = `${this.baseUrl}/${this.prefix}${frameNum}.${this.extension}`;
-                loadPromises.push(this.loadImage(url));
-            }
-            this.images = await Promise.all(loadPromises);
-            this.isLoaded = true;
-            console.log(`Sequence loaded successfully: ${this.frameCount} frames`);
-            this.resize();
+            const initialImg = await this.loadImage(this.getFrameUrl(9));
+            this.images[9] = initialImg;
+            this.currentFrame = 9;
             this.render();
-            window.addEventListener('resize', () => this.resize());
-        } catch (e) {
-            console.error("CRITICAL ERROR loading image sequence:", e);
+            this.initialRenderDone = true;
+            if (this.onInitialReady) {
+                this.onInitialReady();
+            }
+        } catch (err) {
+            console.warn('[Sequence] Falló frame inicial 9:', err.message);
         }
+
+        // 2. CARGA PROGRESIVA POR LOTES (Sin saturar la red ni bloquear platillos)
+        let loadedCount = this.images[9] ? 1 : 0;
+        const total = this.frameCount;
+
+        const loadSingle = async (idx) => {
+            if (this.images[idx]) return this.images[idx];
+            try {
+                const img = await this.loadImage(this.getFrameUrl(idx));
+                this.images[idx] = img;
+            } catch (err) {
+                // Tolerante si algún frame remoto falla
+            } finally {
+                loadedCount++;
+                if (this.onProgress) {
+                    this.onProgress(loadedCount, total);
+                }
+            }
+        };
+
+        // Descarga en lotes controlados de 6 para dejar ancho de banda a platillos y menú
+        const batchSize = 6;
+        for (let i = 0; i < total; i += batchSize) {
+            const batch = [];
+            for (let j = i; j < Math.min(i + batchSize, total); j++) {
+                if (j !== 9) {
+                    batch.push(loadSingle(j));
+                }
+            }
+            await Promise.all(batch);
+        }
+
+        this.isLoaded = true;
+        console.log(`Sequence loaded successfully: ${total} frames`);
+        this.render();
     }
 
     loadImage(url) {
@@ -50,6 +94,7 @@ export class ImageSequence {
     }
 
     resize() {
+        if (!this.canvas) return;
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
         this.render();
@@ -57,9 +102,7 @@ export class ImageSequence {
 
     setFrame(frame) {
         this.currentFrame = Math.max(0, Math.min(frame, this.frameCount - 1));
-        if (this.isLoaded) {
-            this.render();
-        }
+        this.render();
     }
 
     setOpacity(val) {
@@ -68,8 +111,24 @@ export class ImageSequence {
     }
 
     render() {
-        if (!this.isLoaded) return;
-        const img = this.images[this.currentFrame];
+        if (!this.canvas || !this.ctx) return;
+
+        // Selección inteligente de frame: si el frame exacto no ha cargado aún,
+        // renderiza el fotograma vecino más próximo para que nunca se vea vacío
+        let img = this.images[this.currentFrame];
+        if (!img) {
+            for (let offset = 1; offset < 20; offset++) {
+                if (this.currentFrame - offset >= 0 && this.images[this.currentFrame - offset]) {
+                    img = this.images[this.currentFrame - offset];
+                    break;
+                }
+                if (this.currentFrame + offset < this.frameCount && this.images[this.currentFrame + offset]) {
+                    img = this.images[this.currentFrame + offset];
+                    break;
+                }
+            }
+        }
+        if (!img && this.images[9]) img = this.images[9];
         if (!img) return;
 
         const canvasAspect = this.canvas.width / this.canvas.height;
@@ -103,7 +162,6 @@ export class SequenceManager {
     async addSequence(id, config) {
         const seq = new ImageSequence(this.canvasId, config);
         this.sequences[id] = seq;
-        await seq.init();
         return seq;
     }
 

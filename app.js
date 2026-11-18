@@ -7,10 +7,56 @@ async function initializeApp() {
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
     // ==========================================
-    // ⚡ RENDERIZADO INMEDIATO DEL MENÚ (0ms)
-    // El libro y todos los platillos aparecen instantáneamente sin esperar red ni auth
+    // 🔮 CONTROL DE PANTALLA DE CARGA (IMPERIAL PRELOADER)
+    // ==========================================
+    const imperialLoader = document.getElementById('imperialLoader');
+    const loaderProgressBar = document.getElementById('loaderProgressBar');
+    const loaderPercent = document.getElementById('loaderPercent');
+    const loaderStatus = document.getElementById('loaderStatus');
+
+    let currentProgress = 10;
+    let loaderDismissed = false;
+
+    function updateLoaderProgress(targetPercent, statusText) {
+        if (loaderDismissed) return;
+        currentProgress = Math.max(currentProgress, Math.min(100, Math.round(targetPercent)));
+        if (loaderProgressBar) loaderProgressBar.style.width = `${currentProgress}%`;
+        if (loaderPercent) loaderPercent.textContent = `${currentProgress}%`;
+        if (statusText && loaderStatus) loaderStatus.textContent = statusText;
+
+        if (currentProgress >= 100) {
+            hideLoader();
+        }
+    }
+
+    function hideLoader() {
+        if (loaderDismissed || !imperialLoader) return;
+        loaderDismissed = true;
+        if (loaderStatus) loaderStatus.textContent = "Bienvenido a Loto Imperial";
+        if (loaderProgressBar) loaderProgressBar.style.width = "100%";
+        if (loaderPercent) loaderPercent.textContent = "100%";
+
+        setTimeout(() => {
+            imperialLoader.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                imperialLoader.style.display = 'none';
+            }, 750);
+        }, 350);
+    }
+
+    // Seguridad de tiempo máximo (máximo 3.5s para no hacer esperar al usuario)
+    setTimeout(() => {
+        if (!loaderDismissed) {
+            updateLoaderProgress(100, "Experiencia lista");
+            hideLoader();
+        }
+    }, 3500);
+
+    // ==========================================
+    // ⚡ RENDERIZADO INMEDIATO DEL MENÚ
     // ==========================================
     initBookMenu();
+    updateLoaderProgress(35, "Carta imperial cargada...");
 
     // Sincronización en segundo plano con Supabase / Caché local
     fetchMenuData().then(menuData => {
@@ -20,7 +66,7 @@ async function initializeApp() {
     }).catch(err => console.warn('Carga diferida del menú:', err));
 
     // ==========================================
-    // 0. SISTEMA DE ANIMACIÓN (Carga Asíncrona Tolerante)
+    // 0. SISTEMA DE ANIMACIÓN (Con reporte de progreso al Preloader)
     // ==========================================
     const manager = new SequenceManager('hero-canvas');
 
@@ -30,12 +76,21 @@ async function initializeApp() {
         prefix: 'Comp 2_',
         frameCount: 144,
         padding: 5,
-        extension: 'png'
+        extension: 'png',
+        onInitialReady: () => {
+            updateLoaderProgress(70, "Efectos visuales listos...");
+        },
+        onProgress: (loaded, total) => {
+            const percent = 70 + Math.round((loaded / total) * 30);
+            updateLoaderProgress(percent, `Cargando atmósfera (${loaded}/${total})...`);
+        }
     }).then(async () => {
         const START_FRAME = 9;
         const END_FRAME = 143;
         manager.setFrame('home-to-menu', START_FRAME);
         await manager.transitionTo('home-to-menu');
+
+        updateLoaderProgress(100, "Mesa lista");
 
         const homeProxy = { frame: START_FRAME };
         gsap.to(homeProxy, {
@@ -53,6 +108,8 @@ async function initializeApp() {
         });
     }).catch(err => {
         console.warn('Secuencia de fondo no disponible en este momento:', err);
+        updateLoaderProgress(100, "Listo");
+        hideLoader();
     });
 
     // ==========================================

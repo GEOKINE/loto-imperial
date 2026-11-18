@@ -333,6 +333,57 @@
 <body class="bg-imperial-bg text-imperial-cream font-body antialiased selection:bg-imperial-gold selection:text-imperial-bg overflow-x-hidden">
 
   <!-- =========================================================================
+       PANTALLA DE CARGA IMPERIAL (PRELOADER / SPLASH SCREEN)
+       ========================================================================= -->
+  <div
+    id="imperialLoader"
+    class="fixed inset-0 z-[3000] flex flex-col items-center justify-center px-6 bg-[#120505] transition-all duration-700 select-none"
+    aria-label="Cargando experiencia Loto Imperial"
+  >
+    <!-- Resplandor místico de fondo -->
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(122,23,27,0.38)_0%,rgba(255,218,116,0.12)_35%,rgba(18,5,5,0.98)_70%)]"></div>
+
+    <div class="relative z-10 max-w-sm sm:max-w-md w-full mx-auto flex flex-col items-center text-center">
+      <!-- Emblema / Loto con Aura Pulsante -->
+      <div class="relative mb-6 flex items-center justify-center">
+        <div class="absolute w-36 h-36 rounded-full bg-imperial-gold/25 blur-2xl animate-pulse"></div>
+        <div class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl p-2.5 bg-[#1c0808] border-2 border-imperial-gold/50 shadow-[0_0_35px_rgba(255,218,116,0.45)] flex items-center justify-center overflow-hidden">
+          <img
+            src="img/icons/maskable_icon (2).png"
+            alt="Loto Imperial"
+            class="w-full h-full object-contain animate-logo-glow"
+          />
+        </div>
+      </div>
+
+      <!-- Título de Marca -->
+      <span class="text-[10px] sm:text-xs uppercase tracking-[0.35em] text-imperial-gold font-semibold mb-2 block">
+        ALTA GASTRONOMÍA ORIENTAL
+      </span>
+      <h1 class="font-serif text-2xl sm:text-3xl font-bold tracking-[0.2em] text-gold-gradient mb-6">
+        LOTO IMPERIAL
+      </h1>
+
+      <!-- Barra de Progreso Dorada -->
+      <div class="w-full max-w-[280px] sm:max-w-[320px] mb-3">
+        <div class="h-2 w-full rounded-full bg-[#1c0808] border border-imperial-gold/30 p-0.5 overflow-hidden shadow-[0_0_15px_rgba(255,218,116,0.15)]">
+          <div
+            id="loaderProgressBar"
+            class="h-full rounded-full bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] shadow-[0_0_12px_rgba(255,218,116,0.8)] transition-all duration-300 ease-out"
+            style="width: 8%;"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Indicador Porcentual y Estado Dinámico -->
+      <div class="flex items-center justify-between w-full max-w-[280px] sm:max-w-[320px] text-xs font-serif tracking-widest text-imperial-muted/90">
+        <span id="loaderStatus" class="font-light truncate pr-2">Preparando experiencia...</span>
+        <span id="loaderPercent" class="text-imperial-gold font-bold shrink-0">8%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
        PANTALLA OFFLINE FIRST: "CONEXIÓN INTERRUMPIDA" (Basada en tu imagen)
        ========================================================================= -->
   <div
