@@ -7,31 +7,18 @@ async function initializeApp() {
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
     // ==========================================
-    // 🔮 CONTROL DE PANTALLA DE CARGA IMPERIAL (MAJESTIC ORIENTAL PRELOADER)
+    // 🔮 CONTROL DE PANTALLA DE CARGA (ORIGINAL GITHUB)
     // ==========================================
-    const imperialLoader = document.getElementById('imperialLoader');
-    const loaderProgressBar = document.getElementById('loaderProgressBar');
-    const loaderCircularProgress = document.getElementById('loaderCircularProgress');
-    const loaderPercent = document.getElementById('loaderPercent');
-    const loaderStatus = document.getElementById('loaderStatus');
+    const loadingScreen = document.getElementById('loadingScreen');
+    const loaderBar = document.getElementById('loaderBar');
 
     let currentProgress = 15;
     let loaderDismissed = false;
 
-    function updateLoaderProgress(targetPercent, statusText) {
+    function updateLoaderProgress(targetPercent) {
         if (loaderDismissed) return;
         currentProgress = Math.max(currentProgress, Math.min(100, Math.round(targetPercent)));
-
-        // Barra de progreso lineal tradicional
-        if (loaderProgressBar) loaderProgressBar.style.width = `${currentProgress}%`;
-
-        // Anillo de progreso circular SVG (si existe)
-        if (loaderCircularProgress) {
-            const offset = Math.max(0, Math.round(289 - (289 * (currentProgress / 100))));
-            loaderCircularProgress.style.strokeDashoffset = offset;
-        }
-
-        if (loaderPercent) loaderPercent.textContent = `${currentProgress}%`;
+        if (loaderBar) loaderBar.style.width = `${currentProgress}%`;
 
         if (currentProgress >= 100) {
             hideLoader();
@@ -39,29 +26,33 @@ async function initializeApp() {
     }
 
     function hideLoader() {
-        if (loaderDismissed || !imperialLoader) return;
+        if (loaderDismissed || !loadingScreen) return;
         loaderDismissed = true;
 
-        if (loaderStatus) loaderStatus.textContent = "BIENVENIDO A LOTO IMPERIAL";
-        if (loaderProgressBar) loaderProgressBar.style.width = "100%";
-        if (loaderCircularProgress) loaderCircularProgress.style.strokeDashoffset = "0";
-        if (loaderPercent) loaderPercent.textContent = "100%";
+        if (loaderBar) loaderBar.style.width = '100%';
 
         setTimeout(() => {
-            imperialLoader.style.opacity = '0';
-            imperialLoader.style.transform = 'scale(1.04)';
-            imperialLoader.style.filter = 'blur(6px)';
-            imperialLoader.style.pointerEvents = 'none';
-            setTimeout(() => {
-                imperialLoader.style.display = 'none';
-            }, 750);
+            if (window.gsap) {
+                gsap.to(loadingScreen, {
+                    opacity: 0,
+                    duration: 1.0,
+                    ease: 'power2.inOut',
+                    onComplete: () => {
+                        loadingScreen.classList.add('hidden');
+                        loadingScreen.style.display = 'none';
+                    }
+                });
+            } else {
+                loadingScreen.classList.add('hidden');
+                loadingScreen.style.display = 'none';
+            }
         }, 350);
     }
 
     // Seguridad de tiempo máximo (máximo 3.5s para no hacer esperar al usuario)
     setTimeout(() => {
         if (!loaderDismissed) {
-            updateLoaderProgress(100, "Mesa lista");
+            updateLoaderProgress(100);
             hideLoader();
         }
     }, 3500);

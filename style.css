@@ -1194,288 +1194,70 @@ a[class*="btn-"]:hover {
 }
 
 /* ==========================================================================
-   PANTALLA DE CARGA IMPERIAL (100% CÓDIGO PURO: HTML5 + SVG + CSS3)
+   LOADING SCREEN - LOTO IMPERIAL (ORIGINAL DE GITHUB)
    ========================================================================== */
-#imperialLoader {
+#loadingScreen {
     position: fixed;
     inset: 0;
-    width: 100vw;
-    height: 100vh;
     z-index: 9999;
-    background: radial-gradient(circle at 50% 45%, #2a0a0d 0%, #170406 50%, #0d0203 100%);
+    background-color: #1a0a0a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 1s ease;
+}
+
+#loadingScreen.hidden {
+    opacity: 0;
+    pointer-events: none;
+    display: none !important;
+}
+
+.loader-content {
+    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    gap: 20px;
+}
+
+.loader-logo {
+    width: 150px;
+    height: auto;
+    animation: logoPulse 2s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+}
+
+.loader-bar-container {
+    width: 200px;
+    height: 2px;
+    background: rgba(255, 218, 116, 0.2);
+    position: relative;
     overflow: hidden;
-    user-select: none;
-    transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), filter 0.75s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* 1. Marcas de agua orientales en el fondo (Dragón, Flores de ciruelo y Olas) */
-.oriental-watermark {
-    position: absolute;
-    pointer-events: none;
-}
-
-.dragon-watermark {
-    left: -20px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 440px;
-    height: 440px;
-    filter: drop-shadow(0 0 10px rgba(255, 218, 116, 0.15));
-}
-
-.blossom-watermark {
-    right: 0;
-    top: 0;
-    width: 380px;
-    height: 380px;
-}
-
-.clouds-watermark {
-    right: 0;
-    bottom: 0;
-    width: 420px;
-    height: 250px;
-}
-
-@media (min-width: 768px) {
-    .dragon-watermark { width: 520px; height: 520px; left: 10px; }
-    .blossom-watermark { width: 440px; height: 440px; }
-    .clouds-watermark { width: 500px; height: 300px; }
-}
-
-/* 2. Marco Perimetral Tradicional Chino con Doble Filete */
-.chinese-frame-border {
-    position: absolute;
-    inset: 12px;
-    border: 1.5px solid rgba(212, 175, 55, 0.65);
-    box-shadow: 
-        inset 0 0 0 5px #170406, 
-        inset 0 0 0 7px rgba(212, 175, 55, 0.45), 
-        0 0 25px rgba(0, 0, 0, 0.85);
-    pointer-events: none;
     border-radius: 2px;
 }
 
-@media (min-width: 640px) {
-    .chinese-frame-border {
-        inset: 22px;
-        box-shadow: 
-            inset 0 0 0 7px #170406, 
-            inset 0 0 0 9.5px rgba(212, 175, 55, 0.5), 
-            0 0 35px rgba(0, 0, 0, 0.9);
-    }
-}
-
-/* Grecas de Esquina Tradicionales Chinas (雷纹 / 回纹) en SVG */
-.chinese-meander-corner {
+.loader-bar {
     position: absolute;
-    width: 40px;
-    height: 40px;
-    pointer-events: none;
-    filter: drop-shadow(0 0 5px rgba(255, 218, 116, 0.65));
-}
-
-@media (min-width: 640px) {
-    .chinese-meander-corner {
-        width: 58px;
-        height: 58px;
-    }
-}
-
-.chinese-meander-corner.top-left { top: -2px; left: -2px; }
-.chinese-meander-corner.top-right { top: -2px; right: -2px; transform: scaleX(-1); }
-.chinese-meander-corner.bottom-left { bottom: -2px; left: -2px; transform: scaleY(-1); }
-.chinese-meander-corner.bottom-right { bottom: -2px; right: -2px; transform: scale(-1); }
-
-/* 3. Amuleto de Cascabel / Gato Dorado Central */
-.mascot-amulet-box {
-    position: relative;
-    width: 135px;
-    height: 135px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 2rem;
-}
-
-@media (min-width: 640px) {
-    .mascot-amulet-box {
-        width: 175px;
-        height: 175px;
-        margin-bottom: 2.25rem;
-    }
-}
-
-.mascot-aura {
-    position: absolute;
-    width: 165px;
-    height: 165px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 218, 116, 0.5) 0%, rgba(212, 175, 55, 0.2) 45%, transparent 72%);
-    filter: blur(14px);
-    animation: mascotGlowPulse 3.2s ease-in-out infinite;
-    pointer-events: none;
-}
-
-@keyframes mascotGlowPulse {
-    0%, 100% { transform: scale(0.92); opacity: 0.7; }
-    50% { transform: scale(1.18); opacity: 1; }
-}
-
-.mascot-amulet-img {
-    position: relative;
-    z-index: 5;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    filter: drop-shadow(0 0 20px rgba(255, 218, 116, 0.85)) drop-shadow(0 0 35px rgba(212, 175, 55, 0.5));
-    animation: mascotHover 4s ease-in-out infinite;
-}
-
-@keyframes mascotHover {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
-}
-
-/* Chispas y estrellas de 4 puntas flotantes */
-.sparkle-star {
-    position: absolute;
-    filter: drop-shadow(0 0 6px rgba(255, 218, 116, 0.9));
-    animation: sparkleTwinkle 2.4s ease-in-out infinite;
-    pointer-events: none;
-    z-index: 6;
-}
-
-.sparkle-dot {
-    position: absolute;
-    border-radius: 50%;
-    background-color: #FFF6D6;
-    box-shadow: 0 0 8px #FFDA74, 0 0 14px rgba(255, 218, 116, 0.9);
-    animation: sparkleTwinkle 2.2s ease-in-out infinite;
-    pointer-events: none;
-    z-index: 6;
-}
-
-@keyframes sparkleTwinkle {
-    0%, 100% { opacity: 0.25; transform: scale(0.6); }
-    50% { opacity: 1; transform: scale(1.25); }
-}
-
-/* 4. Barra de Carga Flanqueada por Nubes Tradicionales Chinas (祥云) */
-.chinese-cloud-bar-box {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 480px;
-    padding: 0 10px;
-    margin-bottom: 1.35rem;
-}
-
-@media (min-width: 640px) {
-    .chinese-cloud-bar-box {
-        max-width: 580px;
-    }
-}
-
-.cloud-terminal {
-    width: 48px;
-    height: 32px;
-    flex-shrink: 0;
-    color: #FFDA74;
-    filter: drop-shadow(0 0 6px rgba(255, 218, 116, 0.65));
-}
-
-@media (min-width: 640px) {
-    .cloud-terminal {
-        width: 64px;
-        height: 40px;
-    }
-}
-
-.cloud-terminal.right {
-    transform: scaleX(-1);
-}
-
-.cloud-bar-track {
-    flex: 1;
-    height: 9px;
-    background: #140506;
-    border: 1.5px solid #D4AF37;
-    border-radius: 2.5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.9), inset 0 0 6px rgba(0, 0, 0, 0.8), 0 0 8px rgba(255, 218, 116, 0.25);
-    padding: 1px;
-    overflow: hidden;
-    position: relative;
-    margin: 0 -4px;
-    z-index: 2;
-}
-
-@media (min-width: 640px) {
-    .cloud-bar-track {
-        height: 11px;
-    }
-}
-
-.cloud-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #A87922 0%, #D4AF37 40%, #FFDA74 80%, #FFF4CE 100%);
-    border-radius: 1.5px;
-    box-shadow: 0 0 12px rgba(255, 218, 116, 0.95);
-    transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    position: relative;
-}
-
-.cloud-bar-fill::after {
-    content: '';
-    position: absolute;
+    left: 0;
     top: 0;
-    right: 0;
-    bottom: 0;
-    width: 5px;
-    background: #FFFFFF;
-    box-shadow: 0 0 8px #FFDA74;
+    height: 100%;
+    width: 0%;
+    background: var(--primary-highlight, #FFDA74);
+    box-shadow: 0 0 10px var(--primary-highlight, #FFDA74);
+    transition: width 0.3s ease;
 }
 
-/* 5. Leyenda Imperial Inferior y Alas Florales */
-.loader-subtext-box {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    color: #FFDA74;
-}
-
-.loader-subtext {
-    font-family: 'Cinzel', serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.26em;
-    color: #FFDA74;
+.loader-text {
+    font-family: var(--font-title, 'Cinzel', serif);
+    color: var(--primary-highlight, #FFDA74);
+    font-size: 0.9rem;
+    letter-spacing: 3px;
     text-transform: uppercase;
-    text-shadow: 0 0 12px rgba(255, 218, 116, 0.5);
-}
-
-@media (min-width: 640px) {
-    .loader-subtext {
-        font-size: 16px;
-        letter-spacing: 0.32em;
-    }
-}
-
-.loader-flourish-wing {
-    width: 24px;
-    height: 12px;
-    filter: drop-shadow(0 0 5px rgba(255, 218, 116, 0.65));
-    flex-shrink: 0;
-    user-select: none;
-}
-
-.loader-flourish-wing.right {
-    transform: scaleX(-1);
+    opacity: 0.7;
 }
 
