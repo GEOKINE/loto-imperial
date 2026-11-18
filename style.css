@@ -1416,10 +1416,11 @@ a[class*="btn-"]:hover {
 .loader-logo {
     position: relative;
     z-index: 2;
-    width: 170px;
-    max-width: 170px;
-    height: auto;
-    filter: drop-shadow(0 0 20px rgba(255,200,50,0.6)) drop-shadow(0 0 40px rgba(255,150,0,0.3));
+    width: 180px;
+    max-width: 180px;
+    height: 180px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 24px rgba(255,200,50,0.75)) drop-shadow(0 0 50px rgba(255,150,0,0.4));
     animation: lsLogoPulse 2.5s ease-in-out infinite;
 }
 
