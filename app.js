@@ -7,20 +7,56 @@ async function initializeApp() {
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
     // ==========================================
-    // 🔮 CONTROL DE PANTALLA DE CARGA (IMPERIAL PRELOADER)
+    // 🔮 CONTROL DE PANTALLA DE CARGA IMPERIAL (MAJESTIC ORIENTAL PRELOADER)
     // ==========================================
     const imperialLoader = document.getElementById('imperialLoader');
     const loaderProgressBar = document.getElementById('loaderProgressBar');
+    const loaderCircularProgress = document.getElementById('loaderCircularProgress');
     const loaderPercent = document.getElementById('loaderPercent');
     const loaderStatus = document.getElementById('loaderStatus');
+    const loaderQuote = document.getElementById('loaderQuote');
 
     let currentProgress = 10;
     let loaderDismissed = false;
 
+    // Citas poéticas culinarias orientales
+    const imperialQuotes = [
+        "“Cortes puros, caldos de doce horas y el respeto al ingrediente.”",
+        "“El fuego del Wok despierta el alma del dragón.”",
+        "“La paciencia y la precisión son el alma de la mesa imperial.”",
+        "“Un viaje sensorial desde Kioto hasta Bangkok.”"
+    ];
+    let quoteIdx = 0;
+    const quoteInterval = setInterval(() => {
+        if (loaderDismissed) {
+            clearInterval(quoteInterval);
+            return;
+        }
+        quoteIdx = (quoteIdx + 1) % imperialQuotes.length;
+        if (loaderQuote) {
+            loaderQuote.style.opacity = '0';
+            setTimeout(() => {
+                if (loaderQuote) {
+                    loaderQuote.textContent = imperialQuotes[quoteIdx];
+                    loaderQuote.style.opacity = '1';
+                }
+            }, 250);
+        }
+    }, 1200);
+
     function updateLoaderProgress(targetPercent, statusText) {
         if (loaderDismissed) return;
         currentProgress = Math.max(currentProgress, Math.min(100, Math.round(targetPercent)));
+
+        // Barra de progreso lineal
         if (loaderProgressBar) loaderProgressBar.style.width = `${currentProgress}%`;
+
+        // Anillo de progreso circular SVG (Perímetro ~289)
+        if (loaderCircularProgress) {
+            const offset = Math.max(0, Math.round(289 - (289 * (currentProgress / 100))));
+            loaderCircularProgress.style.strokeDashoffset = offset;
+        }
+
         if (loaderPercent) loaderPercent.textContent = `${currentProgress}%`;
         if (statusText && loaderStatus) loaderStatus.textContent = statusText;
 
@@ -32,22 +68,28 @@ async function initializeApp() {
     function hideLoader() {
         if (loaderDismissed || !imperialLoader) return;
         loaderDismissed = true;
-        if (loaderStatus) loaderStatus.textContent = "Bienvenido a Loto Imperial";
+        clearInterval(quoteInterval);
+
+        if (loaderStatus) loaderStatus.textContent = "Mesa lista • Bienvenido";
         if (loaderProgressBar) loaderProgressBar.style.width = "100%";
+        if (loaderCircularProgress) loaderCircularProgress.style.strokeDashoffset = "0";
         if (loaderPercent) loaderPercent.textContent = "100%";
 
         setTimeout(() => {
-            imperialLoader.classList.add('opacity-0', 'pointer-events-none');
+            imperialLoader.style.opacity = '0';
+            imperialLoader.style.transform = 'scale(1.06)';
+            imperialLoader.style.filter = 'blur(6px)';
+            imperialLoader.style.pointerEvents = 'none';
             setTimeout(() => {
                 imperialLoader.style.display = 'none';
-            }, 750);
-        }, 350);
+            }, 800);
+        }, 320);
     }
 
     // Seguridad de tiempo máximo (máximo 3.5s para no hacer esperar al usuario)
     setTimeout(() => {
         if (!loaderDismissed) {
-            updateLoaderProgress(100, "Experiencia lista");
+            updateLoaderProgress(100, "Mesa lista");
             hideLoader();
         }
     }, 3500);
