@@ -1194,7 +1194,7 @@ a[class*="btn-"]:hover {
 }
 
 /* ==========================================================================
-   PANTALLA DE CARGA IMPERIAL (DISEÑO FIDEDIGNO BASADO EN TU IMAGEN)
+   PANTALLA DE CARGA IMPERIAL (100% CÓDIGO PURO: HTML5 + SVG + CSS3)
    ========================================================================== */
 #imperialLoader {
     position: fixed;
@@ -1202,100 +1202,154 @@ a[class*="btn-"]:hover {
     width: 100vw;
     height: 100vh;
     z-index: 9999;
-    background-color: #140406;
+    background: radial-gradient(circle at 50% 45%, #2a0a0d 0%, #170406 50%, #0d0203 100%);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 12px;
     overflow: hidden;
     user-select: none;
     transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), filter 0.75s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Lienzo proporcional que encuadra el arte imperial sin deformaciones */
-.loader-artwork-container {
-    position: relative;
-    width: 100%;
-    max-width: 1024px;
-    aspect-ratio: 1024 / 522;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
-    border-radius: 4px;
-    overflow: hidden;
+/* 1. Marcas de agua orientales en el fondo (Dragón, Flores de ciruelo y Olas) */
+.oriental-watermark {
+    position: absolute;
+    pointer-events: none;
 }
 
-@media (max-height: 560px) {
-    .loader-artwork-container {
-        height: 94vh;
-        width: auto;
+.dragon-watermark {
+    left: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 440px;
+    height: 440px;
+    filter: drop-shadow(0 0 10px rgba(255, 218, 116, 0.15));
+}
+
+.blossom-watermark {
+    right: 0;
+    top: 0;
+    width: 380px;
+    height: 380px;
+}
+
+.clouds-watermark {
+    right: 0;
+    bottom: 0;
+    width: 420px;
+    height: 250px;
+}
+
+@media (min-width: 768px) {
+    .dragon-watermark { width: 520px; height: 520px; left: 10px; }
+    .blossom-watermark { width: 440px; height: 440px; }
+    .clouds-watermark { width: 500px; height: 300px; }
+}
+
+/* 2. Marco Perimetral Tradicional Chino con Doble Filete */
+.chinese-frame-border {
+    position: absolute;
+    inset: 12px;
+    border: 1.5px solid rgba(212, 175, 55, 0.65);
+    box-shadow: 
+        inset 0 0 0 5px #170406, 
+        inset 0 0 0 7px rgba(212, 175, 55, 0.45), 
+        0 0 25px rgba(0, 0, 0, 0.85);
+    pointer-events: none;
+    border-radius: 2px;
+}
+
+@media (min-width: 640px) {
+    .chinese-frame-border {
+        inset: 22px;
+        box-shadow: 
+            inset 0 0 0 7px #170406, 
+            inset 0 0 0 9.5px rgba(212, 175, 55, 0.5), 
+            0 0 35px rgba(0, 0, 0, 0.9);
     }
 }
 
-/* Imagen base con el marco tradicional, dragones, amuleto y texto */
-.loader-artwork-img {
+/* Grecas de Esquina Tradicionales Chinas (雷纹 / 回纹) en SVG */
+.chinese-meander-corner {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    pointer-events: none;
+    filter: drop-shadow(0 0 5px rgba(255, 218, 116, 0.65));
+}
+
+@media (min-width: 640px) {
+    .chinese-meander-corner {
+        width: 58px;
+        height: 58px;
+    }
+}
+
+.chinese-meander-corner.top-left { top: -2px; left: -2px; }
+.chinese-meander-corner.top-right { top: -2px; right: -2px; transform: scaleX(-1); }
+.chinese-meander-corner.bottom-left { bottom: -2px; left: -2px; transform: scaleY(-1); }
+.chinese-meander-corner.bottom-right { bottom: -2px; right: -2px; transform: scale(-1); }
+
+/* 3. Amuleto de Cascabel / Gato Dorado Central */
+.mascot-amulet-box {
+    position: relative;
+    width: 135px;
+    height: 135px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+@media (min-width: 640px) {
+    .mascot-amulet-box {
+        width: 175px;
+        height: 175px;
+        margin-bottom: 2.25rem;
+    }
+}
+
+.mascot-aura {
+    position: absolute;
+    width: 165px;
+    height: 165px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 218, 116, 0.5) 0%, rgba(212, 175, 55, 0.2) 45%, transparent 72%);
+    filter: blur(14px);
+    animation: mascotGlowPulse 3.2s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes mascotGlowPulse {
+    0%, 100% { transform: scale(0.92); opacity: 0.7; }
+    50% { transform: scale(1.18); opacity: 1; }
+}
+
+.mascot-amulet-img {
+    position: relative;
+    z-index: 5;
     width: 100%;
     height: 100%;
     object-fit: contain;
-    display: block;
-    user-select: none;
-    pointer-events: none;
+    filter: drop-shadow(0 0 20px rgba(255, 218, 116, 0.85)) drop-shadow(0 0 35px rgba(212, 175, 55, 0.5));
+    animation: mascotHover 4s ease-in-out infinite;
 }
 
-/* Resplandor áureo pulsante en el amuleto (Centrado en x:50%, y:36%) */
-.loader-amulet-glow {
+@keyframes mascotHover {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+/* Chispas y estrellas de 4 puntas flotantes */
+.sparkle-star {
     position: absolute;
-    left: 50%;
-    top: 36%;
-    transform: translate(-50%, -50%);
-    width: 22%;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 218, 116, 0.32) 0%, rgba(212, 175, 55, 0.12) 50%, transparent 72%);
-    filter: blur(8px);
+    filter: drop-shadow(0 0 6px rgba(255, 218, 116, 0.9));
+    animation: sparkleTwinkle 2.4s ease-in-out infinite;
     pointer-events: none;
-    animation: amuletPulse 3s ease-in-out infinite;
+    z-index: 6;
 }
 
-@keyframes amuletPulse {
-    0%, 100% { transform: translate(-50%, -50%) scale(0.94); opacity: 0.65; }
-    50% { transform: translate(-50%, -50%) scale(1.18); opacity: 1; }
-}
-
-/* Riel dinámico posicionado exactamente en el canal de la barra entre las nubes */
-.loader-dynamic-track {
-    position: absolute;
-    left: 33.01%;
-    top: 61.4%;
-    width: 34.77%;
-    height: 1.53%;
-    overflow: hidden;
-    pointer-events: none;
-    border-radius: 1px;
-}
-
-/* Llenado dorado con gradiente idéntico al de la imagen original */
-.loader-dynamic-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #A87922 0%, #D4AF37 35%, #FFDA74 75%, #FFF6D6 100%);
-    box-shadow: 0 0 8px rgba(255, 218, 116, 0.95);
-    transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    position: relative;
-}
-
-.loader-dynamic-fill::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 4px;
-    background: #FFFFFF;
-    box-shadow: 0 0 6px #FFDA74;
-}
-
-/* Chispas y destellos dorados que orbitan el amuleto */
 .sparkle-dot {
     position: absolute;
     border-radius: 50%;
@@ -1307,7 +1361,121 @@ a[class*="btn-"]:hover {
 }
 
 @keyframes sparkleTwinkle {
-    0%, 100% { opacity: 0.2; transform: scale(0.6); }
-    50% { opacity: 1; transform: scale(1.3); }
+    0%, 100% { opacity: 0.25; transform: scale(0.6); }
+    50% { opacity: 1; transform: scale(1.25); }
+}
+
+/* 4. Barra de Carga Flanqueada por Nubes Tradicionales Chinas (祥云) */
+.chinese-cloud-bar-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 480px;
+    padding: 0 10px;
+    margin-bottom: 1.35rem;
+}
+
+@media (min-width: 640px) {
+    .chinese-cloud-bar-box {
+        max-width: 580px;
+    }
+}
+
+.cloud-terminal {
+    width: 48px;
+    height: 32px;
+    flex-shrink: 0;
+    color: #FFDA74;
+    filter: drop-shadow(0 0 6px rgba(255, 218, 116, 0.65));
+}
+
+@media (min-width: 640px) {
+    .cloud-terminal {
+        width: 64px;
+        height: 40px;
+    }
+}
+
+.cloud-terminal.right {
+    transform: scaleX(-1);
+}
+
+.cloud-bar-track {
+    flex: 1;
+    height: 9px;
+    background: #140506;
+    border: 1.5px solid #D4AF37;
+    border-radius: 2.5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.9), inset 0 0 6px rgba(0, 0, 0, 0.8), 0 0 8px rgba(255, 218, 116, 0.25);
+    padding: 1px;
+    overflow: hidden;
+    position: relative;
+    margin: 0 -4px;
+    z-index: 2;
+}
+
+@media (min-width: 640px) {
+    .cloud-bar-track {
+        height: 11px;
+    }
+}
+
+.cloud-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #A87922 0%, #D4AF37 40%, #FFDA74 80%, #FFF4CE 100%);
+    border-radius: 1.5px;
+    box-shadow: 0 0 12px rgba(255, 218, 116, 0.95);
+    transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+}
+
+.cloud-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 5px;
+    background: #FFFFFF;
+    box-shadow: 0 0 8px #FFDA74;
+}
+
+/* 5. Leyenda Imperial Inferior y Alas Florales */
+.loader-subtext-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: #FFDA74;
+}
+
+.loader-subtext {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.26em;
+    color: #FFDA74;
+    text-transform: uppercase;
+    text-shadow: 0 0 12px rgba(255, 218, 116, 0.5);
+}
+
+@media (min-width: 640px) {
+    .loader-subtext {
+        font-size: 16px;
+        letter-spacing: 0.32em;
+    }
+}
+
+.loader-flourish-wing {
+    width: 24px;
+    height: 12px;
+    filter: drop-shadow(0 0 5px rgba(255, 218, 116, 0.65));
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.loader-flourish-wing.right {
+    transform: scaleX(-1);
 }
 
