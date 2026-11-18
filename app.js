@@ -7,6 +7,19 @@ async function initializeApp() {
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
     // ==========================================
+    // ⚡ RENDERIZADO INMEDIATO DEL MENÚ (0ms)
+    // El libro y todos los platillos aparecen instantáneamente sin esperar red ni auth
+    // ==========================================
+    initBookMenu();
+
+    // Sincronización en segundo plano con Supabase / Caché local
+    fetchMenuData().then(menuData => {
+        if (menuData) {
+            initBookMenu(menuData);
+        }
+    }).catch(err => console.warn('Carga diferida del menú:', err));
+
+    // ==========================================
     // 0. SISTEMA DE ANIMACIÓN (Carga Asíncrona Tolerante)
     // ==========================================
     const manager = new SequenceManager('hero-canvas');
@@ -146,14 +159,13 @@ async function initializeApp() {
         updateAuthUI(session?.user || null);
     });
 
-    let initialUser = null;
-    try {
-        const { data } = await supabase.auth.getSession();
-        initialUser = data?.session?.user || null;
-    } catch (e) {
+    // Comprobación de sesión asíncrona en segundo plano (no bloquea el arranque)
+    supabase.auth.getSession().then(({ data }) => {
+        updateAuthUI(data?.session?.user || null);
+    }).catch(e => {
         console.warn('Supabase Auth: Sesión inicial no disponible:', e.message);
-    }
-    updateAuthUI(initialUser);
+        updateAuthUI(null);
+    });
 
     async function showSection(sectionId) {
         document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
@@ -413,13 +425,6 @@ async function initializeApp() {
         });
     });
 
-    // Core Menu Logic: Inicialización inmediata del libro interactivo
-    initBookMenu();
-    fetchMenuData().then(menuData => {
-        if (menuData) {
-            initBookMenu(menuData);
-        }
-    });
 
     function showNotification(message, type = 'success') {
         const container = document.getElementById('toastContainer');
