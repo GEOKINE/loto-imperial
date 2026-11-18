@@ -333,110 +333,103 @@
 <body class="bg-imperial-bg text-imperial-cream font-body antialiased selection:bg-imperial-gold selection:text-imperial-bg overflow-x-hidden">
 
   <!-- =========================================================================
-       PANTALLA DE CARGA IMPERIAL DE ALTA GAMA (MAJESTIC ORIENTAL PRELOADER)
+       PANTALLA DE CARGA IMPERIAL (DISEÑO ORIENTAL BASADO EN TU IMAGEN)
        ========================================================================= -->
   <div
     id="imperialLoader"
-    class="fixed inset-0 z-[9999] flex flex-col items-center justify-center px-6 bg-[#0b0304] select-none overflow-hidden transition-all duration-700"
+    class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#150406] select-none overflow-hidden"
     role="status"
     aria-live="polite"
-    aria-label="Iniciando experiencia Loto Imperial"
+    aria-label="Cargando experiencia imperial"
   >
-    <!-- Niebla mística y resplandor ambiental -->
-    <div class="loader-ambient-smoke"></div>
-    <div class="loader-lattice-pattern"></div>
+    <!-- Fondo artístico con dragones, nubes y flores tradicionales de ciruelo -->
+    <div class="loader-bg-artwork"></div>
+    <div class="loader-bg-overlay"></div>
 
-    <!-- Partículas sutiles de ámbar ascendentes -->
-    <div class="absolute inset-0 pointer-events-none overflow-hidden">
-      <div class="amber-mote w-2 h-2 left-[20%] bottom-[15%]" style="animation-duration: 4.8s; animation-delay: 0.2s;"></div>
-      <div class="amber-mote w-1.5 h-1.5 left-[35%] bottom-[10%]" style="animation-duration: 5.6s; animation-delay: 1.1s;"></div>
-      <div class="amber-mote w-2.5 h-2.5 left-[65%] bottom-[18%]" style="animation-duration: 4.2s; animation-delay: 0.5s;"></div>
-      <div class="amber-mote w-1.5 h-1.5 left-[80%] bottom-[12%]" style="animation-duration: 5.1s; animation-delay: 1.8s;"></div>
+    <!-- Marco de meandros imperiales con esquinas tradicionales (雷纹 / 回纹) -->
+    <div class="loader-meander-frame">
+      <!-- Esquina Superior Izquierda -->
+      <svg class="meander-corner top-left" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M 3 57 L 3 3 L 57 3 M 11 57 L 11 11 L 49 11 L 49 49 L 19 49 L 19 19 L 41 19 L 41 41 L 27 41 L 27 27 L 33 27" stroke-linecap="square" />
+      </svg>
+      <!-- Esquina Superior Derecha -->
+      <svg class="meander-corner top-right" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M 3 57 L 3 3 L 57 3 M 11 57 L 11 11 L 49 11 L 49 49 L 19 49 L 19 19 L 41 19 L 41 41 L 27 41 L 27 27 L 33 27" stroke-linecap="square" />
+      </svg>
+      <!-- Esquina Inferior Izquierda -->
+      <svg class="meander-corner bottom-left" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M 3 57 L 3 3 L 57 3 M 11 57 L 11 11 L 49 11 L 49 49 L 19 49 L 19 19 L 41 19 L 41 41 L 27 41 L 27 27 L 33 27" stroke-linecap="square" />
+      </svg>
+      <!-- Esquina Inferior Derecha -->
+      <svg class="meander-corner bottom-right" viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M 3 57 L 3 3 L 57 3 M 11 57 L 11 11 L 49 11 L 49 49 L 19 49 L 19 19 L 41 19 L 41 41 L 27 41 L 27 27 L 33 27" stroke-linecap="square" />
+      </svg>
     </div>
 
-    <div class="relative z-10 max-w-md w-full mx-auto flex flex-col items-center text-center">
+    <!-- Contenedor central -->
+    <div class="relative z-10 flex flex-col items-center justify-center w-full max-w-xl px-6 text-center">
 
-      <!-- Cuadrante Astrolabio Imperial con Progreso Circular -->
-      <div class="astrolabe-dial-wrap">
-        <!-- Anillo Exterior con grabados -->
-        <div class="astrolabe-ring-outer"></div>
-        <!-- Anillo Medio Contrarrotatorio -->
-        <div class="astrolabe-ring-middle"></div>
-        <!-- Anillo Interior Punteado -->
-        <div class="astrolabe-ring-inner"></div>
+      <!-- Talismán / Cascabel Sagrado Dorado con Halo y Chispas Orbitantes -->
+      <div class="mascot-amulet-wrap">
+        <div class="mascot-golden-glow"></div>
+        <img
+          src="imagenes/cat-bell.png"
+          alt="Amuleto Imperial"
+          class="mascot-amulet-img"
+        />
 
-        <!-- Arco de Progreso Circular SVG -->
-        <svg class="astrolabe-svg-progress" viewBox="0 0 100 100">
-          <defs>
-            <linearGradient id="goldGradientStroke" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#991B21" />
-              <stop offset="50%" stop-color="#D4AF37" />
-              <stop offset="100%" stop-color="#FFDA74" />
-            </linearGradient>
-          </defs>
-          <circle class="bg" cx="50" cy="50" r="46" stroke-width="2" fill="none" />
-          <circle
-            id="loaderCircularProgress"
-            class="progress"
-            cx="50"
-            cy="50"
-            r="46"
-            stroke-width="3"
-            fill="none"
-            stroke-dasharray="289"
-            stroke-dashoffset="275"
-          />
+        <!-- Chispas doradas de stardust flotantes en órbita -->
+        <span class="sparkle-dot w-2.5 h-2.5" style="top: -12px; left: 45%; animation-delay: 0s;"></span>
+        <span class="sparkle-dot w-2 h-2" style="top: -6px; left: 62%; animation-delay: 0.5s;"></span>
+        <span class="sparkle-dot w-1.5 h-1.5" style="top: 10px; right: -4px; animation-delay: 1.2s;"></span>
+        <span class="sparkle-dot w-2 h-2" style="top: 30px; right: -14px; animation-delay: 0.3s;"></span>
+        <span class="sparkle-dot w-3 h-3" style="top: 55px; right: -8px; animation-delay: 1.6s;"></span>
+        <span class="sparkle-dot w-1.5 h-1.5" style="bottom: 25px; right: -12px; animation-delay: 0.8s;"></span>
+        <span class="sparkle-dot w-2 h-2" style="bottom: 0px; right: 8px; animation-delay: 1.9s;"></span>
+        <span class="sparkle-dot w-2.5 h-2.5" style="bottom: -10px; left: 52%; animation-delay: 0.4s;"></span>
+        <span class="sparkle-dot w-1.5 h-1.5" style="bottom: -6px; left: 35%; animation-delay: 1.4s;"></span>
+        <span class="sparkle-dot w-2.5 h-2.5" style="bottom: 12px; left: -8px; animation-delay: 0.7s;"></span>
+        <span class="sparkle-dot w-1.5 h-1.5" style="top: 60px; left: -16px; animation-delay: 1.1s;"></span>
+        <span class="sparkle-dot w-2 h-2" style="top: 32px; left: -10px; animation-delay: 0.2s;"></span>
+        <span class="sparkle-dot w-2 h-2" style="top: 8px; left: -4px; animation-delay: 1.7s;"></span>
+        <span class="sparkle-dot w-1.5 h-1.5" style="top: -4px; left: 24%; animation-delay: 0.9s;"></span>
+        <span class="sparkle-dot w-3 h-3" style="top: -15px; left: 32%; animation-delay: 1.5s;"></span>
+      </div>
+
+      <!-- Barra de progreso tradicional custodiada por volutas de nubes sagradas (Xiangyun) -->
+      <div class="chinese-cloud-bar-wrap">
+        <!-- Nube izquierda SVG (Xiangyun) -->
+        <svg class="cloud-terminal left" viewBox="0 0 80 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M78 26 C68 26 62 29 54 31 C46 33 38 35 28 35 C16 35 6 28 6 19 C6 10 16 3 27 3 C34 3 40 6 44 11 C48 6 55 3 63 3 C70 3 76 6 76 10 C76 13 73 15 69 15 C65 15 62 13 62 10 C62 8 59 7 55 7 C49 7 44 11 43 16 C41 21 36 24 30 24 C23 24 17 19 17 14 C17 9 22 6 28 6 C32 6 36 8 38 11" stroke="#FFDA74" stroke-width="2" stroke-linecap="round" fill="rgba(212, 175, 55, 0.2)" />
+          <path d="M78 24 C66 24 58 27 48 30 C38 33 28 33 20 29 C14 26 12 21 14 17" stroke="#FFDA74" stroke-width="1.8" stroke-linecap="round" />
+          <circle cx="28" cy="18" r="2.5" fill="#FFDA74" />
         </svg>
 
-        <!-- Núcleo de Obsidiana con el Emblema del Loto -->
-        <div class="astrolabe-core">
-          <img
-            src="img/icons/maskable_icon (2).png"
-            alt="Emblema Loto Imperial"
-          />
+        <!-- Riel de oro con barra de relleno progresiva -->
+        <div class="cloud-bar-track">
+          <div id="loaderProgressBar" class="cloud-bar-fill" style="width: 15%;"></div>
         </div>
+
+        <!-- Nube derecha SVG (Xiangyun espejada) -->
+        <svg class="cloud-terminal right" viewBox="0 0 80 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M78 26 C68 26 62 29 54 31 C46 33 38 35 28 35 C16 35 6 28 6 19 C6 10 16 3 27 3 C34 3 40 6 44 11 C48 6 55 3 63 3 C70 3 76 6 76 10 C76 13 73 15 69 15 C65 15 62 13 62 10 C62 8 59 7 55 7 C49 7 44 11 43 16 C41 21 36 24 30 24 C23 24 17 19 17 14 C17 9 22 6 28 6 C32 6 36 8 38 11" stroke="#FFDA74" stroke-width="2" stroke-linecap="round" fill="rgba(212, 175, 55, 0.2)" />
+          <path d="M78 24 C66 24 58 27 48 30 C38 33 28 33 20 29 C14 26 12 21 14 17" stroke="#FFDA74" stroke-width="1.8" stroke-linecap="round" />
+          <circle cx="28" cy="18" r="2.5" fill="#FFDA74" />
+        </svg>
       </div>
 
-      <!-- Cabecera Imperial con Sello de Cinabrio -->
-      <div class="flex items-center justify-center gap-3 mb-2">
-        <span class="imperial-cinnabar-seal" title="Sello de la Mesa Imperial">御膳</span>
-        <div class="text-left">
-          <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.38em] text-imperial-gold font-semibold block leading-none">
-            CARTA MAESTRA • DINASTÍA
-          </span>
-          <span class="text-[9px] text-imperial-muted/70 tracking-[0.2em] font-light">
-            EDICIÓN SENSORIAL 2026
-          </span>
-        </div>
+      <!-- Leyenda tradicional con alas doradas idéntica al diseño de referencia -->
+      <div class="loader-subtext-wrap">
+        <svg class="loader-flourish-wing left" viewBox="0 0 28 12" fill="currentColor">
+          <path d="M28,6 C20,6 16,1 10,1 C4,1 0,6 0,6 C0,6 4,11 10,11 C16,11 20,6 28,6 Z M10,4 C11.5,4 12.5,5 12.5,6 C12.5,7 11.5,8 10,8 C8.5,8 7.5,7 7.5,6 C7.5,5 8.5,4 10,4 Z" />
+        </svg>
+        <span id="loaderStatus" class="loader-subtext">PREPARANDO SU EXPERIENCIA IMPERIAL...</span>
+        <svg class="loader-flourish-wing right" viewBox="0 0 28 12" fill="currentColor">
+          <path d="M28,6 C20,6 16,1 10,1 C4,1 0,6 0,6 C0,6 4,11 10,11 C16,11 20,6 28,6 Z M10,4 C11.5,4 12.5,5 12.5,6 C12.5,7 11.5,8 10,8 C8.5,8 7.5,7 7.5,6 C7.5,5 8.5,4 10,4 Z" />
+        </svg>
+        <span id="loaderPercent" class="hidden">15%</span>
       </div>
 
-      <!-- Nombre del Restaurante con Brillo Metálico Dorado -->
-      <h1 class="font-serif text-3xl sm:text-4xl font-extrabold tracking-[0.24em] shimmer-gold-text mb-1">
-        LOTO IMPERIAL
-      </h1>
-      <p class="text-xs text-imperial-cream/80 font-serif tracking-[0.22em] uppercase mb-3">
-        ALTA GASTRONOMÍA ORIENTAL
-      </p>
-
-      <!-- Barra de Filamento de Oro con Indicador Luminoso -->
-      <div class="luxury-filament-track">
-        <div id="loaderProgressBar" class="luxury-filament-fill" style="width: 10%;"></div>
-      </div>
-
-      <!-- Detalle Numérico y Poética Culinaria -->
-      <div class="flex items-center justify-between w-full max-w-[340px] px-1 text-[11px] font-serif tracking-widest text-imperial-muted mb-2">
-        <span id="loaderStatus" class="font-light text-imperial-cream/90 truncate max-w-[240px]">
-          Despertando el fuego imperial...
-        </span>
-        <span id="loaderPercent" class="text-imperial-gold font-bold shrink-0 text-xs">
-          10%
-        </span>
-      </div>
-
-      <!-- Cita Culinaria Oriental Rotativa -->
-      <p id="loaderQuote" class="text-[10px] sm:text-[11px] italic text-imperial-muted/65 font-serif max-w-[320px] transition-opacity duration-500">
-        “Cortes puros, caldos de doce horas y el respeto al ingrediente.”
-      </p>
     </div>
   </div>
 
