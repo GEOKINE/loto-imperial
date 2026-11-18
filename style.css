@@ -1194,17 +1194,20 @@ a[class*="btn-"]:hover {
 }
 
 /* ==========================================================================
-   LOADING SCREEN - LOTO IMPERIAL (ORIGINAL DE GITHUB)
+   LOADING SCREEN - LOTO IMPERIAL (VERSIÓN IMPERIAL COMPLETA)
    ========================================================================== */
+
+/* --- Pantalla base --- */
 #loadingScreen {
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background-color: #1a0a0a;
+    background: radial-gradient(ellipse at center, #2a0d0d 0%, #1a0505 40%, #0d0202 100%);
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: opacity 1s ease;
+    overflow: hidden;
+    transition: opacity 1.2s ease;
 }
 
 #loadingScreen.hidden {
@@ -1213,33 +1216,257 @@ a[class*="btn-"]:hover {
     display: none !important;
 }
 
+/* --- Fondo texturizado (patrón geométrico sutil) --- */
+.ls-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+        repeating-linear-gradient(45deg, rgba(200,151,42,0.03) 0px, rgba(200,151,42,0.03) 1px, transparent 1px, transparent 20px),
+        repeating-linear-gradient(-45deg, rgba(200,151,42,0.03) 0px, rgba(200,151,42,0.03) 1px, transparent 1px, transparent 20px);
+    pointer-events: none;
+}
+
+/* --- Borde dorado perimetral --- */
+.ls-border {
+    position: absolute;
+    inset: 12px;
+    border: 1px solid rgba(200,151,42,0.3);
+    pointer-events: none;
+    box-shadow: inset 0 0 60px rgba(200,151,42,0.05);
+}
+
+/* --- Esquinas decorativas --- */
+.ls-corner {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    pointer-events: none;
+    z-index: 2;
+}
+.ls-corner::before,
+.ls-corner::after {
+    content: '';
+    position: absolute;
+    background: #c8972a;
+}
+.ls-corner::before { width: 100%; height: 2px; }
+.ls-corner::after  { width: 2px; height: 100%; }
+
+.ls-corner--tl { top: 12px; left: 12px; }
+.ls-corner--tl::before { top: 0; left: 0; }
+.ls-corner--tl::after  { top: 0; left: 0; }
+
+.ls-corner--tr { top: 12px; right: 12px; }
+.ls-corner--tr::before { top: 0; right: 0; left: auto; }
+.ls-corner--tr::after  { top: 0; right: 0; left: auto; }
+
+.ls-corner--bl { bottom: 12px; left: 12px; }
+.ls-corner--bl::before { bottom: 0; top: auto; left: 0; }
+.ls-corner--bl::after  { bottom: 0; top: auto; left: 0; }
+
+.ls-corner--br { bottom: 12px; right: 12px; }
+.ls-corner--br::before { bottom: 0; top: auto; right: 0; left: auto; }
+.ls-corner--br::after  { bottom: 0; top: auto; right: 0; left: auto; }
+
+/* --- Dragones laterales --- */
+.ls-dragon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 140px;
+    height: 420px;
+    pointer-events: none;
+    opacity: 0;
+    animation: lsDragonFade 1.5s ease 0.3s forwards;
+}
+.ls-dragon--left  { left: 20px; }
+.ls-dragon--right { right: 20px; }
+.ls-dragon svg    { width: 100%; height: 100%; }
+
+@keyframes lsDragonFade {
+    to { opacity: 1; }
+}
+
+/* --- Nubes decorativas CSS puro --- */
+.ls-clouds { position: absolute; inset: 0; pointer-events: none; }
+
+.ls-cloud {
+    position: absolute;
+    border-radius: 50px;
+    background: rgba(200,151,42,0.12);
+    animation: lsCloudDrift 8s ease-in-out infinite alternate;
+}
+.ls-cloud::before,
+.ls-cloud::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: inherit;
+}
+
+.ls-cloud--1 { width:120px; height:22px; bottom:22%; left:8%;  animation-duration:9s;  animation-delay:0s; }
+.ls-cloud--1::before { width:60px;  height:36px; top:-18px; left:20px; }
+.ls-cloud--1::after  { width:40px;  height:28px; top:-12px; left:60px; }
+
+.ls-cloud--2 { width:90px;  height:18px; bottom:18%; left:4%;  animation-duration:11s; animation-delay:1s; }
+.ls-cloud--2::before { width:45px;  height:28px; top:-14px; left:15px; }
+.ls-cloud--2::after  { width:30px;  height:22px; top:-10px; left:50px; }
+
+.ls-cloud--3 { width:130px; height:24px; bottom:26%; right:8%; animation-duration:10s; animation-delay:2s; }
+.ls-cloud--3::before { width:65px;  height:38px; top:-18px; left:22px; }
+.ls-cloud--3::after  { width:45px;  height:30px; top:-12px; left:68px; }
+
+.ls-cloud--4 { width:80px;  height:16px; bottom:30%; right:5%; animation-duration:8s;  animation-delay:0.5s; }
+.ls-cloud--4::before { width:40px;  height:26px; top:-12px; left:12px; }
+.ls-cloud--4::after  { width:28px;  height:20px; top:-8px;  left:44px; }
+
+.ls-cloud--5 { width:100px; height:20px; top:20%;   left:50%; transform:translateX(-50%); animation-duration:12s; animation-delay:3s; opacity:0.07; }
+.ls-cloud--5::before { width:50px;  height:32px; top:-16px; left:18px; }
+.ls-cloud--5::after  { width:35px;  height:24px; top:-10px; left:55px; }
+
+@keyframes lsCloudDrift {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(12px); }
+}
+.ls-cloud--5 { animation-name: none; } /* estática, solo opacidad */
+
+/* --- Pétalos de cerezo --- */
+.ls-petals { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+
+.ls-petal {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: rgba(220,160,160,0.4);
+    border-radius: 0 50% 50% 50%;
+    animation: lsPetalFall linear infinite;
+}
+.ls-petal--1 { left:15%;  animation-duration:12s; animation-delay:0s;   top:-20px; }
+.ls-petal--2 { left:35%;  animation-duration:14s; animation-delay:3s;   top:-20px; }
+.ls-petal--3 { left:55%;  animation-duration:11s; animation-delay:6s;   top:-20px; }
+.ls-petal--4 { left:72%;  animation-duration:15s; animation-delay:1.5s; top:-20px; }
+.ls-petal--5 { left:85%;  animation-duration:13s; animation-delay:4.5s; top:-20px; }
+
+@keyframes lsPetalFall {
+    0%   { transform: translateY(-20px) rotate(0deg);    opacity: 0; }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.3; }
+    100% { transform: translateY(110vh) rotate(540deg);  opacity: 0; }
+}
+
+/* --- Contenido central --- */
 .loader-content {
+    position: relative;
+    z-index: 10;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 24px;
 }
 
+/* --- Halo resplandeciente detrás del gato --- */
+.ls-halo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -68%);
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,210,80,0.30) 0%, rgba(255,150,0,0.12) 40%, transparent 70%);
+    animation: lsHaloPulse 2.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes lsHaloPulse {
+    0%, 100% { transform: translate(-50%, -68%) scale(1);    opacity: 0.8; }
+    50%       { transform: translate(-50%, -68%) scale(1.15); opacity: 1;   }
+}
+
+/* --- Partículas de brillo --- */
+.ls-sparkles {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+.ls-spark {
+    position: absolute;
+    color: #FFD44E;
+    font-size: 10px;
+    animation: lsSparkle 2s ease-in-out infinite;
+    transform-origin: center;
+}
+.ls-spark--1 { top:-130px; left: 60px;  animation-delay:0s;    }
+.ls-spark--2 { top: -90px; left:-80px;  animation-delay:0.4s;  }
+.ls-spark--3 { top:-150px; left:-30px;  animation-delay:0.8s;  }
+.ls-spark--4 { top: -70px; left: 90px;  animation-delay:1.2s;  }
+.ls-spark--5 { top:-110px; left:-60px;  animation-delay:1.6s;  }
+.ls-spark--6 { top: -50px; left: 50px;  animation-delay:2.0s;  }
+
+@keyframes lsSparkle {
+    0%, 100% { transform: scale(0) rotate(0deg);   opacity: 0;   }
+    30%, 70%  { transform: scale(1) rotate(180deg); opacity: 0.9; }
+}
+
+/* --- Logo / Gato dorado --- */
 .loader-logo {
-    width: 150px;
+    position: relative;
+    z-index: 2;
+    width: 170px;
+    max-width: 170px;
     height: auto;
-    animation: logoPulse 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(255,200,50,0.6)) drop-shadow(0 0 40px rgba(255,150,0,0.3));
+    animation: lsLogoPulse 2.5s ease-in-out infinite;
 }
 
-@keyframes logoPulse {
-    0%, 100% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.05); opacity: 1; }
+@keyframes lsLogoPulse {
+    0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 20px rgba(255,200,50,0.6)) drop-shadow(0 0 40px rgba(255,150,0,0.3)); }
+    50%       { transform: scale(1.04); filter: drop-shadow(0 0 30px rgba(255,220,80,0.9)) drop-shadow(0 0 55px rgba(255,160,0,0.5)); }
+}
+
+/* --- Barra de progreso con adornos --- */
+.ls-bar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.ls-bar-ornament {
+    color: #c8972a;
+    font-size: 1.1rem;
+    opacity: 0.7;
+    line-height: 1;
+    animation: lsOrnamentGlow 2s ease-in-out infinite alternate;
+}
+.ls-bar-ornament--r { transform: scaleX(-1); }
+
+@keyframes lsOrnamentGlow {
+    0%   { opacity: 0.4; }
+    100% { opacity: 0.9; }
 }
 
 .loader-bar-container {
-    width: 200px;
-    height: 2px;
-    background: rgba(255, 218, 116, 0.2);
+    width: 240px;
+    height: 3px;
+    background: rgba(200,151,42,0.15);
     position: relative;
-    overflow: hidden;
-    border-radius: 2px;
+    overflow: visible;
+    border-radius: 3px;
 }
+/* línea tenue superior e inferior (efecto grabado) */
+.loader-bar-container::before,
+.loader-bar-container::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    height: 1px;
+    background: rgba(200,151,42,0.1);
+}
+.loader-bar-container::before { top: -3px; }
+.loader-bar-container::after  { bottom: -3px; }
 
 .loader-bar {
     position: absolute;
@@ -1247,17 +1474,51 @@ a[class*="btn-"]:hover {
     top: 0;
     height: 100%;
     width: 0%;
-    background: var(--primary-highlight, #FFDA74);
-    box-shadow: 0 0 10px var(--primary-highlight, #FFDA74);
+    background: linear-gradient(90deg, #c8972a, #FFD44E, #c8972a);
+    border-radius: 3px;
     transition: width 0.3s ease;
 }
 
+.loader-bar-glow {
+    position: absolute;
+    top: -4px;
+    left: 0;
+    width: 100%;
+    height: 11px;
+    background: rgba(255,212,78,0.15);
+    border-radius: 10px;
+    pointer-events: none;
+}
+
+/* --- Texto imperial --- */
 .loader-text {
-    font-family: var(--font-title, 'Cinzel', serif);
-    color: var(--primary-highlight, #FFDA74);
-    font-size: 0.9rem;
-    letter-spacing: 3px;
+    font-family: 'Cinzel', 'Trajan Pro', serif;
+    color: #FFDA74;
+    font-size: 0.75rem;
+    letter-spacing: 4px;
     text-transform: uppercase;
-    opacity: 0.7;
+    opacity: 0.75;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-shadow: 0 0 12px rgba(255,218,116,0.4);
+    animation: lsTextFade 2s ease-in-out infinite alternate;
+}
+
+.ls-text-ornament {
+    font-size: 0.8rem;
+    color: #c8972a;
+    opacity: 0.6;
+}
+
+@keyframes lsTextFade {
+    0%   { opacity: 0.55; }
+    100% { opacity: 0.9;  }
+}
+
+/* --- logoPulse alias (para compatibilidad con JS antiguo) --- */
+@keyframes logoPulse {
+    0%, 100% { transform: scale(1);    }
+    50%       { transform: scale(1.04); }
 }
 
