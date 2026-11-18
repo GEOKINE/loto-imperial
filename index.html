@@ -333,125 +333,16 @@
 <body class="bg-imperial-bg text-imperial-cream font-body antialiased selection:bg-imperial-gold selection:text-imperial-bg overflow-x-hidden">
 
   <!-- =========================================================================
-       PANTALLA DE CARGA - LOTO IMPERIAL
+       PANTALLA DE CARGA (GITHUB - LOTO IMPERIAL ORIGINAL)
        ========================================================================= -->
   <div id="loadingScreen">
-    <!-- Fondo texturizado oscuro -->
-    <div class="ls-bg"></div>
-
-    <!-- Marco decorativo esquinas -->
-    <div class="ls-corner ls-corner--tl"></div>
-    <div class="ls-corner ls-corner--tr"></div>
-    <div class="ls-corner ls-corner--bl"></div>
-    <div class="ls-corner ls-corner--br"></div>
-
-    <!-- Borde línea dorada perimetral -->
-    <div class="ls-border"></div>
-
-    <!-- Dragón izquierdo (CSS) -->
-    <div class="ls-dragon ls-dragon--left" aria-hidden="true">
-      <svg viewBox="0 0 120 400" xmlns="http://www.w3.org/2000/svg">
-        <g opacity="0.35" fill="none" stroke="#c8972a" stroke-width="1.2">
-          <!-- cuerpo serpentino -->
-          <path d="M80,10 C40,40 90,80 50,120 C10,160 70,200 30,240 C-10,280 50,320 20,370"/>
-          <path d="M90,15 C50,45 100,85 60,125 C20,165 80,205 40,245 C0,285 60,325 30,375"/>
-          <!-- escamas -->
-          <ellipse cx="65" cy="70" rx="12" ry="6" transform="rotate(-30,65,70)"/>
-          <ellipse cx="45" cy="130" rx="12" ry="6" transform="rotate(20,45,130)"/>
-          <ellipse cx="55" cy="190" rx="12" ry="6" transform="rotate(-15,55,190)"/>
-          <ellipse cx="35" cy="250" rx="12" ry="6" transform="rotate(25,35,250)"/>
-          <!-- cabeza -->
-          <ellipse cx="85" cy="18" rx="14" ry="10" transform="rotate(-20,85,18)"/>
-          <path d="M75,10 L65,2 M82,8 L78,0"/>
-          <circle cx="90" cy="14" r="2" fill="#c8972a" opacity="0.6"/>
-          <!-- garra -->
-          <path d="M22,368 L10,380 M22,368 L18,383 M22,368 L28,382"/>
-        </g>
-        <!-- Nubes decorativas izquierda -->
-        <g opacity="0.25" fill="#c8972a">
-          <ellipse cx="30" cy="100" rx="20" ry="8"/>
-          <ellipse cx="45" cy="96" rx="14" ry="7"/>
-          <ellipse cx="15" cy="98" rx="12" ry="6"/>
-          <ellipse cx="20" cy="300" rx="18" ry="7"/>
-          <ellipse cx="35" cy="296" rx="13" ry="6"/>
-        </g>
-      </svg>
-    </div>
-
-    <!-- Dragón derecho (CSS) -->
-    <div class="ls-dragon ls-dragon--right" aria-hidden="true">
-      <svg viewBox="0 0 120 400" xmlns="http://www.w3.org/2000/svg">
-        <g opacity="0.35" fill="none" stroke="#c8972a" stroke-width="1.2">
-          <path d="M40,10 C80,40 30,80 70,120 C110,160 50,200 90,240 C130,280 70,320 100,370"/>
-          <path d="M30,15 C70,45 20,85 60,125 C100,165 40,205 80,245 C120,285 60,325 90,375"/>
-          <ellipse cx="55" cy="70" rx="12" ry="6" transform="rotate(30,55,70)"/>
-          <ellipse cx="75" cy="130" rx="12" ry="6" transform="rotate(-20,75,130)"/>
-          <ellipse cx="65" cy="190" rx="12" ry="6" transform="rotate(15,65,190)"/>
-          <ellipse cx="85" cy="250" rx="12" ry="6" transform="rotate(-25,85,250)"/>
-          <ellipse cx="35" cy="18" rx="14" ry="10" transform="rotate(20,35,18)"/>
-          <path d="M45,10 L55,2 M38,8 L42,0"/>
-          <circle cx="30" cy="14" r="2" fill="#c8972a" opacity="0.6"/>
-          <path d="M98,368 L110,380 M98,368 L102,383 M98,368 L92,382"/>
-        </g>
-        <g opacity="0.25" fill="#c8972a">
-          <ellipse cx="90" cy="100" rx="20" ry="8"/>
-          <ellipse cx="75" cy="96" rx="14" ry="7"/>
-          <ellipse cx="105" cy="98" rx="12" ry="6"/>
-          <ellipse cx="100" cy="300" rx="18" ry="7"/>
-          <ellipse cx="85" cy="296" rx="13" ry="6"/>
-        </g>
-      </svg>
-    </div>
-
-    <!-- Nubes flotantes CSS puro -->
-    <div class="ls-clouds" aria-hidden="true">
-      <div class="ls-cloud ls-cloud--1"></div>
-      <div class="ls-cloud ls-cloud--2"></div>
-      <div class="ls-cloud ls-cloud--3"></div>
-      <div class="ls-cloud ls-cloud--4"></div>
-      <div class="ls-cloud ls-cloud--5"></div>
-    </div>
-
-    <!-- Flores de cerezo (pétalos flotando) -->
-    <div class="ls-petals" aria-hidden="true">
-      <div class="ls-petal ls-petal--1"></div>
-      <div class="ls-petal ls-petal--2"></div>
-      <div class="ls-petal ls-petal--3"></div>
-      <div class="ls-petal ls-petal--4"></div>
-      <div class="ls-petal ls-petal--5"></div>
-    </div>
-
-    <!-- Centro: gato + barra + texto -->
-    <div class="loader-content">
-      <!-- Halo resplandeciente detrás del gato -->
-      <div class="ls-halo"></div>
-      <!-- Partículas de brillo alrededor del gato -->
-      <div class="ls-sparkles" aria-hidden="true">
-        <span class="ls-spark ls-spark--1">✦</span>
-        <span class="ls-spark ls-spark--2">✦</span>
-        <span class="ls-spark ls-spark--3">✦</span>
-        <span class="ls-spark ls-spark--4">✦</span>
-        <span class="ls-spark ls-spark--5">✦</span>
-        <span class="ls-spark ls-spark--6">✦</span>
+      <div class="loader-content">
+          <img src="img/icons/LOGO.svg" alt="Loto Imperial" class="loader-logo">
+          <div class="loader-bar-container">
+              <div id="loaderBar" class="loader-bar"></div>
+          </div>
+          <p class="loader-text">Preparando su Experiencia Imperial...</p>
       </div>
-      <!-- Gato de la suerte dorado -->
-      <img src="imagenes/cat-bell.png" alt="Loto Imperial" class="loader-logo">
-      <!-- Barra de progreso con adornos -->
-      <div class="ls-bar-wrapper">
-        <span class="ls-bar-ornament ls-bar-ornament--l">❧</span>
-        <div class="loader-bar-container">
-          <div id="loaderBar" class="loader-bar"></div>
-          <div class="loader-bar-glow"></div>
-        </div>
-        <span class="ls-bar-ornament ls-bar-ornament--r">❧</span>
-      </div>
-      <!-- Texto imperial -->
-      <p class="loader-text">
-        <span class="ls-text-ornament">❦</span>
-        Preparando su Experiencia Imperial...
-        <span class="ls-text-ornament">❦</span>
-      </p>
-    </div>
   </div>
 
   <!-- =========================================================================
