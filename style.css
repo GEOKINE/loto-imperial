@@ -1194,7 +1194,7 @@ a[class*="btn-"]:hover {
 }
 
 /* ==========================================================================
-   PANTALLA DE CARGA IMPERIAL (BASADA EXACTAMENTE EN TU IMAGEN DE REFERENCIA)
+   PANTALLA DE CARGA IMPERIAL (DISEÑO FIDEDIGNO BASADO EN TU IMAGEN)
    ========================================================================== */
 #imperialLoader {
     position: fixed;
@@ -1202,129 +1202,100 @@ a[class*="btn-"]:hover {
     width: 100vw;
     height: 100vh;
     z-index: 9999;
-    background-color: #170406;
+    background-color: #140406;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 12px;
     overflow: hidden;
     user-select: none;
-    transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), filter 0.75s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Fondo decorado con dragones y nubes orientales (Imagen de referencia) */
-.loader-bg-artwork {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('imagenes/loader-bg.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: 0.88;
-    pointer-events: none;
-}
-
-/* Viñeta sutil de degradado para enfocar el brillo dorado central */
-.loader-bg-overlay {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at center, rgba(32, 9, 11, 0.25) 0%, rgba(18, 4, 6, 0.72) 75%, rgba(10, 2, 3, 0.95) 100%);
-    pointer-events: none;
-}
-
-/* Marco Dinástico con grecas chinas en las 4 esquinas */
-.loader-meander-frame {
-    position: absolute;
-    inset: 12px;
-    border: 1.5px solid rgba(255, 218, 116, 0.55);
-    box-shadow: inset 0 0 0 5px rgba(18, 4, 6, 0.85), inset 0 0 0 6.5px rgba(255, 218, 116, 0.4);
-    pointer-events: none;
-    border-radius: 4px;
-}
-
-@media (min-width: 640px) {
-    .loader-meander-frame {
-        inset: 22px;
-        box-shadow: inset 0 0 0 7px rgba(18, 4, 6, 0.85), inset 0 0 0 9px rgba(255, 218, 116, 0.4);
-    }
-}
-
-/* Grecas de esquina estilo meandro tradicional chino (雷纹 / 回纹) */
-.meander-corner {
-    position: absolute;
-    width: 38px;
-    height: 38px;
-    color: #FFDA74;
-    pointer-events: none;
-    filter: drop-shadow(0 0 4px rgba(255, 218, 116, 0.5));
-}
-
-@media (min-width: 640px) {
-    .meander-corner {
-        width: 54px;
-        height: 54px;
-    }
-}
-
-.meander-corner.top-left { top: -2px; left: -2px; }
-.meander-corner.top-right { top: -2px; right: -2px; transform: scaleX(-1); }
-.meander-corner.bottom-left { bottom: -2px; left: -2px; transform: scaleY(-1); }
-.meander-corner.bottom-right { bottom: -2px; right: -2px; transform: scale(-1); }
-
-/* Amuleto de Cascabel / Gato Dorado Central */
-.mascot-amulet-wrap {
+/* Lienzo proporcional que encuadra el arte imperial sin deformaciones */
+.loader-artwork-container {
     position: relative;
-    width: 140px;
-    height: 140px;
+    width: 100%;
+    max-width: 1024px;
+    aspect-ratio: 1024 / 522;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 2rem;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+    border-radius: 4px;
+    overflow: hidden;
 }
 
-@media (min-width: 640px) {
-    .mascot-amulet-wrap {
-        width: 175px;
-        height: 175px;
-        margin-bottom: 2.25rem;
+@media (max-height: 560px) {
+    .loader-artwork-container {
+        height: 94vh;
+        width: auto;
     }
 }
 
-/* Halo resplandeciente central */
-.mascot-golden-glow {
-    position: absolute;
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 218, 116, 0.6) 0%, rgba(212, 175, 55, 0.25) 45%, transparent 70%);
-    filter: blur(14px);
-    animation: mascotGlowPulse 3s ease-in-out infinite;
-}
-
-@keyframes mascotGlowPulse {
-    0%, 100% { transform: scale(0.92); opacity: 0.75; }
-    50% { transform: scale(1.18); opacity: 1; }
-}
-
-/* Imagen del amuleto con flotación sutil */
-.mascot-amulet-img {
-    position: relative;
-    z-index: 5;
+/* Imagen base con el marco tradicional, dragones, amuleto y texto */
+.loader-artwork-img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 0 25px rgba(255, 218, 116, 0.95)) drop-shadow(0 0 45px rgba(212, 175, 55, 0.6));
-    animation: mascotHover 4s ease-in-out infinite;
+    display: block;
+    user-select: none;
+    pointer-events: none;
 }
 
-@keyframes mascotHover {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
+/* Resplandor áureo pulsante en el amuleto (Centrado en x:50%, y:36%) */
+.loader-amulet-glow {
+    position: absolute;
+    left: 50%;
+    top: 36%;
+    transform: translate(-50%, -50%);
+    width: 22%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 218, 116, 0.32) 0%, rgba(212, 175, 55, 0.12) 50%, transparent 72%);
+    filter: blur(8px);
+    pointer-events: none;
+    animation: amuletPulse 3s ease-in-out infinite;
 }
 
-/* Chispas y destellos dorados que orbitan el amuleto (Fiel a la imagen) */
+@keyframes amuletPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(0.94); opacity: 0.65; }
+    50% { transform: translate(-50%, -50%) scale(1.18); opacity: 1; }
+}
+
+/* Riel dinámico posicionado exactamente en el canal de la barra entre las nubes */
+.loader-dynamic-track {
+    position: absolute;
+    left: 33.01%;
+    top: 61.4%;
+    width: 34.77%;
+    height: 1.53%;
+    overflow: hidden;
+    pointer-events: none;
+    border-radius: 1px;
+}
+
+/* Llenado dorado con gradiente idéntico al de la imagen original */
+.loader-dynamic-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #A87922 0%, #D4AF37 35%, #FFDA74 75%, #FFF6D6 100%);
+    box-shadow: 0 0 8px rgba(255, 218, 116, 0.95);
+    transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+}
+
+.loader-dynamic-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 4px;
+    background: #FFFFFF;
+    box-shadow: 0 0 6px #FFDA74;
+}
+
+/* Chispas y destellos dorados que orbitan el amuleto */
 .sparkle-dot {
     position: absolute;
     border-radius: 50%;
@@ -1338,128 +1309,5 @@ a[class*="btn-"]:hover {
 @keyframes sparkleTwinkle {
     0%, 100% { opacity: 0.2; transform: scale(0.6); }
     50% { opacity: 1; transform: scale(1.3); }
-}
-
-/* Barra de carga con volutas de nubes chinas (Xiangyun) en los extremos */
-.chinese-cloud-bar-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 480px;
-    padding: 0 10px;
-    margin-bottom: 1.25rem;
-}
-
-@media (min-width: 640px) {
-    .chinese-cloud-bar-wrap {
-        max-width: 560px;
-    }
-}
-
-.cloud-terminal {
-    width: 46px;
-    height: 32px;
-    flex-shrink: 0;
-    color: #FFDA74;
-    filter: drop-shadow(0 0 6px rgba(255, 218, 116, 0.65));
-}
-
-@media (min-width: 640px) {
-    .cloud-terminal {
-        width: 62px;
-        height: 40px;
-    }
-}
-
-.cloud-terminal.right {
-    transform: scaleX(-1);
-}
-
-/* El riel de la barra enmarcado en oro */
-.cloud-bar-track {
-    flex: 1;
-    height: 10px;
-    background: #140506;
-    border: 1.5px solid #D4AF37;
-    border-radius: 3px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.9), inset 0 0 6px rgba(0, 0, 0, 0.8), 0 0 8px rgba(255, 218, 116, 0.25);
-    padding: 1px;
-    overflow: hidden;
-    position: relative;
-    margin: 0 -3px;
-    z-index: 2;
-}
-
-@media (min-width: 640px) {
-    .cloud-bar-track {
-        height: 12px;
-    }
-}
-
-.cloud-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #A87922 0%, #D4AF37 40%, #FFDA74 80%, #FFF4CE 100%);
-    border-radius: 2px;
-    box-shadow: 0 0 12px rgba(255, 218, 116, 0.95);
-    transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    position: relative;
-}
-
-.cloud-bar-fill::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 6px;
-    background: #FFFFFF;
-    box-shadow: 0 0 8px #FFDA74;
-}
-
-/* Texto inferior con los ornamentos laterales */
-.loader-subtext-wrap {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    color: #FFDA74;
-    text-shadow: 0 0 12px rgba(255, 218, 116, 0.5);
-}
-
-.loader-subtext {
-    font-family: 'Cinzel', serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.26em;
-    color: #FFDA74;
-    text-transform: uppercase;
-}
-
-@media (min-width: 640px) {
-    .loader-subtext {
-        font-size: 16px;
-        letter-spacing: 0.32em;
-    }
-}
-
-.loader-flourish {
-    font-size: 16px;
-    color: #D4AF37;
-    filter: drop-shadow(0 0 4px rgba(255, 218, 116, 0.6));
-    user-select: none;
-}
-
-.loader-flourish-wing {
-    width: 24px;
-    height: 12px;
-    color: #D4AF37;
-    filter: drop-shadow(0 0 4px rgba(255, 218, 116, 0.65));
-    flex-shrink: 0;
-    user-select: none;
-}
-
-.loader-flourish-wing.right {
-    transform: scaleX(-1);
 }
 
