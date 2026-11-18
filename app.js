@@ -920,14 +920,20 @@ async function initializeApp() {
         }
     }
 
+    // Registro del Service Worker como Módulo (type: 'module') con estrategias avanzadas
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
+            navigator.serviceWorker.register('sw.js', { type: 'module' })
                 .then(reg => {
-                    console.log('✓ SW Loto Imperial registrado con éxito (v2)');
+                    console.log('✓ SW Loto Imperial registrado con éxito (ES Module v5 - SWR/Network-First)');
                     reg.update();
                 })
-                .catch(err => console.warn('Error registrando Service Worker:', err));
+                .catch(err => {
+                    console.warn('Registro SW module falló, intentando registro estándar:', err);
+                    navigator.serviceWorker.register('sw.js')
+                        .then(reg => console.log('✓ SW Loto Imperial registrado (modo estándar):', reg))
+                        .catch(e => console.error('Error registrando Service Worker:', e));
+                });
         });
     }
 }
