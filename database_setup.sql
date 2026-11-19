@@ -84,6 +84,10 @@ DROP POLICY IF EXISTS "Users can view own profile" ON profiles;
 CREATE POLICY "Users can view own profile" ON profiles 
 FOR SELECT USING (auth.uid() = id OR public.is_admin());
 
+DROP POLICY IF EXISTS "Users can insert own profile" ON profiles;
+CREATE POLICY "Users can insert own profile" ON profiles 
+FOR INSERT WITH CHECK (auth.uid() = id);
+
 DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
 CREATE POLICY "Users can update own profile" ON profiles 
 FOR UPDATE USING (auth.uid() = id);
@@ -103,13 +107,23 @@ FOR SELECT USING (auth.uid() = user_id OR public.is_admin());
 -- C) UPDATE: Administradores pueden cambiar estados (completada, cancelada)
 DROP POLICY IF EXISTS "Admins can update reservations" ON reservations;
 CREATE POLICY "Admins can update reservations" ON reservations 
-FOR UPDATE USING (public.is_admin());
+FOR UPDATE TO authenticated
+USING (public.is_admin())
+WITH CHECK (public.is_admin());
 
 -- =============================================================================
 -- 4. INSTRUCCIÓN RÁPIDA: CÓMO ASIGNAR ROL ADMINISTRADOR A UN USUARIO
 -- =============================================================================
--- Para otorgar permisos de administrador al dueño del restaurante, ejecuta:
--- UPDATE public.profiles SET role = 'admin' WHERE id = 'ID_DEL_USUARIO_AQUI';
+-- Opción 1: Asignar rol administrador a tu usuario por correo:
+-- UPDATE public.profiles 
+-- SET role = 'admin' 
+-- WHERE id IN (SELECT id FROM auth.users WHERE email = 'tu_correo@ejemplo.com');
+
+-- Opción 2 (Desarrollo / Pruebas rápidas): Si deseas que cualquier usuario autenticado
+-- pueda actualizar el estado de las reservaciones en el panel:
+-- DROP POLICY IF EXISTS "Admins can update reservations" ON public.reservations;
+-- CREATE POLICY "Admins can update reservations" ON public.reservations 
+-- FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
 
 -- =============================================================================
 -- 5. DATA SEEDING (MENÚ POR REGIONES DE ASIA)

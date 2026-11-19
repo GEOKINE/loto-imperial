@@ -152,7 +152,7 @@ async function initializeApp() {
                 await supabase.from('profiles').upsert({
                     id: session.user.id,
                     full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Comensal Imperial',
-                    role: 'user'
+                    role: 'cliente'
                 }, { onConflict: 'id', ignoreDuplicates: true });
             } catch (pErr) {
                 console.warn('Aviso upsert profile:', pErr);
@@ -235,7 +235,7 @@ async function initializeApp() {
                     await supabase.from('profiles').upsert({
                         id: data.user.id,
                         full_name: authFullName.value || email.split('@')[0],
-                        role: 'user'
+                        role: 'cliente'
                     }, { onConflict: 'id', ignoreDuplicates: true });
                     await updateAuthUI(data.user);
                     await showSection('profile');
@@ -260,7 +260,7 @@ async function initializeApp() {
                 await supabase.from('profiles').upsert({
                     id: user.id,
                     full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Comensal Imperial',
-                    role: 'user'
+                    role: 'cliente'
                 }, { onConflict: 'id', ignoreDuplicates: true });
             } catch (pErr) {}
             const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
@@ -467,13 +467,34 @@ async function initializeApp() {
     document.getElementById('btnLogoutAdmin')?.addEventListener('click', handleLogout);
 
     window.updateResStatus = async (id, status) => {
-        const { error } = await supabase.from('reservations').update({ status }).eq('id', id);
-        if (error) {
-            showNotification('Error al actualizar estado en Supabase.', 'error');
-        } else {
-            showNotification(`ReservaciÃ³n marcada como ${status}.`, 'success');
+        try {
+            console.log(`[Admin] Intentando actualizar reservación ${id} a estado: "${status}"...`);
+            
+            const { data, error } = await supabase
+                .from('reservations')
+                .update({ status })
+                .eq('id', id)
+                .select();
+
+            if (error) {
+                console.error('[Admin] Error en Supabase al actualizar:', error);
+                showNotification(`Error al actualizar en Supabase: ${error.message || error.code}`, 'error');
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                console.warn('[Admin] PostgREST retornó 0 filas modificadas. Posible bloqueo de permisos RLS en Supabase.');
+                showNotification('No se pudo modificar en Supabase: tu usuario no tiene permisos de administrador (RLS).', 'error');
+                return;
+            }
+
+            console.log('[Admin] Reservación actualizada exitosamente en Supabase:', data[0]);
+            showNotification(`Reservación marcada como ${status}.`, 'success');
             const currentFilter = document.getElementById('adminStatusFilter')?.value || 'pendiente';
             await loadAdminPanel(currentFilter);
+        } catch (err) {
+            console.error('[Admin] Excepción inesperada en updateResStatus:', err);
+            showNotification('Error inesperado al actualizar la reservación.', 'error');
         }
     };
 
@@ -737,7 +758,7 @@ async function initializeApp() {
                 await supabase.from('profiles').upsert({
                     id: syncSession.user.id,
                     full_name: syncSession.user.user_metadata?.full_name || syncSession.user.email?.split('@')[0] || 'Comensal Imperial',
-                    role: 'user'
+                    role: 'cliente'
                 }, { onConflict: 'id', ignoreDuplicates: true });
             } catch (pErr) {}
 
@@ -855,7 +876,7 @@ async function initializeApp() {
                 await supabase.from('profiles').upsert({
                     id: session.user.id,
                     full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Comensal Imperial',
-                    role: 'user'
+                    role: 'cliente'
                 }, { onConflict: 'id', ignoreDuplicates: true });
 
                 const { data, error } = await supabase.from('reservations').insert([reservationData]).select();
