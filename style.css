@@ -479,7 +479,9 @@ a[class*="btn-"]:hover {
 
 .reservation-card {
     width: 100%;
-    max-width: 650px;
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
     position: relative;
     border: 1px solid rgba(255, 218, 116, 0.2);
 }
@@ -574,7 +576,9 @@ a[class*="btn-"]:hover {
     grid-template-columns: 1fr;
     gap: 30px;
     width: 100%;
-    max-width: 1000px;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .contact-info {
@@ -618,10 +622,18 @@ a[class*="btn-"]:hover {
 }
 
 .map-placeholder {
-    height: 380px;
+    min-height: 420px;
+    height: 100%;
+    width: 100%;
     padding: 0;
     overflow: hidden;
     border-radius: 24px;
+}
+
+#reservaciones.section,
+#contacto.section {
+    justify-content: center;
+    align-items: center;
 }
 
 /* ==========================================================================
