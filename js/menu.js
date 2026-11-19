@@ -53,8 +53,6 @@ export async function fetchMenuData() {
                     description,
                     image_url,
                     category_id,
-                    main_ingredient,
-                    ingredients,
                     menu_categories (name)
                 `)
                 .abortSignal(controller.signal);
@@ -85,9 +83,7 @@ export async function fetchMenuData() {
                         name: item.name,
                         price: item.price,
                         desc: item.description,
-                        img: item.image_url,
-                        main_ingredient: item.main_ingredient,
-                        ingredients: item.ingredients
+                        img: item.image_url
                     });
                 });
 

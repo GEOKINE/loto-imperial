@@ -1,14 +1,14 @@
-import { SequenceManager } from './js/sequence.js';
+﻿import { SequenceManager } from './js/sequence.js';
 import { fetchMenuData, renderMenu, initBookMenu } from './js/menu.js';
 import { supabase } from './js/supabaseClient.js';
 import { showReservationSuccess } from './reservation-success.js';
 
 async function initializeApp() {
-    console.log('🚀 Loto Imperial: Iniciando aplicación...');
+    console.log('ðŸš€ Loto Imperial: Iniciando aplicaciÃ³n...');
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
     // ==========================================
-    // 🔮 CONTROL DE PANTALLA DE CARGA (ORIGINAL GITHUB)
+    // ðŸ”® CONTROL DE PANTALLA DE CARGA (ORIGINAL GITHUB)
     // ==========================================
     const loadingScreen = document.getElementById('loadingScreen');
     const loaderBar = document.getElementById('loaderBar');
@@ -50,7 +50,7 @@ async function initializeApp() {
         }, 350);
     }
 
-    // Seguridad de tiempo máximo (máximo 3.5s para no hacer esperar al usuario)
+    // Seguridad de tiempo mÃ¡ximo (mÃ¡ximo 3.5s para no hacer esperar al usuario)
     setTimeout(() => {
         if (!loaderDismissed) {
             updateLoaderProgress(100);
@@ -59,24 +59,24 @@ async function initializeApp() {
     }, 3500);
 
     // ==========================================
-    // ⚡ RENDERIZADO INMEDIATO DEL MENÚ
+    // âš¡ RENDERIZADO INMEDIATO DEL MENÃš
     // ==========================================
     initBookMenu();
     updateLoaderProgress(35, "Carta imperial cargada...");
 
-    // Sincronización en segundo plano con Supabase / Caché local
+    // SincronizaciÃ³n en segundo plano con Supabase / CachÃ© local
     fetchMenuData().then(menuData => {
         if (menuData) {
             initBookMenu(menuData);
         }
-    }).catch(err => console.warn('Carga diferida del menú:', err));
+    }).catch(err => console.warn('Carga diferida del menÃº:', err));
 
     // ==========================================
-    // 0. SISTEMA DE ANIMACIÓN (Con reporte de progreso al Preloader)
+    // 0. SISTEMA DE ANIMACIÃ“N (Con reporte de progreso al Preloader)
     // ==========================================
     const manager = new SequenceManager('hero-canvas');
 
-    // Carga no bloqueante: la aplicación interactiva arranca de inmediato
+    // Carga no bloqueante: la aplicaciÃ³n interactiva arranca de inmediato
     manager.addSequence('home-to-menu', {
         url: 'imagenes/background/comp2',
         prefix: 'Comp 2_',
@@ -88,7 +88,7 @@ async function initializeApp() {
         },
         onProgress: (loaded, total) => {
             const percent = 70 + Math.round((loaded / total) * 30);
-            updateLoaderProgress(percent, `Cargando atmósfera (${loaded}/${total})...`);
+            updateLoaderProgress(percent, `Cargando atmÃ³sfera (${loaded}/${total})...`);
         }
     }).then(async () => {
         const START_FRAME = 9;
@@ -119,7 +119,7 @@ async function initializeApp() {
     });
 
     // ==========================================
-    // 1. SISTEMA DE AUTENTICACIÓN
+    // 1. SISTEMA DE AUTENTICACIÃ“N
     // ==========================================
     const authModal = document.getElementById('authModal');
     const closeModal = document.querySelector('.close-modal');
@@ -197,6 +197,14 @@ async function initializeApp() {
                     options: { data: { full_name: authFullName.value } }
                 });
                 if (error) throw error;
+                // Crear perfil en la tabla profiles al registrarse
+                if (data?.user) {
+                    await supabase.from('profiles').upsert({
+                        id: data.user.id,
+                        full_name: authFullName.value || email.split('@')[0],
+                        role: 'user'
+                    }, { onConflict: 'id', ignoreDuplicates: true });
+                }
                 showNotification('Registro exitoso. Revisa tu correo.', 'success');
             }
             authModal.classList.add('hidden');
@@ -204,14 +212,14 @@ async function initializeApp() {
         } catch (err) {
             authFeedback.innerHTML = `<p style="color: #ff4444; text-align:center; margin-top:10px;">${err.message}</p>`;
             authFeedback.classList.remove('hidden');
-            showNotification('Error en la autenticación.', 'error');
+            showNotification('Error en la autenticaciÃ³n.', 'error');
         }
     });
 
     async function updateAuthUI(user) {
         if (user) {
             accountLabel.innerText = 'Mi Cuenta';
-            const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+            const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
             if (profile?.role === 'admin') accountLabel.innerText = 'Panel Admin';
         } else {
             accountLabel.innerText = 'Cuenta';
@@ -222,11 +230,11 @@ async function initializeApp() {
         updateAuthUI(session?.user || null);
     });
 
-    // Comprobación de sesión asíncrona en segundo plano (no bloquea el arranque)
+    // ComprobaciÃ³n de sesiÃ³n asÃ­ncrona en segundo plano (no bloquea el arranque)
     supabase.auth.getSession().then(({ data }) => {
         updateAuthUI(data?.session?.user || null);
     }).catch(e => {
-        console.warn('Supabase Auth: Sesión inicial no disponible:', e.message);
+        console.warn('Supabase Auth: SesiÃ³n inicial no disponible:', e.message);
         updateAuthUI(null);
     });
 
@@ -236,7 +244,7 @@ async function initializeApp() {
         if (target) {
             target.classList.remove('hidden');
 
-            // ESTÁTICO FRAME 143 PARA PANEL DE USUARIO Y ADMIN
+            // ESTÃTICO FRAME 143 PARA PANEL DE USUARIO Y ADMIN
             if (sectionId === 'profile' || sectionId === 'admin') {
                 manager.setFrame('home-to-menu', 143);
             }
@@ -249,7 +257,7 @@ async function initializeApp() {
     async function loadUserProfile() {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
-        const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
         document.getElementById('userName').innerText = profile?.full_name || 'Usuario Imperial';
         document.getElementById('userEmail').innerText = session.user.email;
         
@@ -295,7 +303,7 @@ async function initializeApp() {
                         ${r.date} ${statusLabel}
                     </strong>
                     <span style="color: var(--text-main); font-size: 0.9rem;">${r.time} | ${r.guests} Invitados</span>
-                    ${r.special_requests ? `<p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Petición: ${r.special_requests}</p>` : ''}
+                    ${r.special_requests ? `<p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">PeticiÃ³n: ${r.special_requests}</p>` : ''}
                 </div>
                 <div class="res-code-badge">${r.special_code}</div>
             `;
@@ -342,8 +350,8 @@ async function initializeApp() {
                     <div class="res-code-badge">${r.special_code}</div>
                     <div class="admin-res-actions" style="display: flex; gap: 8px;">
                         ${r.status === 'pendiente' ? `
-                            <button class="btn-premium" style="padding: 6px 12px; font-size: 0.75rem; border-color: var(--accent-jade-bright); color: var(--accent-jade-bright);" title="Completar" onclick="window.updateResStatus('${r.id}', 'completada')">✓</button>
-                            <button class="btn-premium" style="padding: 6px 12px; font-size: 0.75rem; border-color: #ff4d4d; color: #ff4d4d;" title="Cancelar" onclick="window.updateResStatus('${r.id}', 'cancelada')">✕</button>
+                            <button class="btn-premium" style="padding: 6px 12px; font-size: 0.75rem; border-color: var(--accent-jade-bright); color: var(--accent-jade-bright);" title="Completar" onclick="window.updateResStatus('${r.id}', 'completada')">âœ“</button>
+                            <button class="btn-premium" style="padding: 6px 12px; font-size: 0.75rem; border-color: #ff4d4d; color: #ff4d4d;" title="Cancelar" onclick="window.updateResStatus('${r.id}', 'cancelada')">âœ•</button>
                         ` : `
                             <button class="btn-premium" style="padding: 6px 10px; font-size: 0.7rem;" title="Mover a pendiente" onclick="window.updateResStatus('${r.id}', 'pendiente')">Reabrir</button>
                         `}
@@ -365,15 +373,15 @@ async function initializeApp() {
         });
     }
 
-    // Botones de cierre de sesión
+    // Botones de cierre de sesiÃ³n
     const handleLogout = async () => {
         try {
             await supabase.auth.signOut();
-            showNotification('Sesión finalizada. Hasta pronto.', 'success');
+            showNotification('SesiÃ³n finalizada. Hasta pronto.', 'success');
             showSection('home');
             updateAuthUI(null);
         } catch (e) {
-            console.warn('Error al cerrar sesión:', e);
+            console.warn('Error al cerrar sesiÃ³n:', e);
         }
     };
     document.getElementById('btnLogoutUser')?.addEventListener('click', handleLogout);
@@ -384,7 +392,7 @@ async function initializeApp() {
         if (error) {
             showNotification('Error al actualizar estado en Supabase.', 'error');
         } else {
-            showNotification(`Reservación marcada como ${status}.`, 'success');
+            showNotification(`ReservaciÃ³n marcada como ${status}.`, 'success');
             const currentFilter = document.getElementById('adminStatusFilter')?.value || 'pendiente';
             await loadAdminPanel(currentFilter);
         }
@@ -396,7 +404,7 @@ async function initializeApp() {
         if (!code) return;
         const { data, error } = await supabase.from('reservations').select('*, profiles(full_name)').eq('special_code', code).single();
         if (error || !data) {
-            showNotification(`Código "${code}" no encontrado.`, 'error');
+            showNotification(`CÃ³digo "${code}" no encontrado.`, 'error');
         } else {
             showNotification(`Encontrado: ${data.profiles?.full_name || 'Comensal'} (${data.status})`, 'success');
             const adminGrid = document.getElementById('adminReservationsGrid');
@@ -412,8 +420,8 @@ async function initializeApp() {
                     </div>
                     <div class="res-code-badge">${data.special_code}</div>
                     <div class="admin-res-actions">
-                        <button class="btn-premium" style="padding: 6px 12px; font-size: 0.75rem; border-color: var(--accent-jade-bright); color: var(--accent-jade-bright);" onclick="window.updateResStatus('${data.id}', 'completada')">✓</button>
-                        <button class="btn-premium" style="padding: 6px 12px; font-size: 0.75rem; border-color: #ff4d4d; color: #ff4d4d;" onclick="window.updateResStatus('${data.id}', 'cancelada')">✕</button>
+                        <button class="btn-premium" style="padding: 6px 12px; font-size: 0.75rem; border-color: var(--accent-jade-bright); color: var(--accent-jade-bright);" onclick="window.updateResStatus('${data.id}', 'completada')">âœ“</button>
+                        <button class="btn-premium" style="padding: 6px 12px; font-size: 0.75rem; border-color: #ff4d4d; color: #ff4d4d;" onclick="window.updateResStatus('${data.id}', 'cancelada')">âœ•</button>
                     </div>
                 `;
                 adminGrid.appendChild(item);
@@ -544,11 +552,11 @@ async function initializeApp() {
         }
     }
 
-    // Función unificada de estado de red
+    // FunciÃ³n unificada de estado de red
     function updateNetworkStatus(isOnline) {
         if (isOnline) {
             hideOfflineScreen(false);
-            showNotification('Conexión con el Imperio restablecida.', 'success');
+            showNotification('ConexiÃ³n con el Imperio restablecida.', 'success');
             syncOfflineReservations();
             fetchMenuData().then(updatedMenu => {
                 if (updatedMenu) {
@@ -560,7 +568,7 @@ async function initializeApp() {
         }
     }
 
-    // Botón: REINTENTAR CONEXIÓN (con verificación activa y feedback)
+    // BotÃ³n: REINTENTAR CONEXIÃ“N (con verificaciÃ³n activa y feedback)
     if (btnRetryConnection) {
         btnRetryConnection.addEventListener('click', async () => {
             if (retryBtnText) retryBtnText.innerText = 'VERIFICANDO...';
@@ -568,28 +576,28 @@ async function initializeApp() {
 
             try {
                 if (!navigator.onLine) {
-                    throw new Error('Aún sin conexión detectada');
+                    throw new Error('AÃºn sin conexiÃ³n detectada');
                 }
                 const res = await fetch('index.html', { method: 'HEAD', cache: 'no-store' });
                 if (res.ok || navigator.onLine) {
                     updateNetworkStatus(true);
                 } else {
-                    throw new Error('Aún sin conexión');
+                    throw new Error('AÃºn sin conexiÃ³n');
                 }
             } catch (err) {
-                showNotification('Aún sin conexión. Modo offline activo.', 'warning');
+                showNotification('AÃºn sin conexiÃ³n. Modo offline activo.', 'warning');
             } finally {
-                if (retryBtnText) retryBtnText.innerText = 'REINTENTAR CONEXIÓN';
+                if (retryBtnText) retryBtnText.innerText = 'REINTENTAR CONEXIÃ“N';
                 if (retrySpinner) retrySpinner.classList.remove('animate-spin');
             }
         });
     }
 
-    // Botón: EXPLORAR MENÚ SIN CONEXIÓN (Minimiza el bloqueo a un pill)
+    // BotÃ³n: EXPLORAR MENÃš SIN CONEXIÃ“N (Minimiza el bloqueo a un pill)
     if (btnBrowseOffline) {
         btnBrowseOffline.addEventListener('click', () => {
             hideOfflineScreen(true);
-            showNotification('Navegando en modo sin conexión.', 'warning');
+            showNotification('Navegando en modo sin conexiÃ³n.', 'warning');
         });
     }
 
@@ -600,7 +608,7 @@ async function initializeApp() {
         });
     }
 
-    // Toggle de Menú Móvil
+    // Toggle de MenÃº MÃ³vil
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     if (mobileMenuBtn && mobileMenu) {
@@ -612,19 +620,19 @@ async function initializeApp() {
         });
     }
 
-    // Inicialización de iconos Lucide
+    // InicializaciÃ³n de iconos Lucide
     if (window.lucide) {
         lucide.createIcons();
     }
 
-    // Función de Sincronización de Reservas Offline
+    // FunciÃ³n de SincronizaciÃ³n de Reservas Offline
     async function syncOfflineReservations() {
         const offlineData = localStorage.getItem('loto_offline_reservations');
         if (!offlineData) return;
         try {
             const queue = JSON.parse(offlineData);
             if (!Array.isArray(queue) || queue.length === 0) return;
-            console.log(`🔄 Sincronizando ${queue.length} reservaciones offline con Supabase...`);
+            console.log(`ðŸ”„ Sincronizando ${queue.length} reservaciones offline con Supabase...`);
             const remaining = [];
             for (const resItem of queue) {
                 const { isOffline, ...cleanItem } = resItem;
@@ -636,7 +644,7 @@ async function initializeApp() {
             }
             if (remaining.length === 0) {
                 localStorage.removeItem('loto_offline_reservations');
-                showNotification('Tus reservaciones pendientes se sincronizaron con éxito.', 'success');
+                showNotification('Tus reservaciones pendientes se sincronizaron con Ã©xito.', 'success');
             } else {
                 localStorage.setItem('loto_offline_reservations', JSON.stringify(remaining));
             }
@@ -649,14 +657,14 @@ async function initializeApp() {
     window.addEventListener('online', () => updateNetworkStatus(true));
     window.addEventListener('offline', () => updateNetworkStatus(false));
 
-    // Comprobación de estado al cargar la página
+    // ComprobaciÃ³n de estado al cargar la pÃ¡gina
     if (!navigator.onLine) {
         updateNetworkStatus(false);
     } else {
         syncOfflineReservations();
     }
 
-    // Configuración de fecha mínima en el formulario
+    // ConfiguraciÃ³n de fecha mÃ­nima en el formulario
     const reserveDateInput = document.getElementById('reserveDate');
     if (reserveDateInput) {
         reserveDateInput.min = new Date().toISOString().split('T')[0];
@@ -670,7 +678,7 @@ async function initializeApp() {
             e.preventDefault();
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) {
-                showNotification('Por favor, inicie sesión para reservar.', 'error');
+                showNotification('Por favor, inicie sesiÃ³n para reservar.', 'error');
                 navAccount.click();
                 return;
             }
@@ -701,7 +709,7 @@ async function initializeApp() {
                 special_code: specialCode
             };
 
-            // Flujo sin conexión (Offline)
+            // Flujo sin conexiÃ³n (Offline)
             if (!navigator.onLine) {
                 const existingQueue = JSON.parse(localStorage.getItem('loto_offline_reservations') || '[]');
                 existingQueue.push({ ...reservationData, created_at: new Date().toISOString() });
@@ -710,31 +718,38 @@ async function initializeApp() {
                 feedback.innerHTML = `
                     <div style="text-align:center; color: var(--primary-highlight); margin-top:20px;">
                         <i class="fa-solid fa-cloud-arrow-up" style="font-size:2.2rem; color: var(--primary-highlight); margin-bottom: 8px; display: block;"></i>
-                        <p style="font-weight: 600; font-size: 1.1rem;">Reservación guardada localmente</p>
+                        <p style="font-weight: 600; font-size: 1.1rem;">ReservaciÃ³n guardada localmente</p>
                         <div class="res-code-badge" style="display:inline-block; margin: 15px 0; font-size: 1.4rem; padding: 10px 20px;">${specialCode}</div>
                         <p style="font-size: 0.85rem; color: var(--text-muted); max-width: 400px; margin: 0 auto;">
-                            Tu reserva quedó registrada en tu dispositivo y se enviará al restaurante automáticamente cuando se restablezca internet.
+                            Tu reserva quedÃ³ registrada en tu dispositivo y se enviarÃ¡ al restaurante automÃ¡ticamente cuando se restablezca internet.
                         </p>
                     </div>`;
                 feedback.classList.remove('hidden');
                 submitBtn.disabled = false;
                 submitBtn.innerText = 'Confirmar Reserva';
                 reserveForm.reset();
-                showNotification('Reserva guardada sin conexión.', 'warning');
+                showNotification('Reserva guardada sin conexiÃ³n.', 'warning');
                 return;
             }
 
-            // Flujo con conexión (Online)
+            // Flujo con conexiÃ³n (Online)
             try {
+                // Garantizar perfil antes de insertar (evita FK error 23503)
+                await supabase.from('profiles').upsert({
+                    id: session.user.id,
+                    full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Comensal Imperial',
+                    role: 'user'
+                }, { onConflict: 'id', ignoreDuplicates: true });
+
                 const { data, error } = await supabase.from('reservations').insert([reservationData]).select();
                 if (error) throw error;
                 feedback.classList.add('hidden');
                 submitBtn.innerText = 'Reservado';
                 reserveForm.reset();
                 showReservationSuccess(specialCode, { date, time, guests });
-                showNotification('¡Reservación realizada con éxito!', 'success');
+                showNotification('Â¡ReservaciÃ³n realizada con Ã©xito!', 'success');
             } catch (err) {
-                // Respaldo en caso de caída inesperada
+                // Respaldo en caso de caÃ­da inesperada
                 const existingQueue = JSON.parse(localStorage.getItem('loto_offline_reservations') || '[]');
                 existingQueue.push({ ...reservationData, created_at: new Date().toISOString() });
                 localStorage.setItem('loto_offline_reservations', JSON.stringify(existingQueue));
@@ -742,9 +757,9 @@ async function initializeApp() {
                 feedback.innerHTML = `
                     <div style="text-align:center; color: var(--primary-highlight); margin-top:20px;">
                         <i class="fa-solid fa-clock" style="font-size:2rem; color: var(--primary-highlight); margin-bottom: 8px; display: block;"></i>
-                        <p>Guardada para sincronización</p>
+                        <p>Guardada para sincronizaciÃ³n</p>
                         <div class="res-code-badge" style="display:inline-block; margin: 15px 0; font-size: 1.3rem; padding: 8px 18px;">${specialCode}</div>
-                        <p style="font-size: 0.8rem; color: var(--text-muted);">Hubo intermitencia en el servidor. Tu reserva fue guardada y se reintentará en breve.</p>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">Hubo intermitencia en el servidor. Tu reserva fue guardada y se reintentarÃ¡ en breve.</p>
                     </div>`;
                 feedback.classList.remove('hidden');
                 submitBtn.disabled = false;
@@ -791,15 +806,15 @@ async function initializeApp() {
         // Estado de la voz del dispositivo
         let isVoiceEnabled = true;
 
-        // Función Text-to-Speech (Voz del Dispositivo)
+        // FunciÃ³n Text-to-Speech (Voz del Dispositivo)
         const speakTogui = (htmlContent) => {
             if (!isVoiceEnabled || !('speechSynthesis' in window)) return;
             try {
-                window.speechSynthesis.cancel(); // Cancelar locución previa
+                window.speechSynthesis.cancel(); // Cancelar locuciÃ³n previa
                 // Limpiar etiquetas HTML y emojis para habla fluida
                 const plainText = htmlContent
                     .replace(/<[^>]*>/g, ' ')
-                    .replace(/[🥢🍣🦆🍜🏮✨📍🍶🌱🐾•→\$]/g, '')
+                    .replace(/[ðŸ¥¢ðŸ£ðŸ¦†ðŸœðŸ®âœ¨ðŸ“ðŸ¶ðŸŒ±ðŸ¾â€¢â†’\$]/g, '')
                     .replace(/\s+/g, ' ')
                     .trim();
 
@@ -809,7 +824,7 @@ async function initializeApp() {
                 utterance.lang = 'es-MX';
 
                 const voices = window.speechSynthesis.getVoices();
-                // Buscar voz natural en español
+                // Buscar voz natural en espaÃ±ol
                 const preferredVoice = voices.find(v => 
                     (v.lang === 'es-MX' || v.lang === 'es-ES' || v.lang.startsWith('es')) &&
                     (v.name.toLowerCase().includes('google') ||
@@ -830,7 +845,7 @@ async function initializeApp() {
 
                 window.speechSynthesis.speak(utterance);
             } catch (err) {
-                console.warn('[TTS] Error en síntesis de voz:', err);
+                console.warn('[TTS] Error en sÃ­ntesis de voz:', err);
             }
         };
 
@@ -841,7 +856,7 @@ async function initializeApp() {
             };
         }
 
-        // Control de botón de voz
+        // Control de botÃ³n de voz
         if (toggleVoiceBtn && voiceIcon) {
             toggleVoiceBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -869,7 +884,7 @@ async function initializeApp() {
                 // Hablar saludo inicial si se abre por primera vez
                 if (!chatWindow.dataset.greeted) {
                     chatWindow.dataset.greeted = 'true';
-                    speakTogui('Saludos de honor. Soy Togui, tu mayordomo y guía gastronómico en Loto Imperial. ¿En qué puedo servirte hoy?');
+                    speakTogui('Saludos de honor. Soy Togui, tu mayordomo y guÃ­a gastronÃ³mico en Loto Imperial. Â¿En quÃ© puedo servirte hoy?');
                 }
             } else {
                 if ('speechSynthesis' in window) window.speechSynthesis.cancel();
@@ -904,30 +919,30 @@ async function initializeApp() {
             let reply = '';
 
             if (lower.includes('menu') || lower.includes('platillo') || lower.includes('comida') || lower.includes('recomiend') || lower.includes('especialidad')) {
-                reply = `🥢 <strong class="text-imperial-gold">Recomendaciones exclusivas de Togui:</strong><br><br>
-                1. 🍣 <strong>Sashimi Deluxe</strong> ($35): Selección fresca de atún aleta azul, salmón y hamachi con wasabi fresco.<br>
-                2. 🦆 <strong>Pato Pekín Imperial</strong> ($42): Laqueado tradicional con piel crocante, crepas al vapor y salsa hoisin.<br>
-                3. 🍜 <strong>Pad Thai Royal</strong> ($26): Fideos de arroz con langostinos jumbo y tamarindo ancestral.<br><br>
-                <a href="#menu" class="inline-block text-imperial-gold font-bold underline hover:text-yellow-300">Explorar toda la Carta de Autor →</a>`;
+                reply = `ðŸ¥¢ <strong class="text-imperial-gold">Recomendaciones exclusivas de Togui:</strong><br><br>
+                1. ðŸ£ <strong>Sashimi Deluxe</strong> ($35): SelecciÃ³n fresca de atÃºn aleta azul, salmÃ³n y hamachi con wasabi fresco.<br>
+                2. ðŸ¦† <strong>Pato PekÃ­n Imperial</strong> ($42): Laqueado tradicional con piel crocante, crepas al vapor y salsa hoisin.<br>
+                3. ðŸœ <strong>Pad Thai Royal</strong> ($26): Fideos de arroz con langostinos jumbo y tamarindo ancestral.<br><br>
+                <a href="#menu" class="inline-block text-imperial-gold font-bold underline hover:text-yellow-300">Explorar toda la Carta de Autor â†’</a>`;
             } else if (lower.includes('reserva') || lower.includes('mesa') || lower.includes('apartar') || lower.includes('cenar')) {
-                reply = `🏮 <strong class="text-imperial-gold">Reservación en Loto Imperial:</strong><br><br>
-                Será un honor recibirle. Disponemos de salones principales y exclusivos reservados tatami.<br><br>
-                <a href="#reservaciones" class="inline-block text-imperial-gold font-bold underline hover:text-yellow-300">Ir directo al formulario de reserva →</a>`;
-            } else if (lower.includes('hora') || lower.includes('abierto') || lower.includes('horario') || lower.includes('dónde') || lower.includes('donde') || lower.includes('ubicacion') || lower.includes('direccion')) {
-                reply = `📍 <strong class="text-imperial-gold">Ubicación y Horarios:</strong><br><br>
-                • <strong>Dirección</strong>: Paseo de la Reforma 450, Juárez, Cuauhtémoc, CDMX.<br>
-                • <strong>Horario</strong>: Martes a Domingo de 13:00 a 23:30 hrs.<br>
-                • <strong>Servicios</strong>: Valet parking en puerta y código de vestir <em>Smart Casual</em>.`;
+                reply = `ðŸ® <strong class="text-imperial-gold">ReservaciÃ³n en Loto Imperial:</strong><br><br>
+                SerÃ¡ un honor recibirle. Disponemos de salones principales y exclusivos reservados tatami.<br><br>
+                <a href="#reservaciones" class="inline-block text-imperial-gold font-bold underline hover:text-yellow-300">Ir directo al formulario de reserva â†’</a>`;
+            } else if (lower.includes('hora') || lower.includes('abierto') || lower.includes('horario') || lower.includes('dÃ³nde') || lower.includes('donde') || lower.includes('ubicacion') || lower.includes('direccion')) {
+                reply = `ðŸ“ <strong class="text-imperial-gold">UbicaciÃ³n y Horarios:</strong><br><br>
+                â€¢ <strong>DirecciÃ³n</strong>: Paseo de la Reforma 450, JuÃ¡rez, CuauhtÃ©moc, CDMX.<br>
+                â€¢ <strong>Horario</strong>: Martes a Domingo de 13:00 a 23:30 hrs.<br>
+                â€¢ <strong>Servicios</strong>: Valet parking en puerta y cÃ³digo de vestir <em>Smart Casual</em>.`;
             } else if (lower.includes('bebida') || lower.includes('sake') || lower.includes('vino') || lower.includes('cava') || lower.includes('trago')) {
-                reply = `🍶 <strong class="text-imperial-gold">Cava y Mixología Imperial:</strong><br><br>
-                Nuestra cava alberga una refinada selección de Sakes <em>Junmai Daiginjo</em>, cócteles de autor infusionados con lichi y flor de loto, y vinos de alta gama para maridaje oriental.`;
+                reply = `ðŸ¶ <strong class="text-imperial-gold">Cava y MixologÃ­a Imperial:</strong><br><br>
+                Nuestra cava alberga una refinada selecciÃ³n de Sakes <em>Junmai Daiginjo</em>, cÃ³cteles de autor infusionados con lichi y flor de loto, y vinos de alta gama para maridaje oriental.`;
             } else if (lower.includes('alergia') || lower.includes('vegetari') || lower.includes('vegano') || lower.includes('gluten')) {
-                reply = `🌱 <strong class="text-imperial-gold">Dietas y Alérgenos:</strong><br><br>
-                Nuestros maestros de cocina adaptan platillos vegetarianos, libres de gluten o especiales para alergias. Por favor indíquelo en las notas de su reservación.`;
+                reply = `ðŸŒ± <strong class="text-imperial-gold">Dietas y AlÃ©rgenos:</strong><br><br>
+                Nuestros maestros de cocina adaptan platillos vegetarianos, libres de gluten o especiales para alergias. Por favor indÃ­quelo en las notas de su reservaciÃ³n.`;
             } else if (lower.includes('hola') || lower.includes('buenas') || lower.includes('togui') || lower.includes('saludos')) {
-                reply = `¡Un cordial saludo! Soy <strong class="text-imperial-gold">Togui</strong> 🐾, tu anfitrión en Loto Imperial. ¿Te gustaría conocer los platillos del día o prefieres que reservemos tu mesa?`;
+                reply = `Â¡Un cordial saludo! Soy <strong class="text-imperial-gold">Togui</strong> ðŸ¾, tu anfitriÃ³n en Loto Imperial. Â¿Te gustarÃ­a conocer los platillos del dÃ­a o prefieres que reservemos tu mesa?`;
             } else {
-                reply = `Entiendo con gusto su consulta. Como mayordomo imperial, le sugiero descubrir nuestra <a href="#menu" class="text-imperial-gold underline">Carta Gastronómica</a> o asegurar su velada en <a href="#reservaciones" class="text-imperial-gold underline">Reservaciones</a>. ¿Puedo asistirle en algún detalle en particular?`;
+                reply = `Entiendo con gusto su consulta. Como mayordomo imperial, le sugiero descubrir nuestra <a href="#menu" class="text-imperial-gold underline">Carta GastronÃ³mica</a> o asegurar su velada en <a href="#reservaciones" class="text-imperial-gold underline">Reservaciones</a>. Â¿Puedo asistirle en algÃºn detalle en particular?`;
             }
 
             setTimeout(() => {
@@ -936,11 +951,11 @@ async function initializeApp() {
             }, 400);
         };
 
-        // Píldoras de opciones rápidas
+        // PÃ­ldoras de opciones rÃ¡pidas
         chatOptBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const action = btn.getAttribute('data-action');
-                const text = btn.innerText.replace(/^[^\wáéíóúÁÉÍÓÚ]+/g, '').trim();
+                const text = btn.innerText.replace(/^[^\wÃ¡Ã©Ã­Ã³ÃºÃÃ‰ÃÃ“Ãš]+/g, '').trim();
                 appendMessage('user', text);
 
                 if (action === 'reserva') {
@@ -977,18 +992,18 @@ async function initializeApp() {
         }
     }
 
-    // Registro del Service Worker como Módulo (type: 'module') con estrategias avanzadas
+    // Registro del Service Worker como MÃ³dulo (type: 'module') con estrategias avanzadas
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js', { type: 'module' })
                 .then(reg => {
-                    console.log('✓ SW Loto Imperial registrado con éxito (ES Module v5 - SWR/Network-First)');
+                    console.log('âœ“ SW Loto Imperial registrado con Ã©xito (ES Module v5 - SWR/Network-First)');
                     reg.update();
                 })
                 .catch(err => {
-                    console.warn('Registro SW module falló, intentando registro estándar:', err);
+                    console.warn('Registro SW module fallÃ³, intentando registro estÃ¡ndar:', err);
                     navigator.serviceWorker.register('sw.js')
-                        .then(reg => console.log('✓ SW Loto Imperial registrado (modo estándar):', reg))
+                        .then(reg => console.log('âœ“ SW Loto Imperial registrado (modo estÃ¡ndar):', reg))
                         .catch(e => console.error('Error registrando Service Worker:', e));
                 });
         });
@@ -998,3 +1013,4 @@ async function initializeApp() {
 document.addEventListener('DOMContentLoaded', () => {
     initializeApp().catch(err => console.error('Critical app init error:', err));
 });
+
