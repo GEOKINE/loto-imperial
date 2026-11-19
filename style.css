@@ -1194,70 +1194,315 @@ a[class*="btn-"]:hover {
 }
 
 /* ==========================================================================
-   LOADING SCREEN - LOTO IMPERIAL (ORIGINAL GITHUB)
+   LOADING SCREEN - LOTO IMPERIAL (VERSIÓN IMPERIAL)
    ========================================================================== */
 
+/* --- Base --- */
 #loadingScreen {
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background-color: #1a0a0a;
+    background: radial-gradient(ellipse at 50% 45%, #2e0e0e 0%, #1a0505 45%, #0c0202 100%);
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: opacity 1s ease;
+    overflow: hidden;
+    transition: opacity 1.2s ease;
 }
-
 #loadingScreen.hidden {
     opacity: 0;
     pointer-events: none;
+    display: none !important;
 }
 
+/* --- Patrón de fondo sutil --- */
+.ls-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+        repeating-linear-gradient( 45deg, rgba(200,151,42,0.025) 0px, rgba(200,151,42,0.025) 1px, transparent 1px, transparent 24px),
+        repeating-linear-gradient(-45deg, rgba(200,151,42,0.025) 0px, rgba(200,151,42,0.025) 1px, transparent 1px, transparent 24px);
+    pointer-events: none;
+}
+
+/* --- Borde dorado perimetral --- */
+.ls-border {
+    position: absolute;
+    inset: 14px;
+    border: 1px solid rgba(200,151,42,0.28);
+    pointer-events: none;
+    box-shadow: inset 0 0 80px rgba(200,151,42,0.04);
+}
+
+/* --- Esquinas decorativas --- */
+.ls-corner {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    pointer-events: none;
+    z-index: 2;
+}
+.ls-corner::before,
+.ls-corner::after {
+    content: '';
+    position: absolute;
+    background: #c8972a;
+    border-radius: 1px;
+}
+.ls-corner::before { width: 100%; height: 2px; top: 0; }
+.ls-corner::after  { width: 2px; height: 100%; top: 0; }
+
+.ls-corner--tl { top: 14px;    left: 14px;  }
+.ls-corner--tl::before { left: 0;   }
+.ls-corner--tl::after  { left: 0;   }
+
+.ls-corner--tr { top: 14px;    right: 14px; }
+.ls-corner--tr::before { right: 0; left: auto; }
+.ls-corner--tr::after  { right: 0; left: auto; }
+
+.ls-corner--bl { bottom: 14px; left: 14px;  }
+.ls-corner--bl::before { bottom: 0; top: auto; left: 0; }
+.ls-corner--bl::after  { bottom: 0; top: auto; left: 0; }
+
+.ls-corner--br { bottom: 14px; right: 14px; }
+.ls-corner--br::before { bottom: 0; top: auto; right: 0; left: auto; }
+.ls-corner--br::after  { bottom: 0; top: auto; right: 0; left: auto; }
+
+/* --- Dragones laterales --- */
+.ls-dragon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 130px;
+    height: 420px;
+    pointer-events: none;
+    opacity: 0;
+    animation: lsDragonFade 1.8s ease 0.5s forwards;
+}
+.ls-dragon--left  { left: 18px;  }
+.ls-dragon--right { right: 18px; }
+.ls-dragon svg    { width: 100%; height: 100%; }
+
+@keyframes lsDragonFade {
+    to { opacity: 1; }
+}
+
+/* --- Nubes CSS --- */
+.ls-clouds {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+.ls-cloud {
+    position: absolute;
+    border-radius: 50px;
+    background: rgba(200,151,42,0.10);
+    animation: lsCloudDrift ease-in-out infinite alternate;
+}
+.ls-cloud::before,
+.ls-cloud::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: inherit;
+}
+.ls-cloud--1 { width:110px; height:20px; bottom:20%; left:9%;  animation-duration:9s;  animation-delay:0s;   }
+.ls-cloud--1::before { width:55px;  height:34px; top:-16px; left:18px; }
+.ls-cloud--1::after  { width:36px;  height:26px; top:-10px; left:58px; }
+.ls-cloud--2 { width:85px;  height:16px; bottom:15%; left:5%;  animation-duration:11s; animation-delay:1.2s; }
+.ls-cloud--2::before { width:42px;  height:26px; top:-12px; left:14px; }
+.ls-cloud--2::after  { width:28px;  height:20px; top:-8px;  left:48px; }
+.ls-cloud--3 { width:120px; height:22px; bottom:24%; right:9%; animation-duration:10s; animation-delay:2s;   }
+.ls-cloud--3::before { width:60px;  height:36px; top:-18px; left:20px; }
+.ls-cloud--3::after  { width:40px;  height:28px; top:-12px; left:65px; }
+.ls-cloud--4 { width:75px;  height:15px; bottom:28%; right:6%; animation-duration:8s;  animation-delay:0.6s; }
+.ls-cloud--4::before { width:38px;  height:24px; top:-11px; left:11px; }
+.ls-cloud--4::after  { width:26px;  height:18px; top:-7px;  left:42px; }
+
+@keyframes lsCloudDrift {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(14px); }
+}
+
+/* --- Pétalos de cerezo --- */
+.ls-petals {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+.ls-petal {
+    position: absolute;
+    top: -16px;
+    width: 7px;
+    height: 7px;
+    background: rgba(220,140,140,0.45);
+    border-radius: 0 50% 50% 50%;
+    animation: lsPetalFall linear infinite;
+}
+.ls-petal--1 { left: 12%; animation-duration:13s; animation-delay:0s;   }
+.ls-petal--2 { left: 32%; animation-duration:15s; animation-delay:3.5s; }
+.ls-petal--3 { left: 54%; animation-duration:11s; animation-delay:7s;   }
+.ls-petal--4 { left: 73%; animation-duration:16s; animation-delay:1.5s; }
+.ls-petal--5 { left: 88%; animation-duration:12s; animation-delay:5s;   }
+
+@keyframes lsPetalFall {
+    0%   { transform: translateY(-16px) rotate(0deg);    opacity: 0;   }
+    8%   { opacity: 0.7; }
+    92%  { opacity: 0.25; }
+    100% { transform: translateY(102vh) rotate(560deg); opacity: 0;   }
+}
+
+/* --- Contenido central --- */
 .loader-content {
-    text-align: center;
+    position: relative;
+    z-index: 10;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 22px;
+    text-align: center;
 }
 
+/* --- Halo dorado pulsante --- */
+.ls-halo {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -15%);
+    width: 230px;
+    height: 230px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,210,70,0.28) 0%, rgba(255,140,0,0.10) 45%, transparent 70%);
+    animation: lsHaloPulse 2.8s ease-in-out infinite;
+    pointer-events: none;
+}
+@keyframes lsHaloPulse {
+    0%, 100% { transform: translate(-50%, -15%) scale(1);    opacity: 0.75; }
+    50%       { transform: translate(-50%, -15%) scale(1.18); opacity: 1;    }
+}
+
+/* --- Destellos --- */
+.ls-sparkles {
+    position: absolute;
+    top: 90px;
+    left: 50%;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+.ls-spark {
+    position: absolute;
+    color: #FFD44E;
+    font-size: 9px;
+    animation: lsSparkle 2.2s ease-in-out infinite;
+}
+.ls-spark--1 { top:-120px; left:  65px; animation-delay:0s;    }
+.ls-spark--2 { top: -80px; left: -85px; animation-delay:0.37s; }
+.ls-spark--3 { top:-145px; left: -25px; animation-delay:0.74s; }
+.ls-spark--4 { top: -60px; left:  95px; animation-delay:1.1s;  }
+.ls-spark--5 { top:-105px; left: -65px; animation-delay:1.47s; }
+.ls-spark--6 { top: -40px; left:  45px; animation-delay:1.84s; }
+
+@keyframes lsSparkle {
+    0%, 100% { transform: scale(0) rotate(0deg);   opacity: 0;    }
+    35%, 65%  { transform: scale(1) rotate(180deg); opacity: 0.95; }
+}
+
+/* --- Logo --- */
 .loader-logo {
-    width: 150px;
+    position: relative;
+    z-index: 2;
+    width: 160px;
+    max-width: 160px;
     height: auto;
-    animation: logoPulse 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 22px rgba(255,200,50,0.70)) drop-shadow(0 0 45px rgba(255,140,0,0.35));
+    animation: lsLogoPulse 2.8s ease-in-out infinite;
+}
+@keyframes lsLogoPulse {
+    0%, 100% { transform: scale(1);     filter: drop-shadow(0 0 22px rgba(255,200,50,0.70)) drop-shadow(0 0 45px rgba(255,140,0,0.35)); }
+    50%       { transform: scale(1.045); filter: drop-shadow(0 0 32px rgba(255,220,80,0.95)) drop-shadow(0 0 60px rgba(255,160,0,0.55)); }
 }
 
-@keyframes logoPulse {
-    0%, 100% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.05); opacity: 1; }
+/* --- Separador ornamental --- */
+.ls-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 220px;
+    margin-top: -6px;
+}
+.ls-divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(200,151,42,0.5), transparent);
+}
+.ls-divider-diamond {
+    color: #c8972a;
+    font-size: 0.55rem;
+    opacity: 0.75;
+    animation: lsOrnamentGlow 2s ease-in-out infinite alternate;
+}
+
+/* --- Barra con adornos --- */
+.ls-bar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.ls-bar-ornament {
+    color: #c8972a;
+    font-size: 1rem;
+    opacity: 0.65;
+    line-height: 1;
+    animation: lsOrnamentGlow 2s ease-in-out infinite alternate;
+}
+.ls-bar-ornament--r { transform: scaleX(-1); animation-delay: 1s; }
+
+@keyframes lsOrnamentGlow {
+    0%   { opacity: 0.35; }
+    100% { opacity: 0.90; }
 }
 
 .loader-bar-container {
-    width: 200px;
-    height: 2px;
-    background: rgba(255, 218, 116, 0.2);
+    width: 220px;
+    height: 3px;
+    background: rgba(200,151,42,0.15);
     position: relative;
     overflow: hidden;
-    border-radius: 2px;
+    border-radius: 3px;
+    box-shadow: 0 0 8px rgba(200,151,42,0.08);
 }
-
 .loader-bar {
     position: absolute;
-    left: 0;
-    top: 0;
+    left: 0; top: 0;
     height: 100%;
     width: 0%;
-    background: var(--primary-highlight);
-    box-shadow: 0 0 10px var(--primary-highlight);
+    background: linear-gradient(90deg, #a06818, #FFD44E, #a06818);
+    border-radius: 3px;
     transition: width 0.3s ease;
+    box-shadow: 0 0 12px rgba(255,212,78,0.7);
 }
 
+/* --- Texto --- */
 .loader-text {
-    font-family: var(--font-title);
-    color: var(--primary-highlight);
-    font-size: 0.9rem;
-    letter-spacing: 3px;
+    font-family: var(--font-title, 'Cinzel', serif);
+    color: #FFDA74;
+    font-size: 0.72rem;
+    letter-spacing: 4px;
     text-transform: uppercase;
-    opacity: 0.7;
+    opacity: 0.72;
+    text-shadow: 0 0 14px rgba(255,218,116,0.35);
+    animation: lsTextFade 2.5s ease-in-out infinite alternate;
+}
+@keyframes lsTextFade {
+    0%   { opacity: 0.45; }
+    100% { opacity: 0.85; }
+}
+
+/* alias para compatibilidad JS */
+@keyframes logoPulse {
+    0%, 100% { transform: scale(1);     }
+    50%       { transform: scale(1.045); }
 }
 
