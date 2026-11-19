@@ -1,5 +1,5 @@
 ﻿import { SequenceManager } from './js/sequence.js';
-import { fetchMenuData, renderMenu, initBookMenu } from './js/menu.js';
+import { fetchMenuData, renderMenu, initBookMenu } from './js/menu.js?v=2';
 import { supabase } from './js/supabaseClient.js';
 import { showReservationSuccess } from './reservation-success.js';
 
@@ -635,7 +635,16 @@ async function initializeApp() {
             console.log(`ðŸ”„ Sincronizando ${queue.length} reservaciones offline con Supabase...`);
             const remaining = [];
             for (const resItem of queue) {
-                const { isOffline, ...cleanItem } = resItem;
+                // Garantizar perfil antes de insertar (evita FK 23503)
+                const { data: { session: syncSession } } = await supabase.auth.getSession();
+                if (syncSession?.user) {
+                    await supabase.from('profiles').upsert({
+                        id: syncSession.user.id,
+                        full_name: syncSession.user.user_metadata?.full_name || syncSession.user.email?.split('@')[0] || 'Comensal Imperial',
+                        role: 'user'
+                    }, { onConflict: 'id', ignoreDuplicates: true });
+                }
+                const { isOffline, created_at, ...cleanItem } = resItem; // created_at lo genera Supabase
                 const { error } = await supabase.from('reservations').insert([cleanItem]);
                 if (error) {
                     console.error('Error insertando reserva en Supabase:', error);

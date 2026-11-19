@@ -1563,6 +1563,27 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <!-- Limpiar reservas offline corruptas (sin perfil en Supabase) -->
+  <script>
+    (function() {
+      try {
+        // Si hay reservas offline antiguas con created_at que fallan FK,
+        // las limpiamos del localStorage para evitar el bucle de error 409
+        const raw = localStorage.getItem('loto_offline_reservations');
+        if (raw) {
+          const queue = JSON.parse(raw);
+          // Limpiar created_at de cada item para que Supabase lo genere
+          const cleaned = queue.map(function(r) {
+            var o = Object.assign({}, r);
+            delete o.created_at;
+            return o;
+          });
+          localStorage.setItem('loto_offline_reservations', JSON.stringify(cleaned));
+        }
+      } catch(e) {}
+    })();
+  </script>
+
   <!-- MÓDULO PRINCIPAL DE LA APLICACIÓN -->
   <script type="module" src="app.js"></script>
 
