@@ -148,11 +148,15 @@ async function initializeApp() {
             }
 
             // Asegurar perfil del usuario
-            await supabase.from('profiles').upsert({
-                id: session.user.id,
-                full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Comensal Imperial',
-                role: 'user'
-            }, { onConflict: 'id', ignoreDuplicates: true }).catch(err => console.warn('Aviso upsert profile:', err));
+            try {
+                await supabase.from('profiles').upsert({
+                    id: session.user.id,
+                    full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Comensal Imperial',
+                    role: 'user'
+                }, { onConflict: 'id', ignoreDuplicates: true });
+            } catch (pErr) {
+                console.warn('Aviso upsert profile:', pErr);
+            }
 
             const { data: profile } = await supabase
                 .from('profiles')
@@ -252,11 +256,13 @@ async function initializeApp() {
         if (user) {
             accountLabel.innerText = 'Mi Cuenta';
             // Crear/asegurar perfil en Supabase al iniciar sesión
-            await supabase.from('profiles').upsert({
-                id: user.id,
-                full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Comensal Imperial',
-                role: 'user'
-            }, { onConflict: 'id', ignoreDuplicates: true }).catch(() => {});
+            try {
+                await supabase.from('profiles').upsert({
+                    id: user.id,
+                    full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Comensal Imperial',
+                    role: 'user'
+                }, { onConflict: 'id', ignoreDuplicates: true });
+            } catch (pErr) {}
             const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
             if (profile?.role === 'admin') accountLabel.innerText = 'Panel Admin';
             // Sincronizar reservas offline pendientes si las hay
@@ -705,11 +711,13 @@ async function initializeApp() {
             }
 
             // Asegurar perfil del usuario actual en Supabase (evita FK 23503)
-            await supabase.from('profiles').upsert({
-                id: syncSession.user.id,
-                full_name: syncSession.user.user_metadata?.full_name || syncSession.user.email?.split('@')[0] || 'Comensal Imperial',
-                role: 'user'
-            }, { onConflict: 'id', ignoreDuplicates: true }).catch(() => {});
+            try {
+                await supabase.from('profiles').upsert({
+                    id: syncSession.user.id,
+                    full_name: syncSession.user.user_metadata?.full_name || syncSession.user.email?.split('@')[0] || 'Comensal Imperial',
+                    role: 'user'
+                }, { onConflict: 'id', ignoreDuplicates: true });
+            } catch (pErr) {}
 
             console.log('Sincronizando ' + queue.length + ' reservaciones offline con Supabase...');
             const remaining = [];
