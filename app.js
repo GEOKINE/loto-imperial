@@ -144,11 +144,18 @@ async function initializeApp() {
             if (!session) {
                 authModal.classList.remove('hidden');
             } else {
+                // Asegurar perfil
+                await supabase.from('profiles').upsert({
+                    id: session.user.id,
+                    full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Comensal Imperial',
+                    role: 'user'
+                }, { onConflict: 'id', ignoreDuplicates: true }).catch(() => {});
+
                 const { data: profile } = await supabase
                     .from('profiles')
                     .select('role')
                     .eq('id', session.user.id)
-                    .single();
+                    .maybeSingle();
 
                 if (profile?.role === 'admin') {
                     showSection('admin');
@@ -219,8 +226,16 @@ async function initializeApp() {
     async function updateAuthUI(user) {
         if (user) {
             accountLabel.innerText = 'Mi Cuenta';
+            // Crear/asegurar perfil en Supabase al iniciar sesión
+            await supabase.from('profiles').upsert({
+                id: user.id,
+                full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Comensal Imperial',
+                role: 'user'
+            }, { onConflict: 'id', ignoreDuplicates: true }).catch(() => {});
             const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
             if (profile?.role === 'admin') accountLabel.innerText = 'Panel Admin';
+            // Sincronizar reservas offline pendientes si las hay
+            syncOfflineReservations();
         } else {
             accountLabel.innerText = 'Cuenta';
         }
@@ -257,6 +272,12 @@ async function initializeApp() {
     async function loadUserProfile() {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
+
+        // Si hay reservas pendientes por sincronizar y estamos online, sincronizar primero
+        if (navigator.onLine && localStorage.getItem('loto_offline_reservations')) {
+            await syncOfflineReservations();
+        }
+
         const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
         document.getElementById('userName').innerText = profile?.full_name || 'Usuario Imperial';
         document.getElementById('userEmail').innerText = session.user.email;
@@ -293,17 +314,25 @@ async function initializeApp() {
             const card = document.createElement('div');
             card.className = 'reservation-entry';
             
-            const statusLabel = r.isOffline 
-                ? '<span style="background: rgba(255, 218, 116, 0.2); color: var(--primary-highlight); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px;">Pendiente de sincronizar</span>'
-                : `<span style="background: ${r.status === 'completada' ? 'var(--badge-jade)' : r.status === 'cancelada' ? '#4d1414' : 'rgba(255, 218, 116, 0.15)'}; color: ${r.status === 'completada' ? 'var(--accent-jade-bright)' : r.status === 'cancelada' ? '#ff6b6b' : 'var(--primary-highlight)'}; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px; text-transform: uppercase;">${r.status}</span>`;
+            let statusBadge = '';
+            if (r.isOffline) {
+                statusBadge = '<span style="background: rgba(255, 180, 0, 0.2); color: #ffb84d; border: 1px solid rgba(255, 180, 0, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px;">⏳ Pendiente de sincronizar</span>';
+            } else if (r.status === 'completada') {
+                statusBadge = '<span style="background: var(--badge-jade); color: var(--accent-jade-bright); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px; text-transform: uppercase;">✓ Completada</span>';
+            } else if (r.status === 'cancelada') {
+                statusBadge = '<span style="background: #4d1414; color: #ff6b6b; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px; text-transform: uppercase;">✕ Cancelada</span>';
+            } else {
+                // Estado 'pendiente' en la base de datos = confirmada en el restaurante
+                statusBadge = '<span style="background: rgba(46, 204, 113, 0.18); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.35); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px; text-transform: uppercase; font-weight: 600;">✓ Confirmada</span>';
+            }
 
             card.innerHTML = `
                 <div class="res-info">
                     <strong style="display:flex; align-items: center; font-family: var(--font-title); color: var(--primary-highlight);">
-                        ${r.date} ${statusLabel}
+                        ${r.date} ${statusBadge}
                     </strong>
                     <span style="color: var(--text-main); font-size: 0.9rem;">${r.time} | ${r.guests} Invitados</span>
-                    ${r.special_requests ? `<p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">PeticiÃ³n: ${r.special_requests}</p>` : ''}
+                    ${r.special_requests ? `<p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Petición: ${r.special_requests}</p>` : ''}
                 </div>
                 <div class="res-code-badge">${r.special_code}</div>
             `;
@@ -625,35 +654,48 @@ async function initializeApp() {
         lucide.createIcons();
     }
 
-    // FunciÃ³n de SincronizaciÃ³n de Reservas Offline
+    // Funcion de Sincronizacion de Reservas Offline
     async function syncOfflineReservations() {
         const offlineData = localStorage.getItem('loto_offline_reservations');
         if (!offlineData) return;
         try {
             const queue = JSON.parse(offlineData);
             if (!Array.isArray(queue) || queue.length === 0) return;
-            console.log(`ðŸ”„ Sincronizando ${queue.length} reservaciones offline con Supabase...`);
+
+            // Esperar sesión activa antes de sincronizar con Supabase
+            const { data: { session: syncSession } } = await supabase.auth.getSession();
+            if (!syncSession?.user) {
+                return;
+            }
+
+            // Asegurar perfil del usuario actual en Supabase (evita FK 23503)
+            await supabase.from('profiles').upsert({
+                id: syncSession.user.id,
+                full_name: syncSession.user.user_metadata?.full_name || syncSession.user.email?.split('@')[0] || 'Comensal Imperial',
+                role: 'user'
+            }, { onConflict: 'id', ignoreDuplicates: true }).catch(() => {});
+
+            console.log('Sincronizando ' + queue.length + ' reservaciones offline con Supabase...');
             const remaining = [];
             for (const resItem of queue) {
-                // Garantizar perfil antes de insertar (evita FK 23503)
-                const { data: { session: syncSession } } = await supabase.auth.getSession();
-                if (syncSession?.user) {
-                    await supabase.from('profiles').upsert({
-                        id: syncSession.user.id,
-                        full_name: syncSession.user.user_metadata?.full_name || syncSession.user.email?.split('@')[0] || 'Comensal Imperial',
-                        role: 'user'
-                    }, { onConflict: 'id', ignoreDuplicates: true });
-                }
-                const { isOffline, created_at, ...cleanItem } = resItem; // created_at lo genera Supabase
+                const { isOffline, created_at, ...cleanItem } = resItem;
+                // Vincular siempre al ID del usuario autenticado actual
+                cleanItem.user_id = syncSession.user.id;
+
                 const { error } = await supabase.from('reservations').insert([cleanItem]);
                 if (error) {
                     console.error('Error insertando reserva en Supabase:', error);
-                    remaining.push(resItem);
+                    const irrecoverable = ['23503', '23505', '42501', 'PGRST116'];
+                    if (!irrecoverable.includes(String(error.code))) {
+                        remaining.push(resItem);
+                    } else {
+                        console.warn('Reserva descartada (error permanente):', error.code);
+                    }
                 }
             }
             if (remaining.length === 0) {
                 localStorage.removeItem('loto_offline_reservations');
-                showNotification('Tus reservaciones pendientes se sincronizaron con Ã©xito.', 'success');
+                showNotification('Tus reservaciones pendientes se sincronizaron con exito.', 'success');
             } else {
                 localStorage.setItem('loto_offline_reservations', JSON.stringify(remaining));
             }
@@ -1022,4 +1064,3 @@ async function initializeApp() {
 document.addEventListener('DOMContentLoaded', () => {
     initializeApp().catch(err => console.error('Critical app init error:', err));
 });
-
