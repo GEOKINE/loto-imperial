@@ -4,11 +4,11 @@ import { supabase } from './js/supabaseClient.js';
 import { showReservationSuccess } from './reservation-success.js';
 
 async function initializeApp() {
-    console.log('ðŸš€ Loto Imperial: Iniciando aplicaciÃ³n...');
+    console.log('🚀 Loto Imperial: Iniciando aplicación...');
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
     // ==========================================
-    // ðŸ”® CONTROL DE PANTALLA DE CARGA (ORIGINAL GITHUB)
+    // 🔮 CONTROL DE PANTALLA DE CARGA (ORIGINAL GITHUB)
     // ==========================================
     const loadingScreen = document.getElementById('loadingScreen');
     const loaderBar = document.getElementById('loaderBar');
@@ -50,7 +50,7 @@ async function initializeApp() {
         }, 350);
     }
 
-    // Seguridad de tiempo mÃ¡ximo (mÃ¡ximo 3.5s para no hacer esperar al usuario)
+    // Seguridad de tiempo máximo (máximo 3.5s para no hacer esperar al usuario)
     setTimeout(() => {
         if (!loaderDismissed) {
             updateLoaderProgress(100);
@@ -59,24 +59,24 @@ async function initializeApp() {
     }, 3500);
 
     // ==========================================
-    // âš¡ RENDERIZADO INMEDIATO DEL MENÃš
+    // ⚡ RENDERIZADO INMEDIATO DEL MENÚ
     // ==========================================
     initBookMenu();
     updateLoaderProgress(35, "Carta imperial cargada...");
 
-    // SincronizaciÃ³n en segundo plano con Supabase / CachÃ© local
+    // Sincronización en segundo plano con Supabase / Caché local
     fetchMenuData().then(menuData => {
         if (menuData) {
             initBookMenu(menuData);
         }
-    }).catch(err => console.warn('Carga diferida del menÃº:', err));
+    }).catch(err => console.warn('Carga diferida del menú:', err));
 
     // ==========================================
-    // 0. SISTEMA DE ANIMACIÃ“N (Con reporte de progreso al Preloader)
+    // 0. SISTEMA DE ANIMACIÓN (Con reporte de progreso al Preloader)
     // ==========================================
     const manager = new SequenceManager('hero-canvas');
 
-    // Carga no bloqueante: la aplicaciÃ³n interactiva arranca de inmediato
+    // Carga no bloqueante: la aplicación interactiva arranca de inmediato
     manager.addSequence('home-to-menu', {
         url: 'imagenes/background/comp2',
         prefix: 'Comp 2_',
@@ -88,7 +88,7 @@ async function initializeApp() {
         },
         onProgress: (loaded, total) => {
             const percent = 70 + Math.round((loaded / total) * 30);
-            updateLoaderProgress(percent, `Cargando atmÃ³sfera (${loaded}/${total})...`);
+            updateLoaderProgress(percent, `Cargando atmósfera (${loaded}/${total})...`);
         }
     }).then(async () => {
         const START_FRAME = 9;
@@ -119,7 +119,7 @@ async function initializeApp() {
     });
 
     // ==========================================
-    // 1. SISTEMA DE AUTENTICACIÃ“N
+    // 1. SISTEMA DE AUTENTICACIÓN
     // ==========================================
     const authModal = document.getElementById('authModal');
     const closeModal = document.querySelector('.close-modal');
@@ -276,11 +276,11 @@ async function initializeApp() {
         updateAuthUI(session?.user || null);
     });
 
-    // ComprobaciÃ³n de sesiÃ³n asÃ­ncrona en segundo plano (no bloquea el arranque)
+    // Comprobación de sesión asíncrona en segundo plano (no bloquea el arranque)
     supabase.auth.getSession().then(({ data }) => {
         updateAuthUI(data?.session?.user || null);
     }).catch(e => {
-        console.warn('Supabase Auth: SesiÃ³n inicial no disponible:', e.message);
+        console.warn('Supabase Auth: Sesión inicial no disponible:', e.message);
         updateAuthUI(null);
     });
 
@@ -504,7 +504,7 @@ async function initializeApp() {
         if (!code) return;
         const { data, error } = await supabase.from('reservations').select('*, profiles(full_name)').eq('special_code', code).single();
         if (error || !data) {
-            showNotification(`CÃ³digo "${code}" no encontrado.`, 'error');
+            showNotification(`Código "${code}" no encontrado.`, 'error');
         } else {
             showNotification(`Encontrado: ${data.profiles?.full_name || 'Comensal'} (${data.status})`, 'success');
             const adminGrid = document.getElementById('adminReservationsGrid');
@@ -666,11 +666,11 @@ async function initializeApp() {
         }
     }
 
-    // FunciÃ³n unificada de estado de red
+    // Función unificada de estado de red
     function updateNetworkStatus(isOnline) {
         if (isOnline) {
             hideOfflineScreen(false);
-            showNotification('ConexiÃ³n con el Imperio restablecida.', 'success');
+            showNotification('Conexión con el Imperio restablecida.', 'success');
             syncOfflineReservations();
             fetchMenuData().then(updatedMenu => {
                 if (updatedMenu) {
@@ -682,7 +682,7 @@ async function initializeApp() {
         }
     }
 
-    // BotÃ³n: REINTENTAR CONEXIÃ“N (con verificaciÃ³n activa y feedback)
+    // Botón: REINTENTAR CONEXIÓN (con verificación activa y feedback)
     if (btnRetryConnection) {
         btnRetryConnection.addEventListener('click', async () => {
             if (retryBtnText) retryBtnText.innerText = 'VERIFICANDO...';
@@ -690,28 +690,28 @@ async function initializeApp() {
 
             try {
                 if (!navigator.onLine) {
-                    throw new Error('AÃºn sin conexiÃ³n detectada');
+                    throw new Error('Aún sin conexión detectada');
                 }
                 const res = await fetch('index.html', { method: 'HEAD', cache: 'no-store' });
                 if (res.ok || navigator.onLine) {
                     updateNetworkStatus(true);
                 } else {
-                    throw new Error('AÃºn sin conexiÃ³n');
+                    throw new Error('Aún sin conexión');
                 }
             } catch (err) {
-                showNotification('AÃºn sin conexiÃ³n. Modo offline activo.', 'warning');
+                showNotification('Aún sin conexión. Modo offline activo.', 'warning');
             } finally {
-                if (retryBtnText) retryBtnText.innerText = 'REINTENTAR CONEXIÃ“N';
+                if (retryBtnText) retryBtnText.innerText = 'REINTENTAR CONEXIÓN';
                 if (retrySpinner) retrySpinner.classList.remove('animate-spin');
             }
         });
     }
 
-    // BotÃ³n: EXPLORAR MENÃš SIN CONEXIÃ“N (Minimiza el bloqueo a un pill)
+    // Botón: EXPLORAR MENÚ SIN CONEXIÓN (Minimiza el bloqueo a un pill)
     if (btnBrowseOffline) {
         btnBrowseOffline.addEventListener('click', () => {
             hideOfflineScreen(true);
-            showNotification('Navegando en modo sin conexiÃ³n.', 'warning');
+            showNotification('Navegando en modo sin conexión.', 'warning');
         });
     }
 
@@ -722,7 +722,7 @@ async function initializeApp() {
         });
     }
 
-    // Toggle de MenÃº MÃ³vil
+    // Toggle de Menú Móvil
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     if (mobileMenuBtn && mobileMenu) {
@@ -734,7 +734,7 @@ async function initializeApp() {
         });
     }
 
-    // InicializaciÃ³n de iconos Lucide
+    // Inicialización de iconos Lucide
     if (window.lucide) {
         lucide.createIcons();
     }
@@ -795,14 +795,14 @@ async function initializeApp() {
     window.addEventListener('online', () => updateNetworkStatus(true));
     window.addEventListener('offline', () => updateNetworkStatus(false));
 
-    // ComprobaciÃ³n de estado al cargar la pÃ¡gina
+    // Comprobación de estado al cargar la página
     if (!navigator.onLine) {
         updateNetworkStatus(false);
     } else {
         syncOfflineReservations();
     }
 
-    // ConfiguraciÃ³n de fecha mÃ­nima en el formulario
+    // Configuración de fecha mínima en el formulario
     const reserveDateInput = document.getElementById('reserveDate');
     if (reserveDateInput) {
         reserveDateInput.min = new Date().toISOString().split('T')[0];
@@ -816,7 +816,7 @@ async function initializeApp() {
             e.preventDefault();
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) {
-                showNotification('Por favor, inicie sesiÃ³n para reservar.', 'error');
+                showNotification('Por favor, inicie sesión para reservar.', 'error');
                 navAccount.click();
                 return;
             }
@@ -847,7 +847,7 @@ async function initializeApp() {
                 special_code: specialCode
             };
 
-            // Flujo sin conexiÃ³n (Offline)
+            // Flujo sin conexión (Offline)
             if (!navigator.onLine) {
                 const existingQueue = JSON.parse(localStorage.getItem('loto_offline_reservations') || '[]');
                 existingQueue.push({ ...reservationData, created_at: new Date().toISOString() });
@@ -856,21 +856,21 @@ async function initializeApp() {
                 feedback.innerHTML = `
                     <div style="text-align:center; color: var(--primary-highlight); margin-top:20px;">
                         <i class="fa-solid fa-cloud-arrow-up" style="font-size:2.2rem; color: var(--primary-highlight); margin-bottom: 8px; display: block;"></i>
-                        <p style="font-weight: 600; font-size: 1.1rem;">ReservaciÃ³n guardada localmente</p>
+                        <p style="font-weight: 600; font-size: 1.1rem;">Reservación guardada localmente</p>
                         <div class="res-code-badge" style="display:inline-block; margin: 15px 0; font-size: 1.4rem; padding: 10px 20px;">${specialCode}</div>
                         <p style="font-size: 0.85rem; color: var(--text-muted); max-width: 400px; margin: 0 auto;">
-                            Tu reserva quedÃ³ registrada en tu dispositivo y se enviarÃ¡ al restaurante automÃ¡ticamente cuando se restablezca internet.
+                            Tu reserva quedó registrada en tu dispositivo y se enviará al restaurante automáticamente cuando se restablezca internet.
                         </p>
                     </div>`;
                 feedback.classList.remove('hidden');
                 submitBtn.disabled = false;
                 submitBtn.innerText = 'Confirmar Reserva';
                 reserveForm.reset();
-                showNotification('Reserva guardada sin conexiÃ³n.', 'warning');
+                showNotification('Reserva guardada sin conexión.', 'warning');
                 return;
             }
 
-            // Flujo con conexiÃ³n (Online)
+            // Flujo con conexión (Online)
             try {
                 // Garantizar perfil antes de insertar (evita FK error 23503)
                 await supabase.from('profiles').upsert({
@@ -885,9 +885,9 @@ async function initializeApp() {
                 submitBtn.innerText = 'Reservado';
                 reserveForm.reset();
                 showReservationSuccess(specialCode, { date, time, guests });
-                showNotification('Â¡ReservaciÃ³n realizada con Ã©xito!', 'success');
+                showNotification('¡Reservación realizada con éxito!', 'success');
             } catch (err) {
-                // Respaldo en caso de caÃ­da inesperada
+                // Respaldo en caso de caída inesperada
                 const existingQueue = JSON.parse(localStorage.getItem('loto_offline_reservations') || '[]');
                 existingQueue.push({ ...reservationData, created_at: new Date().toISOString() });
                 localStorage.setItem('loto_offline_reservations', JSON.stringify(existingQueue));
@@ -895,9 +895,9 @@ async function initializeApp() {
                 feedback.innerHTML = `
                     <div style="text-align:center; color: var(--primary-highlight); margin-top:20px;">
                         <i class="fa-solid fa-clock" style="font-size:2rem; color: var(--primary-highlight); margin-bottom: 8px; display: block;"></i>
-                        <p>Guardada para sincronizaciÃ³n</p>
+                        <p>Guardada para sincronización</p>
                         <div class="res-code-badge" style="display:inline-block; margin: 15px 0; font-size: 1.3rem; padding: 8px 18px;">${specialCode}</div>
-                        <p style="font-size: 0.8rem; color: var(--text-muted);">Hubo intermitencia en el servidor. Tu reserva fue guardada y se reintentarÃ¡ en breve.</p>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">Hubo intermitencia en el servidor. Tu reserva fue guardada y se reintentará en breve.</p>
                     </div>`;
                 feedback.classList.remove('hidden');
                 submitBtn.disabled = false;
@@ -944,15 +944,15 @@ async function initializeApp() {
         // Estado de la voz del dispositivo
         let isVoiceEnabled = true;
 
-        // FunciÃ³n Text-to-Speech (Voz del Dispositivo)
+        // Función Text-to-Speech (Voz del Dispositivo)
         const speakTogui = (htmlContent) => {
             if (!isVoiceEnabled || !('speechSynthesis' in window)) return;
             try {
-                window.speechSynthesis.cancel(); // Cancelar locuciÃ³n previa
+                window.speechSynthesis.cancel(); // Cancelar locución previa
                 // Limpiar etiquetas HTML y emojis para habla fluida
                 const plainText = htmlContent
                     .replace(/<[^>]*>/g, ' ')
-                    .replace(/[ðŸ¥¢ðŸ£ðŸ¦†ðŸœðŸ®âœ¨ðŸ“ðŸ¶ðŸŒ±ðŸ¾â€¢â†’\$]/g, '')
+                    .replace(/[🍜🍣🦆🥟🏮✨📍🍶🌱🐾•→\$]/g, '')
                     .replace(/\s+/g, ' ')
                     .trim();
 
@@ -962,7 +962,7 @@ async function initializeApp() {
                 utterance.lang = 'es-MX';
 
                 const voices = window.speechSynthesis.getVoices();
-                // Buscar voz natural en espaÃ±ol
+                // Buscar voz natural en español
                 const preferredVoice = voices.find(v => 
                     (v.lang === 'es-MX' || v.lang === 'es-ES' || v.lang.startsWith('es')) &&
                     (v.name.toLowerCase().includes('google') ||
@@ -983,7 +983,7 @@ async function initializeApp() {
 
                 window.speechSynthesis.speak(utterance);
             } catch (err) {
-                console.warn('[TTS] Error en sÃ­ntesis de voz:', err);
+                console.warn('[TTS] Error en síntesis de voz:', err);
             }
         };
 
@@ -994,7 +994,7 @@ async function initializeApp() {
             };
         }
 
-        // Control de botÃ³n de voz
+        // Control de botón de voz
         if (toggleVoiceBtn && voiceIcon) {
             toggleVoiceBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -1022,12 +1022,64 @@ async function initializeApp() {
                 // Hablar saludo inicial si se abre por primera vez
                 if (!chatWindow.dataset.greeted) {
                     chatWindow.dataset.greeted = 'true';
-                    speakTogui('Saludos de honor. Soy Togui, tu mayordomo y guÃ­a gastronÃ³mico en Loto Imperial. Â¿En quÃ© puedo servirte hoy?');
+                    speakTogui('Saludos de honor. Soy Togui, tu mayordomo y guía gastronómico en Loto Imperial. ¿En qué puedo servirte hoy?');
                 }
             } else {
                 if ('speechSynthesis' in window) window.speechSynthesis.cancel();
                 chatWindow.classList.add('hidden');
                 chatWindow.classList.remove('flex');
+            }
+        };
+
+        // Navegación fluida y apertura de secciones desde el Chatbot
+        const navigateToReservations = () => {
+            toggleChat(false);
+            // Mostrar todas las secciones principales (por si el usuario estaba en profile o admin)
+            document.querySelectorAll('.section').forEach(s => {
+                if (!['profile', 'admin'].includes(s.id)) s.classList.remove('hidden');
+                else s.classList.add('hidden');
+            });
+            // Actualizar pestaña activa en la barra de navegación inferior
+            document.querySelectorAll('.nav-item').forEach(i => {
+                if (i.getAttribute('data-target') === 'reservaciones') {
+                    i.classList.add('active', 'text-imperial-gold');
+                    i.classList.remove('text-imperial-cream/70');
+                } else {
+                    i.classList.remove('active', 'text-imperial-gold');
+                    i.classList.add('text-imperial-cream/70');
+                }
+            });
+            const target = document.getElementById('reservaciones');
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                setTimeout(() => {
+                    const nameField = document.getElementById('reserveFullName');
+                    if (nameField) {
+                        nameField.focus();
+                        nameField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 400);
+            }
+        };
+
+        const navigateToMenu = () => {
+            toggleChat(false);
+            document.querySelectorAll('.section').forEach(s => {
+                if (!['profile', 'admin'].includes(s.id)) s.classList.remove('hidden');
+                else s.classList.add('hidden');
+            });
+            document.querySelectorAll('.nav-item').forEach(i => {
+                if (i.getAttribute('data-target') === 'menu') {
+                    i.classList.add('active', 'text-imperial-gold');
+                    i.classList.remove('text-imperial-cream/70');
+                } else {
+                    i.classList.remove('active', 'text-imperial-gold');
+                    i.classList.add('text-imperial-cream/70');
+                }
+            });
+            const target = document.getElementById('menu');
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         };
 
@@ -1051,62 +1103,71 @@ async function initializeApp() {
             chatBody.scrollTop = chatBody.scrollHeight;
         };
 
+        // Delegación de clics en enlaces dentro de las respuestas de Togui
+        chatBody.addEventListener('click', (e) => {
+            const link = e.target.closest('a');
+            if (!link) return;
+            const href = link.getAttribute('href');
+            if (href === '#reservaciones') {
+                e.preventDefault();
+                navigateToReservations();
+            } else if (href === '#menu') {
+                e.preventDefault();
+                navigateToMenu();
+            }
+        });
+
         // Respuestas inteligentes y personalizadas de Togui
         const respondTogui = (userText) => {
             const lower = userText.toLowerCase().trim();
             let reply = '';
 
-            if (lower.includes('menu') || lower.includes('platillo') || lower.includes('comida') || lower.includes('recomiend') || lower.includes('especialidad')) {
-                reply = `ðŸ¥¢ <strong class="text-imperial-gold">Recomendaciones exclusivas de Togui:</strong><br><br>
-                1. ðŸ£ <strong>Sashimi Deluxe</strong> ($35): SelecciÃ³n fresca de atÃºn aleta azul, salmÃ³n y hamachi con wasabi fresco.<br>
-                2. ðŸ¦† <strong>Pato PekÃ­n Imperial</strong> ($42): Laqueado tradicional con piel crocante, crepas al vapor y salsa hoisin.<br>
-                3. ðŸœ <strong>Pad Thai Royal</strong> ($26): Fideos de arroz con langostinos jumbo y tamarindo ancestral.<br><br>
-                <a href="#menu" class="inline-block text-imperial-gold font-bold underline hover:text-yellow-300">Explorar toda la Carta de Autor â†’</a>`;
+            if (lower.includes('menu') || lower.includes('menú') || lower.includes('platillo') || lower.includes('comida') || lower.includes('recomiend') || lower.includes('especialidad')) {
+                reply = `🥟 <strong class="text-imperial-gold">Recomendaciones exclusivas de Togui:</strong><br><br>
+                1. 🍣 <strong>Sashimi Deluxe</strong> ($35): Selección fresca de atún aleta azul, salmón y hamachi con wasabi fresco.<br>
+                2. 🦆 <strong>Pato Pekín Imperial</strong> ($42): Laqueado tradicional con piel crocante, crepas al vapor y salsa hoisin.<br>
+                3. 🍜 <strong>Pad Thai Royal</strong> ($26): Fideos de arroz con langostinos jumbo y tamarindo ancestral.<br><br>
+                <a href="#menu" class="chat-link inline-block text-imperial-gold font-bold underline hover:text-yellow-300">Explorar toda la Carta de Autor →</a>`;
             } else if (lower.includes('reserva') || lower.includes('mesa') || lower.includes('apartar') || lower.includes('cenar')) {
-                reply = `ðŸ® <strong class="text-imperial-gold">ReservaciÃ³n en Loto Imperial:</strong><br><br>
-                SerÃ¡ un honor recibirle. Disponemos de salones principales y exclusivos reservados tatami.<br><br>
-                <a href="#reservaciones" class="inline-block text-imperial-gold font-bold underline hover:text-yellow-300">Ir directo al formulario de reserva â†’</a>`;
-            } else if (lower.includes('hora') || lower.includes('abierto') || lower.includes('horario') || lower.includes('dÃ³nde') || lower.includes('donde') || lower.includes('ubicacion') || lower.includes('direccion')) {
-                reply = `ðŸ“ <strong class="text-imperial-gold">UbicaciÃ³n y Horarios:</strong><br><br>
-                â€¢ <strong>DirecciÃ³n</strong>: Paseo de la Reforma 450, JuÃ¡rez, CuauhtÃ©moc, CDMX.<br>
-                â€¢ <strong>Horario</strong>: Martes a Domingo de 13:00 a 23:30 hrs.<br>
-                â€¢ <strong>Servicios</strong>: Valet parking en puerta y cÃ³digo de vestir <em>Smart Casual</em>.`;
+                reply = `🏮 <strong class="text-imperial-gold">Reservación en Loto Imperial:</strong><br><br>
+                Será un honor recibirle. Con gusto le guío a nuestra zona de reservaciones.<br><br>
+                <a href="#reservaciones" class="chat-link inline-block text-imperial-gold font-bold underline hover:text-yellow-300">Ir directo al formulario de reserva →</a>`;
+            } else if (lower.includes('hora') || lower.includes('abierto') || lower.includes('horario') || lower.includes('dónde') || lower.includes('donde') || lower.includes('ubicacion') || lower.includes('ubicación') || lower.includes('direccion') || lower.includes('dirección')) {
+                reply = `📍 <strong class="text-imperial-gold">Ubicación y Horarios:</strong><br><br>
+                • <strong>Dirección</strong>: Paseo de la Reforma 450, Juárez, Cuauhtémoc, CDMX.<br>
+                • <strong>Horario</strong>: Martes a Domingo de 13:00 a 23:30 hrs.<br>
+                • <strong>Servicios</strong>: Valet parking en puerta y código de vestir <em>Smart Casual</em>.`;
             } else if (lower.includes('bebida') || lower.includes('sake') || lower.includes('vino') || lower.includes('cava') || lower.includes('trago')) {
-                reply = `ðŸ¶ <strong class="text-imperial-gold">Cava y MixologÃ­a Imperial:</strong><br><br>
-                Nuestra cava alberga una refinada selecciÃ³n de Sakes <em>Junmai Daiginjo</em>, cÃ³cteles de autor infusionados con lichi y flor de loto, y vinos de alta gama para maridaje oriental.`;
+                reply = `🍶 <strong class="text-imperial-gold">Cava y Mixología Imperial:</strong><br><br>
+                Nuestra cava alberga una refinada selección de Sakes <em>Junmai Daiginjo</em>, cócteles de autor infusionados con lichi y flor de loto, y vinos de alta gama para maridaje oriental.`;
             } else if (lower.includes('alergia') || lower.includes('vegetari') || lower.includes('vegano') || lower.includes('gluten')) {
-                reply = `ðŸŒ± <strong class="text-imperial-gold">Dietas y AlÃ©rgenos:</strong><br><br>
-                Nuestros maestros de cocina adaptan platillos vegetarianos, libres de gluten o especiales para alergias. Por favor indÃ­quelo en las notas de su reservaciÃ³n.`;
+                reply = `🌱 <strong class="text-imperial-gold">Dietas y Alérgenos:</strong><br><br>
+                Nuestros maestros de cocina adaptan platillos vegetarianos, libres de gluten o especiales para alergias. Por favor indíquelo en las notas de su reservación.`;
             } else if (lower.includes('hola') || lower.includes('buenas') || lower.includes('togui') || lower.includes('saludos')) {
-                reply = `Â¡Un cordial saludo! Soy <strong class="text-imperial-gold">Togui</strong> ðŸ¾, tu anfitriÃ³n en Loto Imperial. Â¿Te gustarÃ­a conocer los platillos del dÃ­a o prefieres que reservemos tu mesa?`;
+                reply = `¡Un cordial saludo! Soy <strong class="text-imperial-gold">Togui</strong> 🐾, tu anfitrión en Loto Imperial. ¿Te gustaría conocer los platillos del día o prefieres que reservemos tu mesa?`;
             } else {
-                reply = `Entiendo con gusto su consulta. Como mayordomo imperial, le sugiero descubrir nuestra <a href="#menu" class="text-imperial-gold underline">Carta GastronÃ³mica</a> o asegurar su velada en <a href="#reservaciones" class="text-imperial-gold underline">Reservaciones</a>. Â¿Puedo asistirle en algÃºn detalle en particular?`;
+                reply = `Entiendo con gusto su consulta. Como mayordomo imperial, le sugiero descubrir nuestra <a href="#menu" class="chat-link text-imperial-gold underline">Carta Gastronómica</a> o asegurar su velada en <a href="#reservaciones" class="chat-link text-imperial-gold underline">Reservaciones</a>. ¿Puedo asistirle en algún detalle en particular?`;
             }
 
             setTimeout(() => {
                 appendMessage('ai', reply);
                 speakTogui(reply);
-            }, 400);
+            }, 300);
         };
 
-        // PÃ­ldoras de opciones rÃ¡pidas
+        // Píldoras de opciones rápidas
         chatOptBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const action = btn.getAttribute('data-action');
-                const text = btn.innerText.replace(/^[^\wÃ¡Ã©Ã­Ã³ÃºÃÃ‰ÃÃ“Ãš]+/g, '').trim();
+                const text = btn.innerText.replace(/^[^\wáéíóúÁÉÍÓÚñÑ]+/g, '').trim();
                 appendMessage('user', text);
 
                 if (action === 'reserva') {
                     respondTogui('reserva');
+                    // Cerrar chat y llevar fluidamente al formulario de reservas
                     setTimeout(() => {
-                        const target = document.getElementById('reservaciones');
-                        if (target) {
-                            toggleChat(false);
-                            target.scrollIntoView({ behavior: 'smooth' });
-                            const nameField = document.getElementById('reserveName');
-                            if (nameField) nameField.focus();
-                        }
-                    }, 1200);
+                        navigateToReservations();
+                    }, 800);
                 } else if (action === 'menu') {
                     respondTogui('menu');
                 } else if (action === 'ubicacion') {
@@ -1130,18 +1191,18 @@ async function initializeApp() {
         }
     }
 
-    // Registro del Service Worker como MÃ³dulo (type: 'module') con estrategias avanzadas
+    // Registro del Service Worker como Módulo (type: 'module') con estrategias avanzadas
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js', { type: 'module' })
                 .then(reg => {
-                    console.log('âœ“ SW Loto Imperial registrado con Ã©xito (ES Module v5 - SWR/Network-First)');
+                    console.log('✓ SW Loto Imperial registrado con éxito (ES Module v5 - SWR/Network-First)');
                     reg.update();
                 })
                 .catch(err => {
-                    console.warn('Registro SW module fallÃ³, intentando registro estÃ¡ndar:', err);
+                    console.warn('Registro SW module falló, intentando registro estándar:', err);
                     navigator.serviceWorker.register('sw.js')
-                        .then(reg => console.log('âœ“ SW Loto Imperial registrado (modo estÃ¡ndar):', reg))
+                        .then(reg => console.log('✓ SW Loto Imperial registrado (modo estándar):', reg))
                         .catch(e => console.error('Error registrando Service Worker:', e));
                 });
         });
