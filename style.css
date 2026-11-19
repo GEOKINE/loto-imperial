@@ -1,22 +1,22 @@
-/* ==========================================================================
-   LOTO IMPERIAL - SISTEMA DE DISEÑO Y ESTILOS GLOBALES
-   Paleta: Rojo Vino Imperial + Oro Dinástico + Verde Jade Sagrado
+﻿/* ==========================================================================
+   LOTO IMPERIAL - SISTEMA DE DISEÃ‘O Y ESTILOS GLOBALES
+   Paleta: Rojo Vino Imperial + Oro DinÃ¡stico + Verde Jade Sagrado
    ========================================================================== */
 
 :root {
-    /* 1. Rojo Vino Imperial (Nobleza, Fuerza, Tradición) */
+    /* 1. Rojo Vino Imperial (Nobleza, Fuerza, TradiciÃ³n) */
     --primary: #58211C;
     --primary-hover: #722B24;
     --primary-deep: #3A120E;
     
-    /* 2. Oro Dinástico (Riqueza, Luz, Elegancia) */
+    /* 2. Oro DinÃ¡stico (Riqueza, Luz, Elegancia) */
     --primary-highlight: #FFDA74;
     --gold-secondary: #D4AF37;
     --gold-hover: #FFE699;
     --gold-glow: rgba(255, 218, 116, 0.65);
     --gold-button-glow: 0 0 25px rgba(255, 218, 116, 0.65), 0 0 10px rgba(255, 218, 116, 0.4);
 
-    /* 3. Verde Jade Imperial (Piedra Sagrada, Serenidad, Armonía Triádica) */
+    /* 3. Verde Jade Imperial (Piedra Sagrada, Serenidad, ArmonÃ­a TriÃ¡dica) */
     --accent-jade: #1B4D3E;
     --accent-jade-light: #2A735E;
     --accent-jade-bright: #38A385;
@@ -36,7 +36,7 @@
     --text-muted: #BDB0B0;
     --text-dark: #120606;
 
-    /* Tipografías y Animaciones */
+    /* TipografÃ­as y Animaciones */
     --font-title: 'Cinzel', serif;
     --font-body: 'Montserrat', sans-serif;
     --transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
@@ -68,7 +68,7 @@ body {
     width: 100%;
 }
 
-/* CANVAS DE ANIMACIÓN GSAP (Al frente de todo, por encima de las secciones) */
+/* CANVAS DE ANIMACIÃ“N GSAP (Al frente de todo, por encima de las secciones) */
 #hero-canvas {
     position: fixed;
     top: 0;
@@ -95,7 +95,7 @@ body {
 }
 
 /* ==========================================================================
-   BANNER DE CONEXIÓN OFFLINE ("Estamos esperando conexión")
+   BANNER DE CONEXIÃ“N OFFLINE ("Estamos esperando conexiÃ³n")
    ========================================================================== */
 .connection-banner {
     position: fixed;
@@ -274,7 +274,7 @@ body {
     transform: translateY(-2px);
 }
 
-/* Botón con acento Jade */
+/* BotÃ³n con acento Jade */
 .btn-jade {
     border-color: var(--accent-jade-bright);
     color: var(--accent-jade-bright);
@@ -311,7 +311,7 @@ a[class*="btn-"]:hover {
 }
 
 /* ==========================================================================
-   ENCABEZADOS DE SECCIÓN
+   ENCABEZADOS DE SECCIÃ“N
    ========================================================================== */
 .section-header {
     text-align: center;
@@ -347,7 +347,7 @@ a[class*="btn-"]:hover {
 }
 
 /* ==========================================================================
-   2. MENÚ GASTRONÓMICO POR REGIONES
+   2. MENÃš GASTRONÃ“MICO POR REGIONES
    ========================================================================== */
 .menu-categories {
     display: flex;
@@ -625,7 +625,7 @@ a[class*="btn-"]:hover {
 }
 
 /* ==========================================================================
-   5. NAVEGACIÓN INFERIOR FLOTANTE
+   5. NAVEGACIÃ“N INFERIOR FLOTANTE
    ========================================================================== */
 .bottom-nav {
     position: fixed;
@@ -679,7 +679,7 @@ a[class*="btn-"]:hover {
 }
 
 /* ==========================================================================
-   6. MODAL DE AUTENTICACIÓN
+   6. MODAL DE AUTENTICACIÃ“N
    ========================================================================== */
 .modal {
     position: fixed;
@@ -756,7 +756,7 @@ a[class*="btn-"]:hover {
 }
 
 /* ==========================================================================
-   7. SECCIÓN DE PERFIL Y PANEL ADMINISTRATIVO
+   7. SECCIÃ“N DE PERFIL Y PANEL ADMINISTRATIVO
    ========================================================================== */
 .profile-card, 
 .admin-card {
@@ -1195,7 +1195,7 @@ a[class*="btn-"]:hover {
 }
 
 /* ==========================================================================
-   LOADING SCREEN - LOTO IMPERIAL (VERSIÓN IMPERIAL)
+   LOADING SCREEN - LOTO IMPERIAL (VERSIÃ“N IMPERIAL)
    ========================================================================== */
 
 /* --- Base --- */
@@ -1216,7 +1216,7 @@ a[class*="btn-"]:hover {
     display: none !important;
 }
 
-/* --- Patrón de fondo sutil --- */
+/* --- PatrÃ³n de fondo sutil --- */
 .ls-bg {
     position: absolute;
     inset: 0;
@@ -1281,7 +1281,7 @@ a[class*="btn-"]:hover {
     animation: lsDragonFade 1.8s ease 0.5s forwards;
 }
 .ls-dragon--left  { left: 18px;  }
-.ls-dragon--right { right: 18px; }
+.ls-dragon--right { right: 18px; transform: translateY(-50%) scaleX(-1); }
 .ls-dragon svg    { width: 100%; height: 100%; }
 
 @keyframes lsDragonFade {
@@ -1325,7 +1325,7 @@ a[class*="btn-"]:hover {
     100% { transform: translateX(14px); }
 }
 
-/* --- Pétalos de cerezo --- */
+/* --- PÃ©talos de cerezo --- */
 .ls-petals {
     position: absolute;
     inset: 0;
@@ -1506,4 +1506,5 @@ a[class*="btn-"]:hover {
     0%, 100% { transform: scale(1);     }
     50%       { transform: scale(1.045); }
 }
+
 
