@@ -896,6 +896,69 @@ a[class*="btn-"]:hover {
     background: rgba(255, 255, 255, 0.05);
 }
 
+/* Botones de acción del panel de administración */
+.admin-res-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-admin-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: 1px solid transparent;
+}
+
+.btn-admin-approve {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: rgba(16, 185, 129, 0.5) !important;
+    color: #10b981 !important;
+}
+
+.btn-admin-approve:hover {
+    background: #10b981 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.5);
+    transform: translateY(-1px);
+}
+
+.btn-admin-cancel {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: rgba(239, 68, 68, 0.5) !important;
+    color: #f87171 !important;
+}
+
+.btn-admin-cancel:hover {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.5);
+    transform: translateY(-1px);
+}
+
+.btn-admin-reopen {
+    background: rgba(245, 158, 11, 0.15) !important;
+    border-color: rgba(245, 158, 11, 0.5) !important;
+    color: #fbbf24 !important;
+}
+
+.btn-admin-reopen:hover {
+    background: #f59e0b !important;
+    color: #120505 !important;
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.5);
+    transform: translateY(-1px);
+}
+
 /* ==========================================================================
    8. TOAST NOTIFICATIONS
    ========================================================================== */

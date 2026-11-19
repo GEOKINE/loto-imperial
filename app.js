@@ -414,12 +414,21 @@ async function initializeApp() {
                         ${r.special_requests ? `<p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Nota: ${r.special_requests}</p>` : ''}
                     </div>
                     <div class="res-code-badge">${r.special_code}</div>
-                    <div class="admin-res-actions" style="display: flex; gap: 8px;">
+                    <div class="admin-res-actions">
                         ${r.status === 'pendiente' ? `
-                            <button class="btn-premium" style="padding: 6px 12px; font-size: 0.75rem; border-color: var(--accent-jade-bright); color: var(--accent-jade-bright);" title="Completar" onclick="window.updateResStatus('${r.id}', 'completada')">âœ“</button>
-                            <button class="btn-premium" style="padding: 6px 12px; font-size: 0.75rem; border-color: #ff4d4d; color: #ff4d4d;" title="Cancelar" onclick="window.updateResStatus('${r.id}', 'cancelada')">âœ•</button>
+                            <button class="btn-admin-action btn-admin-approve" title="Marcar como válida" onclick="window.updateResStatus('${r.id}', 'completada')">
+                                <i class="fa-solid fa-check"></i>
+                                <span>Válida</span>
+                            </button>
+                            <button class="btn-admin-action btn-admin-cancel" title="Cancelar reservación" onclick="window.updateResStatus('${r.id}', 'cancelada')">
+                                <i class="fa-solid fa-xmark"></i>
+                                <span>Cancelar</span>
+                            </button>
                         ` : `
-                            <button class="btn-premium" style="padding: 6px 10px; font-size: 0.7rem;" title="Mover a pendiente" onclick="window.updateResStatus('${r.id}', 'pendiente')">Reabrir</button>
+                            <button class="btn-admin-action btn-admin-reopen" title="Mover a pendiente" onclick="window.updateResStatus('${r.id}', 'pendiente')">
+                                <i class="fa-solid fa-rotate-left"></i>
+                                <span>Reabrir</span>
+                            </button>
                         `}
                     </div>
                 `;
@@ -490,8 +499,21 @@ async function initializeApp() {
                     </div>
                     <div class="res-code-badge">${data.special_code}</div>
                     <div class="admin-res-actions">
-                        <button class="btn-premium" style="padding: 6px 12px; font-size: 0.75rem; border-color: var(--accent-jade-bright); color: var(--accent-jade-bright);" onclick="window.updateResStatus('${data.id}', 'completada')">âœ“</button>
-                        <button class="btn-premium" style="padding: 6px 12px; font-size: 0.75rem; border-color: #ff4d4d; color: #ff4d4d;" onclick="window.updateResStatus('${data.id}', 'cancelada')">âœ•</button>
+                        ${data.status === 'pendiente' ? `
+                            <button class="btn-admin-action btn-admin-approve" title="Marcar como válida" onclick="window.updateResStatus('${data.id}', 'completada')">
+                                <i class="fa-solid fa-check"></i>
+                                <span>Válida</span>
+                            </button>
+                            <button class="btn-admin-action btn-admin-cancel" title="Cancelar reservación" onclick="window.updateResStatus('${data.id}', 'cancelada')">
+                                <i class="fa-solid fa-xmark"></i>
+                                <span>Cancelar</span>
+                            </button>
+                        ` : `
+                            <button class="btn-admin-action btn-admin-reopen" title="Mover a pendiente" onclick="window.updateResStatus('${data.id}', 'pendiente')">
+                                <i class="fa-solid fa-rotate-left"></i>
+                                <span>Reabrir</span>
+                            </button>
+                        `}
                     </div>
                 `;
                 adminGrid.appendChild(item);
