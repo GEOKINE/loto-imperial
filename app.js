@@ -1103,8 +1103,14 @@ async function initializeApp() {
             chatBody.scrollTop = chatBody.scrollHeight;
         };
 
-        // Delegación de clics en enlaces dentro de las respuestas de Togui
+        // Delegación de clics en botones y enlaces dentro de las respuestas de Togui
         chatBody.addEventListener('click', (e) => {
+            const btnRes = e.target.closest('.chat-goto-res');
+            if (btnRes) {
+                e.preventDefault();
+                navigateToReservations();
+                return;
+            }
             const link = e.target.closest('a');
             if (!link) return;
             const href = link.getAttribute('href');
@@ -1130,8 +1136,11 @@ async function initializeApp() {
                 <a href="#menu" class="chat-link inline-block text-imperial-gold font-bold underline hover:text-yellow-300">Explorar toda la Carta de Autor →</a>`;
             } else if (lower.includes('reserva') || lower.includes('mesa') || lower.includes('apartar') || lower.includes('cenar')) {
                 reply = `🏮 <strong class="text-imperial-gold">Reservación en Loto Imperial:</strong><br><br>
-                Será un honor recibirle. Con gusto le guío a nuestra zona de reservaciones.<br><br>
-                <a href="#reservaciones" class="chat-link inline-block text-imperial-gold font-bold underline hover:text-yellow-300">Ir directo al formulario de reserva →</a>`;
+                Será un honor recibirle. Disponemos de salones principales y exclusivos tatamis de honor.<br><br>
+                <button type="button" class="chat-goto-res mt-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] text-[#120505] font-bold text-xs shadow-md hover:brightness-110 active:scale-95 transition-all inline-flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Ir al Formulario de Reserva →</span>
+                </button>`;
             } else if (lower.includes('hora') || lower.includes('abierto') || lower.includes('horario') || lower.includes('dónde') || lower.includes('donde') || lower.includes('ubicacion') || lower.includes('ubicación') || lower.includes('direccion') || lower.includes('dirección')) {
                 reply = `📍 <strong class="text-imperial-gold">Ubicación y Horarios:</strong><br><br>
                 • <strong>Dirección</strong>: Paseo de la Reforma 450, Juárez, Cuauhtémoc, CDMX.<br>
@@ -1164,10 +1173,6 @@ async function initializeApp() {
 
                 if (action === 'reserva') {
                     respondTogui('reserva');
-                    // Cerrar chat y llevar fluidamente al formulario de reservas
-                    setTimeout(() => {
-                        navigateToReservations();
-                    }, 800);
                 } else if (action === 'menu') {
                     respondTogui('menu');
                 } else if (action === 'ubicacion') {
