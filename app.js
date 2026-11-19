@@ -139,32 +139,35 @@ async function initializeApp() {
 
     navAccount.addEventListener('click', async (e) => {
         e.preventDefault();
+        e.stopPropagation();
         try {
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
+            if (!session?.user) {
                 authModal.classList.remove('hidden');
+                return;
+            }
+
+            // Asegurar perfil del usuario
+            await supabase.from('profiles').upsert({
+                id: session.user.id,
+                full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Comensal Imperial',
+                role: 'user'
+            }, { onConflict: 'id', ignoreDuplicates: true }).catch(err => console.warn('Aviso upsert profile:', err));
+
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', session.user.id)
+                .maybeSingle();
+
+            if (profile?.role === 'admin') {
+                await showSection('admin');
             } else {
-                // Asegurar perfil
-                await supabase.from('profiles').upsert({
-                    id: session.user.id,
-                    full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Comensal Imperial',
-                    role: 'user'
-                }, { onConflict: 'id', ignoreDuplicates: true }).catch(() => {});
-
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', session.user.id)
-                    .maybeSingle();
-
-                if (profile?.role === 'admin') {
-                    showSection('admin');
-                } else {
-                    showSection('profile');
-                }
+                await showSection('profile');
             }
         } catch (err) {
-            authModal.classList.remove('hidden');
+            console.error('Error al abrir cuenta:', err);
+            showNotification('Error al cargar datos del perfil.', 'warning');
         }
     });
 
@@ -197,6 +200,25 @@ async function initializeApp() {
                 const { data, error } = await supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
                 showNotification('Bienvenido de nuevo, Imperial.', 'success');
+                authModal.classList.add('hidden');
+                authForm.reset();
+
+                // Redirección inmediata al panel correspondiente
+                if (data?.user) {
+                    await updateAuthUI(data.user);
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', data.user.id)
+                        .maybeSingle();
+
+                    if (profile?.role === 'admin') {
+                        await showSection('admin');
+                    } else {
+                        await showSection('profile');
+                    }
+                }
+                return;
             } else {
                 const { data, error } = await supabase.auth.signUp({
                     email,
@@ -211,15 +233,18 @@ async function initializeApp() {
                         full_name: authFullName.value || email.split('@')[0],
                         role: 'user'
                     }, { onConflict: 'id', ignoreDuplicates: true });
+                    await updateAuthUI(data.user);
+                    await showSection('profile');
                 }
-                showNotification('Registro exitoso. Revisa tu correo.', 'success');
+                showNotification('Registro exitoso. Bienvenido.', 'success');
+                authModal.classList.add('hidden');
+                authForm.reset();
+                return;
             }
-            authModal.classList.add('hidden');
-            authForm.reset();
         } catch (err) {
             authFeedback.innerHTML = `<p style="color: #ff4444; text-align:center; margin-top:10px;">${err.message}</p>`;
             authFeedback.classList.remove('hidden');
-            showNotification('Error en la autenticaciÃ³n.', 'error');
+            showNotification('Error en la autenticación.', 'error');
         }
     });
 
@@ -259,9 +284,11 @@ async function initializeApp() {
         if (target) {
             target.classList.remove('hidden');
 
-            // ESTÃTICO FRAME 143 PARA PANEL DE USUARIO Y ADMIN
             if (sectionId === 'profile' || sectionId === 'admin') {
-                manager.setFrame('home-to-menu', 143);
+                try {
+                    manager.setFrame('home-to-menu', 143);
+                } catch(e) {}
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
             if (sectionId === 'profile') await loadUserProfile();
@@ -270,76 +297,80 @@ async function initializeApp() {
     }
 
     async function loadUserProfile() {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
-
-        // Si hay reservas pendientes por sincronizar y estamos online, sincronizar primero
-        if (navigator.onLine && localStorage.getItem('loto_offline_reservations')) {
-            await syncOfflineReservations();
-        }
-
-        const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
-        document.getElementById('userName').innerText = profile?.full_name || 'Usuario Imperial';
-        document.getElementById('userEmail').innerText = session.user.email;
-        
-        const resGrid = document.getElementById('userReservationsGrid');
-        resGrid.innerHTML = '';
-
-        // Obtenemos reservaciones de Supabase si estamos online
-        let serverRes = [];
-        if (navigator.onLine) {
-            try {
-                const { data } = await supabase.from('reservations').select('*').eq('user_id', session.user.id).order('date', { ascending: false });
-                serverRes = data || [];
-            } catch (err) {
-                console.warn('Error cargando reservas desde Supabase:', err);
-            }
-        }
-
-        // Revisamos reservas pendientes en cola offline
-        let offlineRes = [];
         try {
-            const queue = JSON.parse(localStorage.getItem('loto_offline_reservations') || '[]');
-            offlineRes = queue.filter(item => item.user_id === session.user.id);
-        } catch (e) {}
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.user) return;
 
-        const allReservations = [...offlineRes.map(r => ({ ...r, isOffline: true })), ...serverRes];
-
-        if (allReservations.length === 0) {
-            resGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">No tienes reservaciones registradas.</p>';
-            return;
-        }
-
-        allReservations.forEach(r => {
-            const card = document.createElement('div');
-            card.className = 'reservation-entry';
-            
-            let statusBadge = '';
-            if (r.isOffline) {
-                statusBadge = '<span style="background: rgba(255, 180, 0, 0.2); color: #ffb84d; border: 1px solid rgba(255, 180, 0, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px;">⏳ Pendiente de sincronizar</span>';
-            } else if (r.status === 'completada') {
-                statusBadge = '<span style="background: var(--badge-jade); color: var(--accent-jade-bright); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px; text-transform: uppercase;">✓ Completada</span>';
-            } else if (r.status === 'cancelada') {
-                statusBadge = '<span style="background: #4d1414; color: #ff6b6b; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px; text-transform: uppercase;">✕ Cancelada</span>';
-            } else {
-                // Estado 'pendiente' en la base de datos = confirmada en el restaurante
-                statusBadge = '<span style="background: rgba(46, 204, 113, 0.18); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.35); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px; text-transform: uppercase; font-weight: 600;">✓ Confirmada</span>';
+            if (navigator.onLine && localStorage.getItem('loto_offline_reservations')) {
+                try {
+                    await syncOfflineReservations();
+                } catch(e) {}
             }
 
-            card.innerHTML = `
-                <div class="res-info">
-                    <strong style="display:flex; align-items: center; font-family: var(--font-title); color: var(--primary-highlight);">
-                        ${r.date} ${statusBadge}
-                    </strong>
-                    <span style="color: var(--text-main); font-size: 0.9rem;">${r.time} | ${r.guests} Invitados</span>
-                    ${r.special_requests ? `<p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Petición: ${r.special_requests}</p>` : ''}
-                </div>
-                <div class="res-code-badge">${r.special_code}</div>
-            `;
-            resGrid.appendChild(card);
-        });
-    }
+            const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+            const userNameEl = document.getElementById('userName');
+            const userEmailEl = document.getElementById('userEmail');
+            if (userNameEl) userNameEl.innerText = profile?.full_name || session.user.user_metadata?.full_name || 'Usuario Imperial';
+            if (userEmailEl) userEmailEl.innerText = session.user.email || '';
+            
+            const resGrid = document.getElementById('userReservationsGrid');
+            if (!resGrid) return;
+            resGrid.innerHTML = '';
 
+            let serverRes = [];
+            if (navigator.onLine) {
+                try {
+                    const { data } = await supabase.from('reservations').select('*').eq('user_id', session.user.id).order('date', { ascending: false });
+                    serverRes = data || [];
+                } catch (err) {
+                    console.warn('Error cargando reservas desde Supabase:', err);
+                }
+            }
+
+            let offlineRes = [];
+            try {
+                const queue = JSON.parse(localStorage.getItem('loto_offline_reservations') || '[]');
+                offlineRes = queue.filter(item => item.user_id === session.user.id);
+            } catch (e) {}
+
+            const allReservations = [...offlineRes.map(r => ({ ...r, isOffline: true })), ...serverRes];
+
+            if (allReservations.length === 0) {
+                resGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">No tienes reservaciones registradas.</p>';
+                return;
+            }
+
+            allReservations.forEach(r => {
+                const card = document.createElement('div');
+                card.className = 'reservation-entry';
+                
+                let statusBadge = '';
+                if (r.isOffline) {
+                    statusBadge = '<span style="background: rgba(255, 180, 0, 0.2); color: #ffb84d; border: 1px solid rgba(255, 180, 0, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px;">⏳ Pendiente de sincronizar</span>';
+                } else if (r.status === 'completada') {
+                    statusBadge = '<span style="background: var(--badge-jade); color: var(--accent-jade-bright); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px; text-transform: uppercase;">✓ Completada</span>';
+                } else if (r.status === 'cancelada') {
+                    statusBadge = '<span style="background: #4d1414; color: #ff6b6b; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px; text-transform: uppercase;">✕ Cancelada</span>';
+                } else {
+                    statusBadge = '<span style="background: rgba(46, 204, 113, 0.18); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.35); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px; text-transform: uppercase; font-weight: 600;">✓ Confirmada</span>';
+                }
+
+                card.innerHTML = `
+                    <div class="res-info">
+                        <strong style="display:flex; align-items: center; font-family: var(--font-title); color: var(--primary-highlight);">
+                            ${r.date} ${statusBadge}
+                        </strong>
+                        <span style="color: var(--text-main); font-size: 0.9rem;">${r.time} | ${r.guests} Invitados</span>
+                        ${r.special_requests ? `<p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Petición: ${r.special_requests}</p>` : ''}
+                    </div>
+                    <div class="res-code-badge">${r.special_code}</div>
+                `;
+                resGrid.appendChild(card);
+            });
+        } catch (err) {
+            console.error('Error en loadUserProfile:', err);
+        }
+    }
     async function loadAdminPanel(filter = 'pendiente') {
         const adminGrid = document.getElementById('adminReservationsGrid');
         if (!adminGrid) return;
@@ -402,15 +433,19 @@ async function initializeApp() {
         });
     }
 
-    // Botones de cierre de sesiÃ³n
+    // Botones de cierre de sesión
     const handleLogout = async () => {
         try {
             await supabase.auth.signOut();
-            showNotification('SesiÃ³n finalizada. Hasta pronto.', 'success');
-            showSection('home');
+            showNotification('Sesión finalizada. Hasta pronto.', 'success');
+            document.querySelectorAll('.section').forEach(s => {
+                if (!['profile', 'admin'].includes(s.id)) s.classList.remove('hidden');
+                else s.classList.add('hidden');
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             updateAuthUI(null);
         } catch (e) {
-            console.warn('Error al cerrar sesiÃ³n:', e);
+            console.warn('Error al cerrar sesión:', e);
         }
     };
     document.getElementById('btnLogoutUser')?.addEventListener('click', handleLogout);
@@ -506,10 +541,13 @@ async function initializeApp() {
     navItems.forEach(item => {
         item.addEventListener('click', (e) => {
             const targetId = item.getAttribute('data-target');
-            if (!targetId) return;
+            if (item.id === 'navAccount' || targetId === 'profile' || targetId === 'admin') {
+                return;
+            }
             e.preventDefault();
             document.querySelectorAll('.section').forEach(s => {
                 if (!['profile', 'admin'].includes(s.id)) s.classList.remove('hidden');
+                else s.classList.add('hidden');
             });
             navItems.forEach(i => {
                 i.classList.remove('active', 'text-imperial-gold');
@@ -517,14 +555,12 @@ async function initializeApp() {
             });
             item.classList.add('active', 'text-imperial-gold');
             item.classList.remove('text-imperial-cream/70');
-            gsap.to(window, {
-                duration: 1.2,
-                scrollTo: { y: `#${targetId}`, offsetY: 0 },
-                ease: 'power3.inOut'
-            });
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+                targetEl.scrollIntoView({ behavior: 'smooth' });
+            }
         });
     });
-
 
     function showNotification(message, type = 'success') {
         const container = document.getElementById('toastContainer');
