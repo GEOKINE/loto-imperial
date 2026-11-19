@@ -1,6 +1,7 @@
 import { SequenceManager } from './js/sequence.js';
 import { fetchMenuData, renderMenu, initBookMenu } from './js/menu.js';
 import { supabase } from './js/supabaseClient.js';
+import { showReservationSuccess } from './reservation-success.js';
 
 async function initializeApp() {
     console.log('🚀 Loto Imperial: Iniciando aplicación...');
@@ -727,17 +728,11 @@ async function initializeApp() {
             try {
                 const { data, error } = await supabase.from('reservations').insert([reservationData]).select();
                 if (error) throw error;
-                feedback.innerHTML = `
-                    <div style="text-align:center; color: var(--primary-highlight); margin-top:20px;">
-                        <i class="fa-solid fa-circle-check" style="font-size:2.2rem; color: var(--accent-jade-bright); margin-bottom: 8px; display: block;"></i>
-                        <p style="font-weight: 600; font-size: 1.1rem;">Reservación Confirmada</p>
-                        <div class="res-code-badge" style="display:inline-block; margin: 15px 0; font-size: 1.5rem; padding: 10px 20px;">${specialCode}</div>
-                        <p style="font-size: 0.85rem; color: var(--text-muted);">Presente este código imperial al llegar al restaurante.</p>
-                    </div>`;
-                feedback.classList.remove('hidden');
+                feedback.classList.add('hidden');
                 submitBtn.innerText = 'Reservado';
                 reserveForm.reset();
-                showNotification('Reservación realizada con éxito.', 'success');
+                showReservationSuccess(specialCode, { date, time, guests });
+                showNotification('¡Reservación realizada con éxito!', 'success');
             } catch (err) {
                 // Respaldo en caso de caída inesperada
                 const existingQueue = JSON.parse(localStorage.getItem('loto_offline_reservations') || '[]');
