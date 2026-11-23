@@ -63,6 +63,26 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Trigger automático para crear perfil al registrarse en auth.users
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO public.profiles (id, full_name, role)
+  VALUES (
+    new.id,
+    COALESCE(new.raw_user_meta_data->>'full_name', split_part(new.email, '@', 1), 'Comensal Imperial'),
+    'cliente'
+  )
+  ON CONFLICT (id) DO NOTHING;
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
 -- =============================================================================
 -- 3. SECURITY (ROW LEVEL SECURITY POLICIES)
 -- =============================================================================
@@ -82,15 +102,19 @@ CREATE POLICY "Menu items are public" ON menu_items FOR SELECT USING (true);
 -- Políticas de Perfiles (Lectura propia o por Administrador)
 DROP POLICY IF EXISTS "Users can view own profile" ON profiles;
 CREATE POLICY "Users can view own profile" ON profiles 
-FOR SELECT USING (auth.uid() = id OR public.is_admin());
+FOR SELECT TO authenticated
+USING (auth.uid() = id OR public.is_admin());
 
 DROP POLICY IF EXISTS "Users can insert own profile" ON profiles;
 CREATE POLICY "Users can insert own profile" ON profiles 
-FOR INSERT WITH CHECK (auth.uid() = id);
+FOR INSERT TO authenticated
+WITH CHECK (auth.uid() = id);
 
 DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
 CREATE POLICY "Users can update own profile" ON profiles 
-FOR UPDATE USING (auth.uid() = id);
+FOR UPDATE TO authenticated
+USING (auth.uid() = id)
+WITH CHECK (auth.uid() = id);
 
 -- Políticas de Reservaciones
 -- A) INSERT: Clientes pueden registrar sus reservaciones
