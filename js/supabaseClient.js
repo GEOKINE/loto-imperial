@@ -1,5 +1,11 @@
 import { SUPABASE_CONFIG } from './config.js';
 
+if (!SUPABASE_CONFIG || !SUPABASE_CONFIG.anonKey || !SUPABASE_CONFIG.url) {
+    console.error('❌ [Supabase] Configuración incompleta. Falta URL o anonKey en js/config.js:', SUPABASE_CONFIG);
+} else {
+    console.log('🔑 [Supabase] Inicializando cliente con URL:', SUPABASE_CONFIG.url);
+}
+
 // Initialize Supabase client
 // The global 'supabase' object is provided by the CDN script in index.html
 export const supabase = window.supabase.createClient(
@@ -10,6 +16,11 @@ export const supabase = window.supabase.createClient(
             persistSession: true,
             autoRefreshToken: true,
             detectSessionInUrl: false
+        },
+        global: {
+            headers: {
+                'apikey': SUPABASE_CONFIG.anonKey
+            }
         }
     }
 );
@@ -23,10 +34,12 @@ if (typeof window !== 'undefined' && window.addEventListener) {
             (err.message && (
                 err.message.includes('refresh_token') ||
                 err.message.includes('Failed to fetch') ||
-                err.message.includes('NetworkError')
+                err.message.includes('NetworkError') ||
+                err.message.includes('No API key found') ||
+                err.message.includes('apikey')
             ))
         )) {
-            console.warn('⚠️ Supabase Auth: Red no disponible o token expirado. Continuando en modo offline seguro.');
+            console.warn('⚠️ Supabase: Error de conexión o autenticación API key. Continuando en modo offline seguro.');
             event.preventDefault();
         }
     });
