@@ -79,11 +79,19 @@ export async function fetchMenuData() {
                         groupedMenu[categoryName] = [];
                     }
 
+                    let itemImg = item.image_url;
+                    if (itemImg && typeof itemImg === 'string') {
+                        const menuIdx = itemImg.indexOf('img/menu/');
+                        if (menuIdx !== -1) {
+                            itemImg = './' + itemImg.substring(menuIdx);
+                        }
+                    }
+
                     groupedMenu[categoryName].push({
                         name: item.name,
                         price: item.price,
                         desc: item.description,
-                        img: item.image_url
+                        img: itemImg
                     });
                 });
 
