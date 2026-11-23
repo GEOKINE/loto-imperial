@@ -1198,19 +1198,31 @@ async function initializeApp() {
 
     // Registro del Service Worker como Módulo (type: 'module') con estrategias avanzadas
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js', { type: 'module' })
-                .then(reg => {
-                    console.log('✓ SW Loto Imperial registrado con éxito (ES Module v5 - SWR/Network-First)');
-                    reg.update();
-                })
-                .catch(err => {
-                    console.warn('Registro SW module falló, intentando registro estándar:', err);
-                    navigator.serviceWorker.register('sw.js')
-                        .then(reg => console.log('✓ SW Loto Imperial registrado (modo estándar):', reg))
-                        .catch(e => console.error('Error registrando Service Worker:', e));
-                });
-        });
+        // En entornos virtuales como Phoenix Code Live Preview (phcode.live /vfs/),
+        // el navegador no permite registrar Service Workers anidados y devuelve 404 del servidor real.
+        const isVirtualPreview = 
+            window.location.hostname.includes('phcode.live') ||
+            window.location.pathname.includes('/vfs/') ||
+            window.location.protocol === 'file:';
+
+        if (isVirtualPreview) {
+            console.info('ℹ️ Modo Live Preview (phcode.live) detectado: Service Worker omitido para no interferir con el servidor virtual. En localhost o producción se registrará automáticamente.');
+        } else {
+            window.addEventListener('load', () => {
+                const swPath = './sw.js';
+                navigator.serviceWorker.register(swPath, { type: 'module' })
+                    .then(reg => {
+                        console.log('✓ SW Loto Imperial registrado con éxito (ES Module v5 - SWR/Network-First)');
+                        reg.update();
+                    })
+                    .catch(err => {
+                        console.warn('Registro SW module no disponible, intentando registro estándar:', err.message);
+                        navigator.serviceWorker.register(swPath)
+                            .then(reg => console.log('✓ SW Loto Imperial registrado (modo estándar):', reg))
+                            .catch(e => console.warn('Aviso: Service Worker no disponible en este entorno:', e.message));
+                    });
+            });
+        }
     }
 }
 
