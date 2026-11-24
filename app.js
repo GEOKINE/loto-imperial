@@ -1234,5 +1234,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch (e) {}
 
+    // Escudo de orientación para teléfonos en horizontal
+    setupOrientationShield();
+
     initializeApp().catch(err => console.error('Critical app init error:', err));
 });
+
+function setupOrientationShield() {
+    const shield = document.getElementById('orientation-shield');
+    if (!shield) return;
+
+    const evaluateOrientation = () => {
+        const isLandscape = window.innerWidth > window.innerHeight;
+        const isMobileHeight = window.innerHeight <= 580;
+        const isMobileWidth = window.innerWidth <= 1024;
+
+        if (isLandscape && isMobileHeight && isMobileWidth) {
+            shield.classList.add('active');
+        } else {
+            shield.classList.remove('active');
+        }
+    };
+
+    window.addEventListener('resize', evaluateOrientation);
+    window.addEventListener('orientationchange', () => {
+        setTimeout(evaluateOrientation, 150);
+    });
+    evaluateOrientation();
+}
