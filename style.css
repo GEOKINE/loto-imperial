@@ -774,9 +774,15 @@ a[class*="btn-"]:hover {
 }
 
 .modal.hidden {
-    display: none;
-    opacity: 0;
-    pointer-events: none;
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.modal:not(.hidden) {
+    display: flex !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
 }
 
 .modal-content {
@@ -2095,4 +2101,18 @@ a[class*="btn-"]:hover {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     box-shadow: 0 0 10px rgba(255, 218, 116, 0.4);
+}
+
+/* Acciones de usuario para aplazar y cancelar reservas */
+.btn-reschedule-user, .btn-cancel-user {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-reschedule-user:active, .btn-cancel-user:active {
+    transform: scale(0.95);
+}
+.btn-reschedule-user:hover {
+    box-shadow: 0 0 12px rgba(255, 218, 116, 0.35);
+}
+.btn-cancel-user:hover {
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.35);
 }

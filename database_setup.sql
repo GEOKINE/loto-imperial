@@ -158,12 +158,13 @@ DROP POLICY IF EXISTS "Users and admins can view reservations" ON reservations;
 CREATE POLICY "Users and admins can view reservations" ON reservations 
 FOR SELECT USING (auth.uid() = user_id OR public.is_admin());
 
--- C) UPDATE: Administradores pueden cambiar estados (completada, cancelada)
+-- C) UPDATE: Clientes pueden aplazar (fecha/hora) o cancelar sus propias reservas; Administradores pueden actualizar cualquier reserva
 DROP POLICY IF EXISTS "Admins can update reservations" ON reservations;
-CREATE POLICY "Admins can update reservations" ON reservations 
+DROP POLICY IF EXISTS "Users and admins can update reservations" ON reservations;
+CREATE POLICY "Users and admins can update reservations" ON reservations 
 FOR UPDATE TO authenticated
-USING (public.is_admin())
-WITH CHECK (public.is_admin());
+USING (auth.uid() = user_id OR public.is_admin())
+WITH CHECK (auth.uid() = user_id OR public.is_admin());
 
 -- =============================================================================
 -- 4. INSTRUCCIÓN RÁPIDA: CÓMO ASIGNAR ROL ADMINISTRADOR A UN USUARIO

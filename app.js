@@ -312,6 +312,333 @@ async function initializeApp() {
         }
     }
 
+    function formatDisplayDate(dateStr) {
+        if (!dateStr) return '';
+        try {
+            const parts = String(dateStr).split('-');
+            if (parts.length === 3) {
+                const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+                return `${parseInt(parts[2], 10)} ${months[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
+            }
+        } catch (e) {}
+        return dateStr;
+    }
+
+    async function getUserReservationsList(userId) {
+        let serverRes = [];
+        if (navigator.onLine) {
+            try {
+                const { data } = await supabase.from('reservations').select('*').eq('user_id', userId).order('date', { ascending: false });
+                serverRes = data || [];
+            } catch (err) {
+                console.warn('Error cargando reservas desde Supabase:', err);
+            }
+        }
+
+        let offlineRes = [];
+        try {
+            const queue = JSON.parse(localStorage.getItem('loto_offline_reservations') || '[]');
+            offlineRes = queue.filter(item => item.user_id === userId);
+        } catch (e) {}
+
+        return [...offlineRes.map(r => ({ ...r, isOffline: true })), ...serverRes];
+    }
+
+    let currentRescheduleCallback = null;
+    let currentCancelCallback = null;
+
+    function closeRescheduleModal() {
+        const modal = document.getElementById('rescheduleModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+            modal.style.opacity = '0';
+            modal.style.pointerEvents = 'none';
+        }
+    }
+
+    function closeCancelResModal() {
+        const modal = document.getElementById('cancelResModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+            modal.style.opacity = '0';
+            modal.style.pointerEvents = 'none';
+        }
+    }
+
+    function openRescheduleModal(resData, onRefresh) {
+        currentRescheduleCallback = onRefresh;
+        const modal = document.getElementById('rescheduleModal');
+        if (!modal) {
+            console.error('Modal rescheduleModal no encontrado en el DOM');
+            return;
+        }
+
+        const resId = resData.id || '';
+        const isOffline = Boolean(resData.isOffline);
+        const rawCode = resData.special_code || resData.code || '';
+        const resCode = rawCode ? (rawCode.startsWith('#') ? rawCode : `#${rawCode}`) : '#RES-XXXX';
+
+        const idInput = document.getElementById('rescheduleResId');
+        if (idInput) idInput.value = resId;
+
+        const offlineInput = document.getElementById('rescheduleIsOffline');
+        if (offlineInput) offlineInput.value = isOffline ? 'true' : 'false';
+
+        const codeEl = document.getElementById('rescheduleModalCode');
+        if (codeEl) codeEl.textContent = resCode;
+        
+        // Formatear fecha para <input type="date"> (YYYY-MM-DD)
+        const dateInput = document.getElementById('rescheduleDate');
+        if (dateInput) {
+            let cleanDate = '';
+            if (resData.date) {
+                cleanDate = String(resData.date).split('T')[0].split(' ')[0].trim();
+            }
+            if (!cleanDate || !cleanDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                cleanDate = new Date().toISOString().split('T')[0];
+            }
+            dateInput.value = cleanDate;
+            dateInput.min = new Date().toISOString().split('T')[0];
+        }
+
+        // Formatear hora para <input type="time"> (HH:mm)
+        const timeInput = document.getElementById('rescheduleTime');
+        if (timeInput) {
+            let cleanTime = '19:00';
+            if (resData.time) {
+                const parts = String(resData.time).trim().split(':');
+                if (parts.length >= 2) {
+                    cleanTime = `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+                }
+            }
+            timeInput.value = cleanTime;
+        }
+
+        const guestsSelect = document.getElementById('rescheduleGuests');
+        if (guestsSelect && resData.guests) {
+            guestsSelect.value = String(resData.guests);
+        }
+
+        const reasonInput = document.getElementById('rescheduleReason');
+        if (reasonInput) {
+            reasonInput.value = resData.special_requests || '';
+        }
+
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        modal.style.opacity = '1';
+        modal.style.pointerEvents = 'auto';
+        modal.style.zIndex = '9999';
+    }
+
+    function openCancelResModal(resData, onRefresh) {
+        currentCancelCallback = onRefresh;
+        const modal = document.getElementById('cancelResModal');
+        if (!modal) {
+            console.error('Modal cancelResModal no encontrado en el DOM');
+            return;
+        }
+
+        const resId = resData.id || '';
+        const isOffline = Boolean(resData.isOffline);
+        const rawCode = resData.special_code || resData.code || '';
+        const resCode = rawCode ? (rawCode.startsWith('#') ? rawCode : `#${rawCode}`) : '#RES-XXXX';
+
+        const idInput = document.getElementById('cancelResId');
+        if (idInput) idInput.value = resId;
+
+        const offlineInput = document.getElementById('cancelResIsOffline');
+        if (offlineInput) offlineInput.value = isOffline ? 'true' : 'false';
+        
+        const detailsEl = document.getElementById('cancelResModalDetails');
+        if (detailsEl) {
+            let cleanTime = '19:00';
+            if (resData.time) {
+                const parts = String(resData.time).trim().split(':');
+                if (parts.length >= 2) {
+                    cleanTime = `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+                }
+            }
+            const cleanDate = resData.date ? formatDisplayDate(String(resData.date).split('T')[0]) : 'Sin fecha';
+
+            detailsEl.innerHTML = `
+                <div class="flex justify-between py-1.5 border-b border-imperial-gold/15">
+                    <span class="text-imperial-muted">Código:</span>
+                    <span class="text-imperial-gold font-bold font-mono">${resCode}</span>
+                </div>
+                <div class="flex justify-between py-1.5 border-b border-imperial-gold/15">
+                    <span class="text-imperial-muted">Fecha reservada:</span>
+                    <span class="text-imperial-cream font-semibold">${cleanDate}</span>
+                </div>
+                <div class="flex justify-between py-1.5 border-b border-imperial-gold/15">
+                    <span class="text-imperial-muted">Hora:</span>
+                    <span class="text-imperial-cream font-semibold">${cleanTime} hrs</span>
+                </div>
+                <div class="flex justify-between py-1.5">
+                    <span class="text-imperial-muted">Invitados:</span>
+                    <span class="text-imperial-cream font-semibold">${resData.guests || 2} personas</span>
+                </div>
+            `;
+        }
+
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        modal.style.opacity = '1';
+        modal.style.pointerEvents = 'auto';
+        modal.style.zIndex = '9999';
+    }
+
+    // Exponer en window para garantizar acceso global
+    window.openRescheduleModal = openRescheduleModal;
+    window.openCancelResModal = openCancelResModal;
+    window.closeRescheduleModal = closeRescheduleModal;
+    window.closeCancelResModal = closeCancelResModal;
+
+    function renderUserReservationCards(container, reservations, onRefresh) {
+        if (!container) return;
+        container.innerHTML = '';
+
+        if (!reservations || reservations.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-full text-center py-10 px-4 rounded-2xl bg-[#140707] border border-imperial-gold/20 text-imperial-muted">
+                    <i class="fa-solid fa-calendar-xmark text-imperial-gold/40 text-3xl mb-2.5 block"></i>
+                    <p class="font-serif text-sm">No tienes reservaciones registradas actualmente.</p>
+                </div>
+            `;
+            return;
+        }
+
+        reservations.forEach(r => {
+            const card = document.createElement('div');
+            card.className = 'w-full rounded-2xl bg-[#140707] border border-imperial-gold/30 hover:border-imperial-gold/60 p-4 sm:p-5 transition-all duration-300 shadow-sm';
+            card.dataset.resId = r.id || r.special_code;
+
+            let statusBadge = '';
+            if (r.isOffline) {
+                statusBadge = '<span class="px-2.5 py-0.5 rounded text-[11px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40">⏳ Pendiente sync</span>';
+            } else if (r.status === 'completada') {
+                statusBadge = '<span class="px-2.5 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase">✓ Completada</span>';
+            } else if (r.status === 'cancelada') {
+                statusBadge = '<span class="px-2.5 py-0.5 rounded text-[11px] font-semibold bg-red-950/60 text-red-400 border border-red-500/40 uppercase">✕ Cancelada</span>';
+            } else {
+                statusBadge = '<span class="px-2.5 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase">✓ Confirmada</span>';
+            }
+
+            const isCancelled = r.status === 'cancelada';
+            const isCompleted = r.status === 'completada';
+            const canModify = !isCancelled && !isCompleted;
+            const displayCode = r.special_code ? (r.special_code.startsWith('#') ? r.special_code : `#${r.special_code}`) : '#RES-XXXX';
+
+            // Formatear hora limpia
+            let displayTime = r.time || '19:00';
+            if (displayTime.includes(':')) {
+                const parts = displayTime.split(':');
+                displayTime = `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+            }
+
+            card.innerHTML = `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2 mb-2 flex-wrap">
+                            <span class="font-serif font-bold text-imperial-gold text-base sm:text-lg flex items-center gap-1.5">
+                                <i class="fa-solid fa-calendar-day text-sm"></i>
+                                <span>${formatDisplayDate(r.date)}</span>
+                            </span>
+                            ${statusBadge}
+                        </div>
+                        <div class="text-xs sm:text-sm text-imperial-cream/90 flex flex-wrap items-center gap-x-4 gap-y-1 mb-1.5">
+                            <span class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-clock text-imperial-gold/80"></i>${displayTime} hrs
+                            </span>
+                            <span class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-users text-imperial-gold/80"></i>${r.guests} Invitados
+                            </span>
+                        </div>
+                        ${r.special_requests ? `
+                            <p class="text-xs text-imperial-muted italic mt-1 flex items-start gap-1.5">
+                                <i class="fa-solid fa-comment-dots text-imperial-gold/60 mt-0.5"></i>
+                                <span>${r.special_requests}</span>
+                            </p>
+                        ` : ''}
+                    </div>
+
+                    <div class="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-imperial-gold/15">
+                        <div class="res-code-badge text-xs px-3 py-1 font-mono">${displayCode}</div>
+
+                        ${canModify ? `
+                            <div class="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    class="btn-reschedule-user px-3 py-1.5 rounded-lg border border-imperial-gold/40 bg-imperial-gold/15 text-imperial-gold hover:bg-imperial-gold hover:text-[#120505] text-xs font-serif font-semibold tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95"
+                                    title="Aplazar o cambiar fecha de esta reservación"
+                                >
+                                    <i class="fa-solid fa-calendar-days text-[11px] pointer-events-none"></i>
+                                    <span class="pointer-events-none">Aplazar</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn-cancel-user px-3 py-1.5 rounded-lg border border-red-500/40 bg-red-950/40 text-red-300 hover:bg-red-600 hover:text-white text-xs font-serif font-semibold tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95"
+                                    title="Cancelar esta reservación"
+                                >
+                                    <i class="fa-solid fa-ban text-[11px] pointer-events-none"></i>
+                                    <span class="pointer-events-none">Cancelar</span>
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+
+            // Enlazar eventos directamente a los botones de esta tarjeta
+            const btnReschedule = card.querySelector('.btn-reschedule-user');
+            if (btnReschedule) {
+                btnReschedule.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openRescheduleModal(r, onRefresh);
+                });
+            }
+
+            const btnCancel = card.querySelector('.btn-cancel-user');
+            if (btnCancel) {
+                btnCancel.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openCancelResModal(r, onRefresh);
+                });
+            }
+
+            container.appendChild(card);
+        });
+    }
+
+    async function refreshAllUserReservations() {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.user) return;
+            const reservations = await getUserReservationsList(session.user.id);
+            
+            // En Mi Cuenta
+            const profileGrid = document.getElementById('userReservationsGrid');
+            if (profileGrid) renderUserReservationCards(profileGrid, reservations, refreshAllUserReservations);
+
+            // En Sección Reservaciones
+            const sectionList = document.getElementById('sectionUserReservationsList');
+            if (sectionList) renderUserReservationCards(sectionList, reservations, refreshAllUserReservations);
+
+            // Si el admin está activo
+            const adminGrid = document.getElementById('adminReservationsGrid');
+            if (adminGrid && typeof loadAdminPanel === 'function') {
+                const filter = document.getElementById('adminStatusFilter')?.value || 'pendiente';
+                loadAdminPanel(filter);
+            }
+        } catch (e) {
+            console.warn('Error refrescando reservaciones:', e);
+        }
+    }
+
     async function loadUserProfile() {
         try {
             const { data: { session } } = await supabase.auth.getSession();
@@ -331,61 +658,182 @@ async function initializeApp() {
             
             const resGrid = document.getElementById('userReservationsGrid');
             if (!resGrid) return;
-            resGrid.innerHTML = '';
 
-            let serverRes = [];
-            if (navigator.onLine) {
-                try {
-                    const { data } = await supabase.from('reservations').select('*').eq('user_id', session.user.id).order('date', { ascending: false });
-                    serverRes = data || [];
-                } catch (err) {
-                    console.warn('Error cargando reservas desde Supabase:', err);
-                }
-            }
-
-            let offlineRes = [];
-            try {
-                const queue = JSON.parse(localStorage.getItem('loto_offline_reservations') || '[]');
-                offlineRes = queue.filter(item => item.user_id === session.user.id);
-            } catch (e) {}
-
-            const allReservations = [...offlineRes.map(r => ({ ...r, isOffline: true })), ...serverRes];
-
-            if (allReservations.length === 0) {
-                resGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">No tienes reservaciones registradas.</p>';
-                return;
-            }
-
-            allReservations.forEach(r => {
-                const card = document.createElement('div');
-                card.className = 'reservation-entry';
-                
-                let statusBadge = '';
-                if (r.isOffline) {
-                    statusBadge = '<span style="background: rgba(255, 180, 0, 0.2); color: #ffb84d; border: 1px solid rgba(255, 180, 0, 0.4); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px;">⏳ Pendiente de sincronizar</span>';
-                } else if (r.status === 'completada') {
-                    statusBadge = '<span style="background: var(--badge-jade); color: var(--accent-jade-bright); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px; text-transform: uppercase;">✓ Completada</span>';
-                } else if (r.status === 'cancelada') {
-                    statusBadge = '<span style="background: #4d1414; color: #ff6b6b; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px; text-transform: uppercase;">✕ Cancelada</span>';
-                } else {
-                    statusBadge = '<span style="background: rgba(46, 204, 113, 0.18); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.35); padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 8px; text-transform: uppercase; font-weight: 600;">✓ Confirmada</span>';
-                }
-
-                card.innerHTML = `
-                    <div class="res-info">
-                        <strong style="display:flex; align-items: center; font-family: var(--font-title); color: var(--primary-highlight);">
-                            ${r.date} ${statusBadge}
-                        </strong>
-                        <span style="color: var(--text-main); font-size: 0.9rem;">${r.time} | ${r.guests} Invitados</span>
-                        ${r.special_requests ? `<p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Petición: ${r.special_requests}</p>` : ''}
-                    </div>
-                    <div class="res-code-badge">${r.special_code}</div>
-                `;
-                resGrid.appendChild(card);
-            });
+            const allReservations = await getUserReservationsList(session.user.id);
+            renderUserReservationCards(resGrid, allReservations, refreshAllUserReservations);
         } catch (err) {
             console.error('Error en loadUserProfile:', err);
         }
+    }
+
+    // Modal Aplazar Reservación
+    const rescheduleForm = document.getElementById('rescheduleForm');
+    rescheduleForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btnSubmitReschedule');
+        const id = document.getElementById('rescheduleResId').value;
+        const isOffline = document.getElementById('rescheduleIsOffline').value === 'true';
+        const codeText = document.getElementById('rescheduleModalCode').textContent.trim().replace(/^#/, '');
+        const newDate = document.getElementById('rescheduleDate').value;
+        const newTime = document.getElementById('rescheduleTime').value;
+        const newGuests = parseInt(document.getElementById('rescheduleGuests').value, 10) || 2;
+        const newReason = document.getElementById('rescheduleReason').value.trim();
+
+        if (!newDate || !newTime) {
+            showNotification('Por favor seleccione una fecha y hora válidas.', 'warning');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Guardando...';
+
+        try {
+            if (isOffline) {
+                const queue = JSON.parse(localStorage.getItem('loto_offline_reservations') || '[]');
+                const item = queue.find(q => q.special_code === codeText || q.id === id);
+                if (item) {
+                    item.date = newDate;
+                    item.time = newTime;
+                    item.guests = newGuests;
+                    if (newReason) item.special_requests = newReason;
+                    localStorage.setItem('loto_offline_reservations', JSON.stringify(queue));
+                }
+            } else {
+                const payload = {
+                    date: newDate,
+                    time: newTime,
+                    guests: newGuests
+                };
+                if (newReason) {
+                    payload.special_requests = newReason;
+                }
+                let query = supabase.from('reservations').update(payload);
+                if (id) {
+                    query = query.eq('id', id);
+                } else if (codeText) {
+                    query = query.eq('special_code', codeText);
+                }
+                const { error } = await query;
+                if (error) throw error;
+            }
+
+            showNotification(`¡Reservación aplazada exitosamente para el ${formatDisplayDate(newDate)} a las ${newTime}!`, 'success');
+            closeRescheduleModal();
+            
+            await refreshAllUserReservations();
+            if (currentRescheduleCallback) currentRescheduleCallback();
+        } catch (err) {
+            console.error('Error al aplazar reservación:', err);
+            showNotification(`Error al aplazar reservación: ${err.message}`, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<span>Confirmar Cambio</span><i class="fa-solid fa-check"></i>';
+        }
+    });
+
+    document.getElementById('btnCloseRescheduleModal')?.addEventListener('click', closeRescheduleModal);
+    document.getElementById('btnCancelRescheduleModal')?.addEventListener('click', closeRescheduleModal);
+
+    // Modal Cancelar Reservación
+    const btnConfirmCancelRes = document.getElementById('btnConfirmCancelRes');
+    btnConfirmCancelRes?.addEventListener('click', async () => {
+        const id = document.getElementById('cancelResId').value;
+        const isOffline = document.getElementById('cancelResIsOffline').value === 'true';
+        btnConfirmCancelRes.disabled = true;
+        btnConfirmCancelRes.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Cancelando...';
+
+        try {
+            if (isOffline) {
+                const queue = JSON.parse(localStorage.getItem('loto_offline_reservations') || '[]');
+                const filtered = queue.filter(q => q.id !== id && q.special_code !== id);
+                localStorage.setItem('loto_offline_reservations', JSON.stringify(filtered));
+            } else {
+                let query = supabase.from('reservations').update({ status: 'cancelada' });
+                if (id) {
+                    query = query.eq('id', id);
+                }
+                const { error } = await query;
+                if (error) throw error;
+            }
+
+            showNotification('Su reservación ha sido cancelada exitosamente.', 'info');
+            closeCancelResModal();
+
+            await refreshAllUserReservations();
+            if (currentCancelCallback) currentCancelCallback();
+        } catch (err) {
+            console.error('Error al cancelar reservación:', err);
+            showNotification(`Error al cancelar: ${err.message}`, 'error');
+        } finally {
+            btnConfirmCancelRes.disabled = false;
+            btnConfirmCancelRes.innerHTML = '<span>Sí, Cancelar</span><i class="fa-solid fa-trash-can"></i>';
+        }
+    });
+
+    document.getElementById('btnDismissCancelModal')?.addEventListener('click', closeCancelResModal);
+
+    // Cerrar al hacer clic en el backdrop de los modales
+    document.getElementById('rescheduleModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'rescheduleModal') closeRescheduleModal();
+    });
+    document.getElementById('cancelResModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'cancelResModal') closeCancelResModal();
+    });
+
+    // Cerrar con Escape
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeRescheduleModal();
+            closeCancelResModal();
+        }
+    });
+
+    // Tabs en sección de reservaciones (Nueva Reservación vs Mis Reservaciones)
+    const btnTabNewReserve = document.getElementById('btnTabNewReserve');
+    const btnTabManageReserve = document.getElementById('btnTabManageReserve');
+    const premiumReserveFormEl = document.getElementById('premiumReserveForm');
+    const sectionManageReservationsEl = document.getElementById('sectionManageReservations');
+
+    btnTabNewReserve?.addEventListener('click', () => {
+        btnTabNewReserve.className = 'px-5 py-2.5 rounded-xl font-serif text-xs sm:text-sm font-semibold tracking-wider uppercase transition-all duration-300 bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] text-[#120505] shadow-gold cursor-pointer';
+        btnTabManageReserve.className = 'px-5 py-2.5 rounded-xl font-serif text-xs sm:text-sm font-medium tracking-wider uppercase transition-all duration-300 bg-[#260d0f] text-imperial-cream/80 border border-imperial-gold/30 hover:border-imperial-gold hover:text-imperial-gold cursor-pointer';
+        premiumReserveFormEl?.classList.remove('hidden');
+        sectionManageReservationsEl?.classList.add('hidden');
+    });
+
+    btnTabManageReserve?.addEventListener('click', async () => {
+        btnTabManageReserve.className = 'px-5 py-2.5 rounded-xl font-serif text-xs sm:text-sm font-semibold tracking-wider uppercase transition-all duration-300 bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] text-[#120505] shadow-gold cursor-pointer';
+        btnTabNewReserve.className = 'px-5 py-2.5 rounded-xl font-serif text-xs sm:text-sm font-medium tracking-wider uppercase transition-all duration-300 bg-[#260d0f] text-imperial-cream/80 border border-imperial-gold/30 hover:border-imperial-gold hover:text-imperial-gold cursor-pointer';
+        premiumReserveFormEl?.classList.add('hidden');
+        sectionManageReservationsEl?.classList.remove('hidden');
+        loadSectionManageReservations();
+    });
+
+    async function loadSectionManageReservations() {
+        const listContainer = document.getElementById('sectionUserReservationsList');
+        if (!listContainer) return;
+        listContainer.innerHTML = '<p class="text-center text-imperial-muted py-8">Cargando sus reservaciones imperiales...</p>';
+
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) {
+            listContainer.innerHTML = `
+                <div class="text-center py-8 px-4 rounded-2xl bg-[#140707] border border-imperial-gold/25">
+                    <i class="fa-solid fa-user-lock text-imperial-gold text-3xl mb-3 block"></i>
+                    <h4 class="font-serif text-lg font-bold text-imperial-cream mb-1">Inicie Sesión para Gestionar sus Reservaciones</h4>
+                    <p class="text-xs text-imperial-muted mb-4 max-w-md mx-auto">Para aplazar o cancelar su reservación, ingrese con su cuenta de Loto Imperial.</p>
+                    <button type="button" id="btnOpenLoginFromManage" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] text-[#120505] font-serif text-xs uppercase font-bold tracking-wider shadow-gold hover:brightness-110 cursor-pointer">
+                        Iniciar Sesión
+                    </button>
+                </div>
+            `;
+            document.getElementById('btnOpenLoginFromManage')?.addEventListener('click', () => {
+                document.getElementById('authModal')?.classList.remove('hidden');
+            });
+            return;
+        }
+
+        const reservations = await getUserReservationsList(session.user.id);
+        renderUserReservationCards(listContainer, reservations, refreshAllUserReservations);
     }
     async function loadAdminPanel(filter = 'pendiente') {
         const adminGrid = document.getElementById('adminReservationsGrid');
@@ -1455,6 +1903,7 @@ async function initializeApp() {
                 reserveForm.reset();
                 showReservationSuccess(specialCode, { date, time, guests });
                 showNotification('¡Reservación realizada con éxito!', 'success');
+                if (typeof refreshAllUserReservations === 'function') refreshAllUserReservations();
             } catch (err) {
                 // Respaldo en caso de caída inesperada
                 const existingQueue = JSON.parse(localStorage.getItem('loto_offline_reservations') || '[]');

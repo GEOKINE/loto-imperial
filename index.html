@@ -27,7 +27,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <!-- Estilos principales -->
-  <link rel="stylesheet" href="style.css?v=5" />
+  <link rel="stylesheet" href="style.css?v=6" />
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -999,6 +999,24 @@
         </p>
       </div>
 
+      <!-- Tabs de la sección de Reservaciones -->
+      <div class="flex flex-wrap items-center justify-center gap-3 mb-6" id="reservationSectionTabs">
+        <button
+          type="button"
+          id="btnTabNewReserve"
+          class="px-5 py-2.5 rounded-xl font-serif text-xs sm:text-sm font-semibold tracking-wider uppercase transition-all duration-300 bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] text-[#120505] shadow-gold cursor-pointer"
+        >
+          <i class="fa-solid fa-calendar-plus mr-2"></i>Nueva Reservación
+        </button>
+        <button
+          type="button"
+          id="btnTabManageReserve"
+          class="px-5 py-2.5 rounded-xl font-serif text-xs sm:text-sm font-medium tracking-wider uppercase transition-all duration-300 bg-[#260d0f] text-imperial-cream/80 border border-imperial-gold/30 hover:border-imperial-gold hover:text-imperial-gold cursor-pointer"
+        >
+          <i class="fa-solid fa-calendar-check mr-2"></i>Mis Reservaciones (Aplazar / Cancelar)
+        </button>
+      </div>
+
       <div class="glass-card reservation-card mx-auto w-full rounded-3xl bg-[#1c0808] border-2 border-imperial-gold/40 p-6 sm:p-10 md:p-12 shadow-deep">
         <form id="premiumReserveForm" class="space-y-6">
           <div class="input-group">
@@ -1107,6 +1125,22 @@
         </form>
 
         <div id="reservaFeedback" class="hidden"></div>
+
+        <!-- Panel de Gestión de Reservaciones del Usuario -->
+        <div id="sectionManageReservations" class="hidden space-y-6">
+          <div class="text-center pb-4 border-b border-imperial-gold/25">
+            <h3 class="font-serif text-xl sm:text-2xl font-bold text-imperial-gold mb-1">
+              Gestionar Mis Reservaciones
+            </h3>
+            <p class="text-xs sm:text-sm text-imperial-muted">
+              Consulte el estado, aplace la fecha y hora o cancele sus reservaciones imperiales.
+            </p>
+          </div>
+
+          <div id="sectionUserReservationsList" class="space-y-3">
+            <!-- Populated via JS -->
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -1895,6 +1929,171 @@
   </div>
 
   <!-- =========================================================================
+       MODAL: APLAZAR / REPROGRAMAR RESERVACIÓN
+       ========================================================================= -->
+  <div id="rescheduleModal" class="modal hidden fixed inset-0 z-[2500] flex items-center justify-center bg-black/85 backdrop-blur-md px-4">
+    <div class="glass-card relative w-full max-w-lg rounded-3xl bg-[#1c0808] border-2 border-imperial-gold/50 p-6 sm:p-8 shadow-deep">
+      <button type="button" id="btnCloseRescheduleModal" class="absolute top-5 right-5 text-imperial-muted hover:text-imperial-gold text-xl cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 rounded-full bg-imperial-gold/15 border border-imperial-gold/40 flex items-center justify-center mx-auto mb-3 text-imperial-gold text-xl">
+          <i class="fa-solid fa-calendar-days"></i>
+        </div>
+        <h3 class="font-serif text-xl sm:text-2xl font-bold text-imperial-gold uppercase tracking-wider">
+          Aplazar Reservación
+        </h3>
+        <p class="text-xs sm:text-sm text-imperial-muted mt-1">
+          Seleccione la nueva fecha y hora para su visita a Loto Imperial
+        </p>
+        <div class="mt-2 inline-block px-3 py-1 rounded-lg bg-[#140707] border border-imperial-gold/30 text-xs font-mono text-imperial-gold" id="rescheduleModalCode">
+          #RES-XXXX
+        </div>
+      </div>
+
+      <form id="rescheduleForm" class="space-y-4">
+        <input type="hidden" id="rescheduleResId" value="" />
+        <input type="hidden" id="rescheduleIsOffline" value="false" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Nueva Fecha -->
+          <div>
+            <label for="rescheduleDate" class="block text-xs uppercase tracking-[0.16em] text-imperial-gold font-semibold mb-2">
+              Nueva Fecha *
+            </label>
+            <div class="relative">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-imperial-gold/70 pointer-events-none">
+                <i class="fa-solid fa-calendar-day"></i>
+              </span>
+              <input
+                type="date"
+                id="rescheduleDate"
+                required
+                class="w-full pl-10 pr-3 py-2.5 rounded-xl bg-[#120505] border border-imperial-gold/35 text-imperial-cream text-xs sm:text-sm focus:border-imperial-gold focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <!-- Nueva Hora -->
+          <div>
+            <label for="rescheduleTime" class="block text-xs uppercase tracking-[0.16em] text-imperial-gold font-semibold mb-2">
+              Nueva Hora *
+            </label>
+            <div class="relative">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-imperial-gold/70 pointer-events-none">
+                <i class="fa-solid fa-clock"></i>
+              </span>
+              <input
+                type="time"
+                id="rescheduleTime"
+                required
+                class="w-full pl-10 pr-3 py-2.5 rounded-xl bg-[#120505] border border-imperial-gold/35 text-imperial-cream text-xs sm:text-sm focus:border-imperial-gold focus:outline-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Invitados -->
+        <div>
+          <label for="rescheduleGuests" class="block text-xs uppercase tracking-[0.16em] text-imperial-gold font-semibold mb-2">
+            Invitados
+          </label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-imperial-gold/70 pointer-events-none">
+              <i class="fa-solid fa-users"></i>
+            </span>
+            <select
+              id="rescheduleGuests"
+              class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#120505] border border-imperial-gold/35 text-imperial-cream text-xs sm:text-sm focus:border-imperial-gold focus:outline-none cursor-pointer"
+            >
+              <option value="1">1 Persona</option>
+              <option value="2">2 Personas</option>
+              <option value="4">4 Personas</option>
+              <option value="6">6 Personas</option>
+              <option value="8">Banquete Imperial (8+)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Motivo / Nota de aplazamiento -->
+        <div>
+          <label for="rescheduleReason" class="block text-xs uppercase tracking-[0.16em] text-imperial-gold font-semibold mb-2">
+            Nota de reprogramación (Opcional)
+          </label>
+          <textarea
+            id="rescheduleReason"
+            rows="2"
+            placeholder="Motivo del cambio o nueva petición culinaria..."
+            class="w-full p-3 rounded-xl bg-[#120505] border border-imperial-gold/35 text-imperial-cream text-xs sm:text-sm focus:border-imperial-gold focus:outline-none resize-none"
+          ></textarea>
+        </div>
+
+        <div class="flex items-center gap-3 pt-2">
+          <button
+            type="button"
+            id="btnCancelRescheduleModal"
+            class="w-1/2 py-3 rounded-xl border border-imperial-gold/30 text-imperial-muted hover:text-imperial-cream hover:border-imperial-gold text-xs font-serif uppercase tracking-wider font-semibold transition-all cursor-pointer"
+          >
+            Volver
+          </button>
+          <button
+            type="submit"
+            id="btnSubmitReschedule"
+            class="w-1/2 py-3 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] text-[#120505] font-serif text-xs font-bold uppercase tracking-wider shadow-gold hover:brightness-110 transition-all cursor-pointer flex items-center justify-center gap-2"
+          >
+            <span>Confirmar Cambio</span>
+            <i class="fa-solid fa-check"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: CONFIRMAR CANCELACIÓN DE RESERVACIÓN
+       ========================================================================= -->
+  <div id="cancelResModal" class="modal hidden fixed inset-0 z-[2500] flex items-center justify-center bg-black/85 backdrop-blur-md px-4">
+    <div class="glass-card relative w-full max-w-md rounded-3xl bg-[#1c0808] border-2 border-red-500/50 p-6 sm:p-8 shadow-deep text-center">
+      <div class="w-14 h-14 rounded-full bg-red-950/60 border border-red-500/50 flex items-center justify-center mx-auto mb-4 text-red-400 text-2xl">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+
+      <h3 class="font-serif text-xl sm:text-2xl font-bold text-red-300 uppercase tracking-wider mb-2">
+        ¿Cancelar Reservación?
+      </h3>
+      <p class="text-xs sm:text-sm text-imperial-muted mb-4" id="cancelResModalMsg">
+        ¿Está seguro que desea cancelar su reservación imperial? Su mesa será liberada.
+      </p>
+
+      <div class="p-3 rounded-xl bg-[#120505] border border-imperial-gold/25 mb-6 text-xs text-imperial-cream/90 font-mono text-left" id="cancelResModalDetails">
+        <!-- Detalles de la reserva a cancelar -->
+      </div>
+
+      <input type="hidden" id="cancelResId" value="" />
+      <input type="hidden" id="cancelResIsOffline" value="false" />
+
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          id="btnDismissCancelModal"
+          class="w-1/2 py-3 rounded-xl border border-imperial-gold/30 text-imperial-cream hover:border-imperial-gold text-xs font-serif uppercase tracking-wider font-semibold transition-all cursor-pointer"
+        >
+          Mantener Mesa
+        </button>
+        <button
+          type="button"
+          id="btnConfirmCancelRes"
+          class="w-1/2 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-serif text-xs font-bold uppercase tracking-wider shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
+        >
+          <span>Sí, Cancelar</span>
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
        MODAL DE DETALLE DE PLATILLO Y MI SELECCIÓN
        ========================================================================= -->
   <dialog id="dish-dialog" aria-label="Detalle del menú"
@@ -1934,7 +2133,7 @@
   </script>
 
   <!-- MÓDULO PRINCIPAL DE LA APLICACIÓN -->
-  <script type="module" src="app.js"></script>
+  <script type="module" src="app.js?v=6"></script>
 
   <!-- =====================================================================
        OVERLAY DE CELEBRACIÓN — RESERVACIÓN CONFIRMADA
