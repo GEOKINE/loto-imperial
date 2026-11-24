@@ -1852,3 +1852,130 @@ a[class*="btn-"]:hover {
 .res-close-btn:active {
     transform: scale(0.97);
 }
+
+/* ==========================================================================
+   13. ESCUDO DE ORIENTACIÓN IMPERIAL (FORZAR VERTICAL EN CELULARES)
+   ========================================================================== */
+.orientation-shield {
+    display: none;
+}
+
+@media screen and (orientation: landscape) and (max-height: 520px) {
+    .orientation-shield {
+        display: flex;
+        position: fixed;
+        inset: 0;
+        z-index: 999999;
+        background: radial-gradient(circle at center, #260d0f 0%, #120505 85%);
+        align-items: center;
+        justify-content: center;
+        padding: 16px 24px;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+    }
+
+    .orientation-shield-card {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        max-width: 620px;
+        width: 100%;
+        background: rgba(20, 7, 7, 0.94);
+        border: 1.5px solid rgba(255, 218, 116, 0.45);
+        border-radius: 18px;
+        padding: 18px 24px;
+        box-shadow: 0 0 45px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 218, 116, 0.2);
+        animation: shieldFadeIn 0.3s ease-out;
+    }
+
+    .orientation-icon-wrapper {
+        flex-shrink: 0;
+        width: 72px;
+        height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(122, 23, 27, 0.6) 0%, rgba(20, 7, 7, 0.8) 100%);
+        border: 1px solid rgba(255, 218, 116, 0.4);
+    }
+
+    .orientation-phone-svg {
+        width: 48px;
+        height: 48px;
+        animation: phoneRotateTip 2.4s ease-in-out infinite;
+        transform-origin: center center;
+    }
+
+    .orientation-brand {
+        flex: 1;
+        text-align: left;
+    }
+
+    .orientation-tag {
+        display: inline-block;
+        font-family: 'Cinzel', serif;
+        font-size: 0.65rem;
+        letter-spacing: 0.25em;
+        color: #D4AF37;
+        font-weight: 700;
+        margin-bottom: 2px;
+    }
+
+    .orientation-title {
+        font-family: 'Cinzel', serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        color: #F8F5F0;
+        margin: 0 0 4px 0;
+        text-shadow: 0 0 12px rgba(255, 218, 116, 0.35);
+    }
+
+    .orientation-desc {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.75rem;
+        color: #C4B5B5;
+        line-height: 1.35;
+        margin: 0;
+    }
+
+    .orientation-desc strong {
+        color: #FFDA74;
+    }
+
+    .orientation-lotus-ornament {
+        flex-shrink: 0;
+        font-family: 'Cinzel', serif;
+        font-size: 1.5rem;
+        color: #D4AF37;
+        opacity: 0.4;
+        user-select: none;
+    }
+}
+
+@keyframes phoneRotateTip {
+    0% {
+        transform: rotate(90deg);
+    }
+    35% {
+        transform: rotate(0deg);
+    }
+    75% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(90deg);
+    }
+}
+
+@keyframes shieldFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

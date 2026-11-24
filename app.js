@@ -1227,5 +1227,12 @@ async function initializeApp() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Intentar bloqueo de orientación vertical en navegadores y PWAs que lo soporten
+    try {
+        if (window.screen?.orientation?.lock) {
+            window.screen.orientation.lock('portrait').catch(() => {});
+        }
+    } catch (e) {}
+
     initializeApp().catch(err => console.error('Critical app init error:', err));
 });
