@@ -848,6 +848,16 @@
                 </span>
               </div>
 
+              <!-- Selector de subpágina para móvil (1 sola página de 3 platillos a la vez) -->
+              <div id="mobile-subpage-pills" class="flex md:hidden items-center bg-[#140707] p-1 rounded-lg border border-imperial-gold/30 text-xs shadow-inner">
+                <button id="mobile-subpage-btn-0" type="button" class="px-2.5 py-1 rounded font-serif font-bold text-imperial-gold bg-imperial-gold/25 border border-imperial-gold/40 shadow-gold transition-all cursor-pointer">
+                  Pág. 1 (1–3)
+                </button>
+                <button id="mobile-subpage-btn-1" type="button" class="px-2.5 py-1 rounded font-serif text-imperial-muted hover:text-imperial-gold border border-transparent transition-all cursor-pointer">
+                  Pág. 2 (4–6)
+                </button>
+              </div>
+
               <div class="hidden sm:flex items-center gap-2 text-xs text-imperial-gold/90 animate-nudge">
                 <i data-lucide="hand" class="w-3.5 h-3.5 text-imperial-gold"></i>
                 <span>Arrastra la esquina inferior para hojear</span>
@@ -861,7 +871,7 @@
             <!-- Dual Facing Pages Grid (Left Page & Right Page forming an exact 2x3 dish grid) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-14 items-stretch">
               <!-- LEFT PAGE OF THE OPEN BOOK (Column 1: 3 Rows) -->
-              <div class="flex flex-col justify-between md:pr-2 lg:pr-3">
+              <div id="book-page-left" class="flex flex-col justify-between md:pr-2 lg:pr-3">
                 <div>
                   <!-- Left Page Editorial Chapter Intro (Exact Mirror Height with Right Page) -->
                   <div class="h-[116px] mb-6 pb-4 border-b border-imperial-gold/20 flex flex-col justify-center text-center md:text-left">
@@ -890,7 +900,7 @@
               </div>
 
               <!-- RIGHT PAGE OF THE OPEN BOOK (Column 2: 3 Rows) -->
-              <div class="flex flex-col justify-between md:pl-2 lg:pl-3 border-t md:border-t-0 pt-7 md:pt-0 border-imperial-gold/20">
+              <div id="book-page-right" class="flex flex-col justify-between md:pl-2 lg:pl-3 border-t-0 md:border-t-0 pt-0 md:pt-0">
                 <div>
                   <!-- Right Page Mirror Header (Exact Same 116px Height & Structure as Left Page) -->
                   <div class="h-[116px] mb-6 pb-4 border-b border-imperial-gold/20 flex items-center justify-between gap-4">

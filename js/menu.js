@@ -1570,6 +1570,15 @@ export function initBookMenu(menuData) {
 
   const leftDishesEl = document.getElementById("left-page-dishes");
   const rightDishesEl = document.getElementById("right-page-dishes");
+  const bookPageLeft = document.getElementById("book-page-left");
+  const bookPageRight = document.getElementById("book-page-right");
+  const mobileSubpagePills = document.getElementById("mobile-subpage-pills");
+  const mobileSubBtn0 = document.getElementById("mobile-subpage-btn-0");
+  const mobileSubBtn1 = document.getElementById("mobile-subpage-btn-1");
+
+  // Estado de subpágina en móvil (0: platillos 1-3, 1: platillos 4-6)
+  let mobileSubPage = 0;
+
   const tabButtons = document.querySelectorAll(".menu-tab");
   const chapterRomanEl = document.getElementById("chapter-roman");
   const chapterRomanSubEl = document.getElementById("chapter-roman-sub");
@@ -1631,7 +1640,6 @@ export function initBookMenu(menuData) {
     if (chapterSubtitleEl) chapterSubtitleEl.textContent = chapter.subtitle;
     if (chapterRightHeadingEl) chapterRightHeadingEl.textContent = "CURADURÍA & MARIDAJE";
     if (chapterPairingEl) chapterPairingEl.textContent = chapter.pairing;
-    if (folioNumbersEl) folioNumbersEl.textContent = `FOLIOS ${chapter.folios[0]} – ${chapter.folios[1]}`;
     if (leftFolioLabelEl) leftFolioLabelEl.textContent = `PÁG. ${chapter.folios[0]}`;
     if (rightFolioLabelEl) rightFolioLabelEl.textContent = `PÁG. ${chapter.folios[1]}`;
 
@@ -1645,6 +1653,36 @@ export function initBookMenu(menuData) {
     chapter.items.slice(3, 6).forEach((item, idx) => {
       if (rightDishesEl) rightDishesEl.appendChild(createBookDishRow(item, idx + 3));
     });
+
+    // Modo responsivo: 1 página (3 platillos) en celular (< 768px), o pliego doble (6 platillos) en desktop
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      if (mobileSubPage === 0) {
+        if (bookPageLeft) bookPageLeft.style.display = "flex";
+        if (bookPageRight) bookPageRight.style.display = "none";
+        if (mobileSubBtn0) {
+          mobileSubBtn0.className = "px-2.5 py-1 rounded font-serif font-bold text-imperial-gold bg-imperial-gold/25 border border-imperial-gold/40 shadow-gold transition-all cursor-pointer";
+        }
+        if (mobileSubBtn1) {
+          mobileSubBtn1.className = "px-2.5 py-1 rounded font-serif text-imperial-muted hover:text-imperial-gold border border-transparent transition-all cursor-pointer";
+        }
+        if (folioNumbersEl) folioNumbersEl.textContent = `FOLIO ${chapter.folios[0]} • PÁG. 1/2`;
+      } else {
+        if (bookPageLeft) bookPageLeft.style.display = "none";
+        if (bookPageRight) bookPageRight.style.display = "flex";
+        if (mobileSubBtn0) {
+          mobileSubBtn0.className = "px-2.5 py-1 rounded font-serif text-imperial-muted hover:text-imperial-gold border border-transparent transition-all cursor-pointer";
+        }
+        if (mobileSubBtn1) {
+          mobileSubBtn1.className = "px-2.5 py-1 rounded font-serif font-bold text-imperial-gold bg-imperial-gold/25 border border-imperial-gold/40 shadow-gold transition-all cursor-pointer";
+        }
+        if (folioNumbersEl) folioNumbersEl.textContent = `FOLIO ${chapter.folios[1]} • PÁG. 2/2`;
+      }
+    } else {
+      if (bookPageLeft) bookPageLeft.style.display = "flex";
+      if (bookPageRight) bookPageRight.style.display = "flex";
+      if (folioNumbersEl) folioNumbersEl.textContent = `FOLIOS ${chapter.folios[0]} – ${chapter.folios[1]}`;
+    }
 
     updateCatalogNavigationUI(index);
     resizeCurlCanvas(catalogBookEl, curlCanvas, ctx);
@@ -1687,6 +1725,9 @@ export function initBookMenu(menuData) {
 
     setTimeout(() => {
       currentChapterIndex = targetIndex;
+      if (window.innerWidth < 768) {
+        mobileSubPage = isNext ? 0 : 1;
+      }
       renderChapterSpread(currentChapterIndex);
     }, 240);
 
@@ -1778,6 +1819,23 @@ export function initBookMenu(menuData) {
         : curlState.pointerX / w;
 
       if (draggedRatio > 0.24 || draggedRatio < 0.08) {
+        if (window.innerWidth < 768) {
+          if (direction === "next") {
+            if (mobileSubPage === 0) {
+              mobileSubPage = 1;
+              playPaperRustleSound(0.35);
+              renderChapterSpread(currentChapterIndex);
+              return;
+            }
+          } else {
+            if (mobileSubPage === 1) {
+              mobileSubPage = 0;
+              playPaperRustleSound(0.35);
+              renderChapterSpread(currentChapterIndex);
+              return;
+            }
+          }
+        }
         const targetIdx =
           direction === "next"
             ? (currentChapterIndex + 1) % catalogChapters.length
@@ -1797,20 +1855,95 @@ export function initBookMenu(menuData) {
   setupCornerGrabInteraction(grabRightZone, "next");
   setupCornerGrabInteraction(grabLeftZone, "prev");
 
+  // Botones de subpágina en móvil (Pág 1: platillos 1-3 vs Pág 2: platillos 4-6)
+  if (mobileSubBtn0) {
+    mobileSubBtn0.addEventListener("click", () => {
+      if (mobileSubPage !== 0) {
+        mobileSubPage = 0;
+        playPaperRustleSound(0.28);
+        renderChapterSpread(currentChapterIndex);
+      }
+    });
+  }
+  if (mobileSubBtn1) {
+    mobileSubBtn1.addEventListener("click", () => {
+      if (mobileSubPage !== 1) {
+        mobileSubPage = 1;
+        playPaperRustleSound(0.28);
+        renderChapterSpread(currentChapterIndex);
+      }
+    });
+  }
+
   // Tabs de capítulos
   tabButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
+      mobileSubPage = 0; // Reiniciar siempre a la cara 1 al cambiar de país
       const targetIndex = parseInt(btn.getAttribute("data-index"), 10);
       triggerPageTurnTo(targetIndex);
     });
   });
 
-  // Botones prev / next
+  // Botones prev / next (con navegación por cara en móvil)
   if (prevPageBtn) {
-    prevPageBtn.addEventListener("click", () => triggerPageTurnTo(currentChapterIndex - 1));
+    prevPageBtn.addEventListener("click", () => {
+      if (window.innerWidth < 768) {
+        if (mobileSubPage === 1) {
+          mobileSubPage = 0;
+          playPaperRustleSound(0.35);
+          renderChapterSpread(currentChapterIndex);
+          return;
+        }
+      }
+      triggerPageTurnTo(currentChapterIndex - 1);
+    });
   }
   if (nextPageBtn) {
-    nextPageBtn.addEventListener("click", () => triggerPageTurnTo(currentChapterIndex + 1));
+    nextPageBtn.addEventListener("click", () => {
+      if (window.innerWidth < 768) {
+        if (mobileSubPage === 0) {
+          mobileSubPage = 1;
+          playPaperRustleSound(0.35);
+          renderChapterSpread(currentChapterIndex);
+          return;
+        }
+      }
+      triggerPageTurnTo(currentChapterIndex + 1);
+    });
+  }
+
+  // Soporte de deslizamiento táctil horizontal (Swipe) en móvil
+  let touchStartX = 0;
+  let touchStartY = 0;
+  if (catalogBookEl) {
+    catalogBookEl.addEventListener(
+      "touchstart",
+      (e) => {
+        if (e.touches && e.touches.length === 1) {
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+        }
+      },
+      { passive: true }
+    );
+
+    catalogBookEl.addEventListener(
+      "touchend",
+      (e) => {
+        if (e.changedTouches && e.changedTouches.length === 1) {
+          const deltaX = e.changedTouches[0].clientX - touchStartX;
+          const deltaY = e.changedTouches[0].clientY - touchStartY;
+          if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+            if (deltaX < 0) {
+              if (nextPageBtn) nextPageBtn.click();
+            } else {
+              if (prevPageBtn) prevPageBtn.click();
+            }
+          }
+        }
+      },
+      { passive: true }
+    );
   }
 
   // Toggle de sonido
