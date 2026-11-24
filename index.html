@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
@@ -798,6 +798,15 @@
             <i id="paper-sound-icon" data-lucide="volume-2" class="w-4 h-4 text-imperial-gold"></i>
             <span id="paper-sound-label">Sonido de papel: Activo</span>
           </button>
+          <!-- Day of the Week Pill / Filter -->
+          <div
+            id="today-menu-pill"
+            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#260d0f]/90 border border-imperial-gold/35 text-xs text-imperial-gold"
+            title="Día de la semana actual en Loto Imperial"
+          >
+            <i class="fa-solid fa-calendar-day text-imperial-gold"></i>
+            <span id="today-day-text">Hoy: Menú Imperial</span>
+          </div>
         </div>
       </div>
 
@@ -1254,51 +1263,381 @@
        ========================================================================= -->
   <section id="admin" class="section hidden relative py-24 sm:py-28 px-4 sm:px-6 bg-imperial-bg border-t border-imperial-gold/20">
     <div class="max-w-6xl mx-auto w-full">
-      <div class="section-header text-center mb-10">
+      <div class="section-header text-center mb-8">
         <h2 class="font-serif text-3xl sm:text-4xl font-bold text-gold-gradient mb-2">Panel de Control Imperial</h2>
-        <p class="text-imperial-muted text-sm sm:text-base">Administración de reservaciones y control de acceso</p>
+        <p class="text-imperial-muted text-sm sm:text-base">Gestión de reservaciones, carta gastronómica y menús semanales</p>
       </div>
 
-      <div class="glass-card admin-card rounded-3xl bg-[#1c0808] border-2 border-imperial-gold/40 p-6 sm:p-10 shadow-deep">
-        <div class="admin-controls flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-imperial-gold/25 mb-8">
-          <div class="flex items-center gap-3">
-            <h3 class="font-serif text-lg sm:text-xl font-semibold text-imperial-cream">Reservaciones</h3>
-            <select
-              id="adminStatusFilter"
-              class="bg-[#120505] border border-imperial-gold/40 text-imperial-gold text-xs sm:text-sm rounded-xl px-3 py-2 outline-none cursor-pointer"
-            >
-              <option value="pendiente">Pendientes</option>
-              <option value="completada">Completadas</option>
-              <option value="cancelada">Canceladas</option>
-              <option value="todas">Todas</option>
-            </select>
-          </div>
-
-          <div class="search-box flex items-center gap-2">
-            <input
-              type="text"
-              id="adminSearchCode"
-              placeholder="Buscar código..."
-              class="bg-[#120505] border border-imperial-gold/40 text-imperial-cream text-xs sm:text-sm rounded-xl px-3 py-2 outline-none focus:border-imperial-gold"
-            />
-            <button
-              id="btnSearchCode"
-              class="px-4 py-2 rounded-xl bg-imperial-gold text-imperial-bg font-semibold text-xs uppercase tracking-wider hover:brightness-105 transition-all cursor-pointer"
-            >
-              Buscar
-            </button>
-            <button
-              id="btnLogoutAdmin"
-              class="p-2.5 rounded-xl border border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white transition-all ml-1 cursor-pointer"
-              title="Cerrar Sesión"
-            >
-              <i class="fa-solid fa-right-from-bracket"></i>
-            </button>
-          </div>
+      <!-- Barra Superior de Navegación de Módulos Admin -->
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-imperial-gold/30">
+        <div class="flex flex-wrap gap-2 sm:gap-3" id="adminModuleTabs">
+          <button
+            type="button"
+            id="tabAdminReservations"
+            data-target="adminPanelReservations"
+            class="admin-module-btn active px-4 sm:px-5 py-2.5 rounded-xl font-serif text-xs sm:text-sm font-semibold tracking-wider uppercase transition-all duration-300 bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] text-[#120505] shadow-gold cursor-pointer"
+          >
+            <i class="fa-solid fa-calendar-check mr-2"></i>Reservaciones
+          </button>
+          <button
+            type="button"
+            id="tabAdminDishes"
+            data-target="adminPanelDishes"
+            class="admin-module-btn px-4 sm:px-5 py-2.5 rounded-xl font-serif text-xs sm:text-sm font-medium tracking-wider uppercase transition-all duration-300 bg-[#260d0f] text-imperial-cream/80 border border-imperial-gold/30 hover:border-imperial-gold hover:text-imperial-gold cursor-pointer"
+          >
+            <i class="fa-solid fa-bowl-food mr-2"></i>Platillos
+          </button>
+          <button
+            type="button"
+            id="tabAdminDailyMenu"
+            data-target="adminPanelDailyMenu"
+            class="admin-module-btn px-4 sm:px-5 py-2.5 rounded-xl font-serif text-xs sm:text-sm font-medium tracking-wider uppercase transition-all duration-300 bg-[#260d0f] text-imperial-cream/80 border border-imperial-gold/30 hover:border-imperial-gold hover:text-imperial-gold cursor-pointer"
+          >
+            <i class="fa-solid fa-calendar-week mr-2"></i>Menús por Día
+          </button>
         </div>
 
-        <div id="adminReservationsGrid" class="grid grid-cols-1 gap-4">
-          <!-- Reservaciones administrables -->
+        <button
+          id="btnLogoutAdmin"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white text-xs uppercase tracking-wider font-semibold transition-all cursor-pointer"
+          title="Cerrar Sesión"
+        >
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span>Cerrar Sesión</span>
+        </button>
+      </div>
+
+      <!-- MÓDULO 1: RESERVACIONES -->
+      <div id="adminPanelReservations" class="admin-module-content">
+        <div class="glass-card admin-card rounded-3xl bg-[#1c0808] border-2 border-imperial-gold/40 p-6 sm:p-10 shadow-deep">
+          <div class="admin-controls flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-imperial-gold/25 mb-8">
+            <div class="flex items-center gap-3">
+              <h3 class="font-serif text-lg sm:text-xl font-semibold text-imperial-cream">Reservaciones</h3>
+              <select
+                id="adminStatusFilter"
+                class="bg-[#120505] border border-imperial-gold/40 text-imperial-gold text-xs sm:text-sm rounded-xl px-3 py-2 outline-none cursor-pointer"
+              >
+                <option value="pendiente">Pendientes</option>
+                <option value="completada">Completadas</option>
+                <option value="cancelada">Canceladas</option>
+                <option value="todas">Todas</option>
+              </select>
+            </div>
+
+            <div class="search-box flex items-center gap-2">
+              <input
+                type="text"
+                id="adminSearchCode"
+                placeholder="Buscar código..."
+                class="bg-[#120505] border border-imperial-gold/40 text-imperial-cream text-xs sm:text-sm rounded-xl px-3 py-2 outline-none focus:border-imperial-gold"
+              />
+              <button
+                id="btnSearchCode"
+                class="px-4 py-2 rounded-xl bg-imperial-gold text-imperial-bg font-semibold text-xs uppercase tracking-wider hover:brightness-105 transition-all cursor-pointer"
+              >
+                Buscar
+              </button>
+            </div>
+          </div>
+
+          <div id="adminReservationsGrid" class="grid grid-cols-1 gap-4">
+            <!-- Reservaciones administrables -->
+          </div>
+        </div>
+      </div>
+
+      <!-- MÓDULO 2: GESTIÓN DE PLATILLOS (REGISTRAR, EDITAR, ELIMINAR) -->
+      <div id="adminPanelDishes" class="admin-module-content hidden">
+        <div class="glass-card admin-card rounded-3xl bg-[#1c0808] border-2 border-imperial-gold/40 p-6 sm:p-10 shadow-deep mb-8">
+          <div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-imperial-gold/25 mb-6">
+            <div>
+              <h3 class="font-serif text-lg sm:text-xl font-semibold text-imperial-cream flex items-center gap-2">
+                <i class="fa-solid fa-utensils text-imperial-gold"></i>
+                <span id="adminDishFormTitle">Registrar Nuevo Platillo Imperial</span>
+              </h3>
+              <p class="text-xs text-imperial-muted mt-1">Completa los datos del platillo para agregarlo a la carta oficial.</p>
+            </div>
+            <button
+              type="button"
+              id="btnToggleDishForm"
+              class="px-4 py-2 rounded-xl bg-imperial-gold/20 border border-imperial-gold text-imperial-gold hover:bg-imperial-gold hover:text-imperial-bg text-xs uppercase tracking-wider font-semibold transition-all cursor-pointer"
+            >
+              <i class="fa-solid fa-plus mr-1.5"></i>Nuevo Platillo
+            </button>
+          </div>
+
+          <!-- Formulario de Registro / Edición -->
+          <form id="adminDishForm" class="space-y-5">
+            <input type="hidden" id="dishEditId" value="" />
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Nombre -->
+              <div class="md:col-span-2">
+                <label class="block text-xs font-serif uppercase tracking-wider text-imperial-gold mb-1.5">Nombre del Platillo *</label>
+                <input
+                  type="text"
+                  id="dishName"
+                  required
+                  placeholder="Ej: Ramen Tonkotsu de Trufa Negra"
+                  class="w-full bg-[#120505] border border-imperial-gold/40 rounded-xl px-4 py-2.5 text-sm text-imperial-cream outline-none focus:border-imperial-gold"
+                />
+              </div>
+
+              <!-- Precio -->
+              <div>
+                <label class="block text-xs font-serif uppercase tracking-wider text-imperial-gold mb-1.5">Precio (MXN) *</label>
+                <input
+                  type="text"
+                  id="dishPrice"
+                  required
+                  placeholder="Ej: $320 MXN o 320"
+                  class="w-full bg-[#120505] border border-imperial-gold/40 rounded-xl px-4 py-2.5 text-sm text-imperial-cream outline-none focus:border-imperial-gold"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Categoría -->
+              <div>
+                <label class="block text-xs font-serif uppercase tracking-wider text-imperial-gold mb-1.5">Categoría *</label>
+                <select
+                  id="dishCategory"
+                  required
+                  class="w-full bg-[#120505] border border-imperial-gold/40 rounded-xl px-3 py-2.5 text-sm text-imperial-cream outline-none focus:border-imperial-gold cursor-pointer"
+                >
+                  <option value="japones">Japón (Tradición Nipona)</option>
+                  <option value="chino">China (Fuego Imperial)</option>
+                  <option value="sudeste">Sudeste Asiático (Especias del Reino)</option>
+                  <option value="infantil">Menú Infantil (Pequeños Emperadores)</option>
+                  <option value="bebidas">Cava & Coctelería Imperial</option>
+                </select>
+              </div>
+
+              <!-- Ingrediente Principal -->
+              <div>
+                <label class="block text-xs font-serif uppercase tracking-wider text-imperial-gold mb-1.5">Ingrediente Principal *</label>
+                <select
+                  id="dishMainIngredient"
+                  required
+                  class="w-full bg-[#120505] border border-imperial-gold/40 rounded-xl px-3 py-2.5 text-sm text-imperial-cream outline-none focus:border-imperial-gold cursor-pointer"
+                >
+                  <option value="Carne">Carne / Wagyu / Cerdo</option>
+                  <option value="Pescado">Pescado / Salmón / Atún</option>
+                  <option value="Mariscos">Mariscos / Camarón / Langosta</option>
+                  <option value="Pato">Pato Laqueado</option>
+                  <option value="Aves">Pollo / Aves</option>
+                  <option value="Vegetariano">Vegetariano / Tofu</option>
+                  <option value="Arroz y Fideos">Arroz y Fideos</option>
+                  <option value="Postre">Postre / Dulce Imperial</option>
+                  <option value="Coctelería">Coctelería / Sake / Vino</option>
+                </select>
+              </div>
+
+              <!-- URL de Imagen (campo completo con preview) -->
+              <div class="md:col-span-3">
+                <label class="block text-xs font-serif uppercase tracking-wider text-imperial-gold mb-1.5">URL de Imagen</label>
+                <div class="flex gap-2">
+                  <input
+                    type="text"
+                    id="dishImageUrl"
+                    autocomplete="off"
+                    spellcheck="false"
+                    placeholder="https://ejemplo.com/imagen.jpg  o  img/menu/platillo.jpeg"
+                    class="flex-1 bg-[#120505] border border-imperial-gold/40 rounded-xl px-4 py-2.5 text-sm text-imperial-cream outline-none focus:border-imperial-gold"
+                  />
+                  <button type="button" id="btnPreviewImage" title="Ver preview" class="px-3 py-2 rounded-xl border border-imperial-gold/40 bg-[#1c0808] text-imperial-gold hover:border-imperial-gold transition-all shrink-0">
+                    <i class="fa-solid fa-eye text-sm"></i>
+                  </button>
+                </div>
+                <div id="dishImagePreviewRow" class="hidden mt-2 flex items-center gap-3 p-3 rounded-xl bg-[#140707] border border-imperial-gold/20">
+                  <img id="dishImagePreview" src="" alt="Preview" class="w-16 h-16 object-cover rounded-lg border border-imperial-gold/30 shrink-0" />
+                  <div class="min-w-0 flex-1">
+                    <p class="text-xs font-serif text-imperial-gold font-semibold">Vista previa</p>
+                    <p id="dishImagePreviewError" class="hidden text-xs text-red-400 mt-0.5">No se pudo cargar la imagen. Verifica la URL.</p>
+                  </div>
+                  <button type="button" id="btnClearImage" title="Quitar imagen" class="text-imperial-muted hover:text-red-400 transition-colors shrink-0 ml-2">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Descripción gourmet -->
+            <div>
+              <label class="block text-xs font-serif uppercase tracking-wider text-imperial-gold mb-1.5">Descripción Gourmet *</label>
+              <textarea
+                id="dishDesc"
+                rows="2"
+                required
+                placeholder="Breve reseña poética y de notas culinarias para el menú..."
+                class="w-full bg-[#120505] border border-imperial-gold/40 rounded-xl px-4 py-2.5 text-sm text-imperial-cream outline-none focus:border-imperial-gold"
+              ></textarea>
+            </div>
+
+            <!-- Ingredientes detallados -->
+            <div>
+              <label class="block text-xs font-serif uppercase tracking-wider text-imperial-gold mb-1.5">Ingredientes Detallados (Separados por comas)</label>
+              <textarea
+                id="dishIngredients"
+                rows="2"
+                placeholder="Fideos alcalinos frescos, caldo tonkotsu de 18 horas, panceta chashu, trufa negra, cebollín..."
+                class="w-full bg-[#120505] border border-imperial-gold/40 rounded-xl px-4 py-2.5 text-sm text-imperial-cream outline-none focus:border-imperial-gold"
+              ></textarea>
+            </div>
+
+            <!-- Días de la semana disponibles -->
+            <div class="p-4 rounded-2xl bg-[#140707] border border-imperial-gold/25">
+              <label class="block text-xs font-serif uppercase tracking-wider text-imperial-gold mb-2.5">
+                <i class="fa-solid fa-calendar-days mr-1.5"></i>Días de la Semana Disponibles
+              </label>
+              <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2 text-xs">
+                <label class="flex items-center gap-1.5 cursor-pointer bg-[#260d0f]/60 p-2 rounded-lg border border-imperial-gold/20 hover:border-imperial-gold">
+                  <input type="checkbox" name="dishDay" value="todos" id="dayCheckTodos" checked class="accent-amber-500" />
+                  <span class="font-medium text-imperial-cream">Todos</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer bg-[#260d0f]/60 p-2 rounded-lg border border-imperial-gold/20 hover:border-imperial-gold">
+                  <input type="checkbox" name="dishDay" value="lunes" class="day-single-check accent-amber-500" />
+                  <span class="text-imperial-muted">Lun</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer bg-[#260d0f]/60 p-2 rounded-lg border border-imperial-gold/20 hover:border-imperial-gold">
+                  <input type="checkbox" name="dishDay" value="martes" class="day-single-check accent-amber-500" />
+                  <span class="text-imperial-muted">Mar</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer bg-[#260d0f]/60 p-2 rounded-lg border border-imperial-gold/20 hover:border-imperial-gold">
+                  <input type="checkbox" name="dishDay" value="miercoles" class="day-single-check accent-amber-500" />
+                  <span class="text-imperial-muted">Mié</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer bg-[#260d0f]/60 p-2 rounded-lg border border-imperial-gold/20 hover:border-imperial-gold">
+                  <input type="checkbox" name="dishDay" value="jueves" class="day-single-check accent-amber-500" />
+                  <span class="text-imperial-muted">Jue</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer bg-[#260d0f]/60 p-2 rounded-lg border border-imperial-gold/20 hover:border-imperial-gold">
+                  <input type="checkbox" name="dishDay" value="viernes" class="day-single-check accent-amber-500" />
+                  <span class="text-imperial-muted">Vie</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer bg-[#260d0f]/60 p-2 rounded-lg border border-imperial-gold/20 hover:border-imperial-gold">
+                  <input type="checkbox" name="dishDay" value="sabado" class="day-single-check accent-amber-500" />
+                  <span class="text-imperial-muted">Sáb</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer bg-[#260d0f]/60 p-2 rounded-lg border border-imperial-gold/20 hover:border-imperial-gold">
+                  <input type="checkbox" name="dishDay" value="domingo" class="day-single-check accent-amber-500" />
+                  <span class="text-imperial-muted">Dom</span>
+                </label>
+              </div>
+
+              <!-- Especial del día toggle -->
+              <div class="mt-3 pt-3 border-t border-imperial-gold/15 flex items-center gap-3">
+                <input type="checkbox" id="dishIsSpecial" class="w-4 h-4 accent-amber-500 cursor-pointer" />
+                <label for="dishIsSpecial" class="text-xs text-imperial-cream cursor-pointer font-medium flex items-center gap-1.5">
+                  <span class="text-imperial-gold font-bold">★</span> Marcar como <strong>Especial / Recomendación del Chef</strong>
+                </label>
+              </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="flex items-center justify-end gap-3 pt-3">
+              <button
+                type="button"
+                id="btnCancelDishEdit"
+                class="hidden px-5 py-2.5 rounded-xl border border-imperial-muted/40 text-imperial-muted hover:text-imperial-cream text-xs uppercase tracking-wider font-semibold transition-all cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                id="btnSaveDish"
+                class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] text-[#120505] font-serif font-bold text-xs uppercase tracking-wider shadow-gold hover:brightness-105 active:scale-95 transition-all cursor-pointer"
+              >
+                <i class="fa-solid fa-floppy-disk mr-1.5"></i>Guardar Platillo
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Lista de Platillos Registrados -->
+        <div class="glass-card admin-card rounded-3xl bg-[#1c0808] border-2 border-imperial-gold/40 p-6 sm:p-10 shadow-deep">
+          <div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-imperial-gold/25 mb-6">
+            <div class="flex items-center gap-3">
+              <h3 class="font-serif text-lg sm:text-xl font-semibold text-imperial-cream">Catálogo de Platillos</h3>
+              <span id="adminDishesCount" class="text-xs px-2.5 py-1 rounded-full bg-imperial-gold/20 text-imperial-gold font-bold">0 platillos</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <input
+                type="text"
+                id="adminSearchDish"
+                placeholder="Filtrar platillos..."
+                class="bg-[#120505] border border-imperial-gold/40 text-imperial-cream text-xs sm:text-sm rounded-xl px-3 py-2 outline-none focus:border-imperial-gold"
+              />
+            </div>
+          </div>
+
+          <div id="adminDishesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Renderizado dinámico de platillos -->
+          </div>
+        </div>
+      </div>
+
+      <!-- MÓDULO 3: MENÚS POR DÍA DE LA SEMANA -->
+      <div id="adminPanelDailyMenu" class="admin-module-content hidden">
+        <div class="glass-card admin-card rounded-3xl bg-[#1c0808] border-2 border-imperial-gold/40 p-6 sm:p-10 shadow-deep">
+          <div class="pb-6 border-b border-imperial-gold/25 mb-6">
+            <h3 class="font-serif text-lg sm:text-xl font-semibold text-imperial-cream mb-1 flex items-center gap-2">
+              <i class="fa-solid fa-calendar-check text-imperial-gold"></i>
+              <span>Curaduría de Menú por Día de la Semana</span>
+            </h3>
+            <p class="text-xs sm:text-sm text-imperial-muted">Selecciona un día de la semana para activar, desactivar o destacar platillos específicos para ese día.</p>
+
+            <!-- Selector de Días de la Semana -->
+            <div class="flex flex-wrap gap-2 mt-4" id="adminWeekDaySelector">
+              <button type="button" data-day="lunes" class="day-tab-btn active px-4 py-2 rounded-xl text-xs font-serif uppercase tracking-wider font-semibold border border-imperial-gold bg-imperial-gold text-[#120505] shadow-gold transition-all cursor-pointer">Lunes</button>
+              <button type="button" data-day="martes" class="day-tab-btn px-4 py-2 rounded-xl text-xs font-serif uppercase tracking-wider font-semibold border border-imperial-gold/30 bg-[#260d0f] text-imperial-cream hover:border-imperial-gold transition-all cursor-pointer">Martes</button>
+              <button type="button" data-day="miercoles" class="day-tab-btn px-4 py-2 rounded-xl text-xs font-serif uppercase tracking-wider font-semibold border border-imperial-gold/30 bg-[#260d0f] text-imperial-cream hover:border-imperial-gold transition-all cursor-pointer">Miércoles</button>
+              <button type="button" data-day="jueves" class="day-tab-btn px-4 py-2 rounded-xl text-xs font-serif uppercase tracking-wider font-semibold border border-imperial-gold/30 bg-[#260d0f] text-imperial-cream hover:border-imperial-gold transition-all cursor-pointer">Jueves</button>
+              <button type="button" data-day="viernes" class="day-tab-btn px-4 py-2 rounded-xl text-xs font-serif uppercase tracking-wider font-semibold border border-imperial-gold/30 bg-[#260d0f] text-imperial-cream hover:border-imperial-gold transition-all cursor-pointer">Viernes</button>
+              <button type="button" data-day="sabado" class="day-tab-btn px-4 py-2 rounded-xl text-xs font-serif uppercase tracking-wider font-semibold border border-imperial-gold/30 bg-[#260d0f] text-imperial-cream hover:border-imperial-gold transition-all cursor-pointer">Sábado</button>
+              <button type="button" data-day="domingo" class="day-tab-btn px-4 py-2 rounded-xl text-xs font-serif uppercase tracking-wider font-semibold border border-imperial-gold/30 bg-[#260d0f] text-imperial-cream hover:border-imperial-gold transition-all cursor-pointer">Domingo</button>
+            </div>
+          </div>
+
+          <!-- Cabecera del día seleccionado -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-imperial-gold/20">
+            <div>
+              <span id="selectedDayTitle" class="font-serif text-base sm:text-lg font-bold text-imperial-gold uppercase tracking-wider">Menú del Lunes</span>
+              <span id="selectedDayCount" class="text-xs text-imperial-muted ml-2">(Cargando platillos...)</span>
+            </div>
+            <span class="text-xs text-imperial-muted italic hidden sm:inline">Platillos que se servirán en este día de la semana</span>
+          </div>
+
+          <!-- Grid de Platillos Activos en este Día -->
+          <div id="adminDailyDishesList" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            <!-- Populated via JS -->
+          </div>
+
+          <!-- SECCIÓN: AGREGAR PLATILLOS AL DÍA -->
+          <div class="mt-8 pt-6 border-t border-imperial-gold/25">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <div>
+                <h4 class="font-serif text-sm sm:text-base font-bold text-imperial-cream flex items-center gap-2">
+                  <i class="fa-solid fa-circle-plus text-emerald-400"></i>
+                  <span>Agregar Platillos a este Día</span>
+                </h4>
+                <p class="text-xs text-imperial-muted">Platillos del catálogo no incluidos actualmente en este día</p>
+              </div>
+              <div class="w-full sm:w-auto">
+                <input
+                  type="text"
+                  id="adminDailySearchAvailable"
+                  placeholder="Buscar en el catálogo..."
+                  class="w-full sm:w-60 bg-[#120505] border border-imperial-gold/30 rounded-xl px-3 py-1.5 text-xs text-imperial-cream placeholder-imperial-muted/60 outline-none focus:border-imperial-gold"
+                />
+              </div>
+            </div>
+
+            <!-- Grid de Platillos Disponibles para Agregar -->
+            <div id="adminDailyAvailableList" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <!-- Populated via JS -->
+            </div>
+          </div>
         </div>
       </div>
     </div>

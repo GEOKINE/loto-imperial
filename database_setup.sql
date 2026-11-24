@@ -35,6 +35,36 @@ CREATE TABLE IF NOT EXISTS menu_items (
 -- Asegurar columnas si la tabla ya existía
 ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS main_ingredient TEXT;
 ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS ingredients TEXT;
+ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS available_days TEXT DEFAULT 'todos';
+ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS is_daily_special BOOLEAN DEFAULT false;
+
+-- Políticas RLS para gestión del menú
+ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Permitir lectura publica de menu_items" ON menu_items;
+CREATE POLICY "Permitir lectura publica de menu_items"
+ON menu_items FOR SELECT
+TO public
+USING (true);
+
+DROP POLICY IF EXISTS "Permitir insertar platillos a autenticados" ON menu_items;
+CREATE POLICY "Permitir insertar platillos a autenticados"
+ON menu_items FOR INSERT
+TO authenticated
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Permitir actualizar platillos a autenticados" ON menu_items;
+CREATE POLICY "Permitir actualizar platillos a autenticados"
+ON menu_items FOR UPDATE
+TO authenticated
+USING (true)
+WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Permitir eliminar platillos a autenticados" ON menu_items;
+CREATE POLICY "Permitir eliminar platillos a autenticados"
+ON menu_items FOR DELETE
+TO authenticated
+USING (true);
 
 -- Reservations Table
 CREATE TABLE IF NOT EXISTS reservations (

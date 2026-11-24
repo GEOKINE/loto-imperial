@@ -48,10 +48,15 @@ export async function fetchMenuData() {
             const fetchQuery = supabase
                 .from('menu_items')
                 .select(`
+                    id,
                     name,
                     price,
                     description,
                     image_url,
+                    main_ingredient,
+                    ingredients,
+                    available_days,
+                    is_daily_special,
                     category_id,
                     menu_categories (name)
                 `)
@@ -88,10 +93,15 @@ export async function fetchMenuData() {
                     }
 
                     groupedMenu[categoryName].push({
+                        id: item.id,
                         name: item.name,
                         price: item.price,
                         desc: item.description,
-                        img: itemImg
+                        img: itemImg,
+                        main_ingredient: item.main_ingredient,
+                        ingredients: item.ingredients,
+                        available_days: item.available_days || 'todos',
+                        is_daily_special: Boolean(item.is_daily_special)
                     });
                 });
 
@@ -1281,7 +1291,8 @@ function createBookDishRow(item, delayIndex) {
 
     <!-- Contenido y Metadatos -->
     <div class="flex-1 min-w-0 flex flex-col justify-center pr-6">
-      <div class="flex items-center gap-1.5 mb-1">
+      <div class="flex items-center gap-1.5 mb-1 flex-wrap">
+        ${item.is_daily_special ? `<span class="special-badge-star" title="Especial del Chef"><i class="fa-solid fa-star"></i> Especial</span>` : ''}
         <!-- Badge de Ingrediente Principal -->
         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold border ${badgeClasses}" title="Ingrediente principal: ${info.mainIngredient}">
           <span>${info.icon}</span>
@@ -1540,8 +1551,10 @@ export function initBookMenu(menuData) {
   if (!catalogBookEl || !curlCanvas) return;
   const ctx = curlCanvas.getContext("2d");
 
-  // Si Supabase contiene datos, enriquecemos los capítulos
+  // Si Supabase contiene datos, enriquecemos los capítulos filtrando por día activo
   if (menuData && typeof menuData === "object") {
+    // Determina el día actual (puede ser sobrescrito por window.__currentMenuDay para pruebas)
+    const currentDay = (window.__currentMenuDay || new Date().toLocaleString('es-ES', { weekday: 'long' })).toLowerCase();
     catalogChapters.forEach(ch => {
       let matchedData = null;
       for (const alias of ch.aliases) {
@@ -1550,19 +1563,28 @@ export function initBookMenu(menuData) {
           break;
         }
       }
+      // Reinicia la lista de ítems para evitar residuos de días anteriores
+      ch.items = [];
       if (matchedData && matchedData.length > 0) {
-        matchedData.slice(0, 6).forEach((remoteItem, idx) => {
-          if (!ch.items[idx]) {
-            ch.items[idx] = { name: "", price: "", tag: "Especialidad", description: "", image: "" };
-          }
-          if (remoteItem.name) ch.items[idx].name = remoteItem.name;
-          if (remoteItem.price !== undefined) {
-            ch.items[idx].price = formatPriceMXN(remoteItem.price);
-          }
-          if (remoteItem.desc) ch.items[idx].description = remoteItem.desc;
-          if (remoteItem.img) ch.items[idx].image = remoteItem.img;
-          if (remoteItem.main_ingredient) ch.items[idx].main_ingredient = remoteItem.main_ingredient;
-          if (remoteItem.ingredients) ch.items[idx].ingredients = remoteItem.ingredients;
+        // Filtra los platos que están disponibles hoy o que son "todos"
+        const dayFiltered = matchedData.filter(item => {
+          const days = (item.available_days || 'todos').toLowerCase();
+          return days === 'todos' || days.includes(currentDay);
+        });
+        dayFiltered.slice(0, 6).forEach((remoteItem, idx) => {
+          const newItem = {
+            name: remoteItem.name || "",
+            price: remoteItem.price !== undefined ? formatPriceMXN(remoteItem.price) : "",
+            tag: "Especialidad",
+            description: remoteItem.desc || "",
+            image: remoteItem.img || "",
+            main_ingredient: remoteItem.main_ingredient,
+            ingredients: remoteItem.ingredients,
+            available_days: remoteItem.available_days,
+            is_daily_special: remoteItem.is_daily_special,
+            id: remoteItem.id
+          };
+          ch.items[idx] = newItem;
         });
       }
     });
@@ -1599,6 +1621,14 @@ export function initBookMenu(menuData) {
   const soundToggleBtn = document.getElementById("paper-sound-toggle");
   const soundIconEl = document.getElementById("paper-sound-icon");
   const soundLabelEl = document.getElementById("paper-sound-label");
+
+  // Indicador de día de la semana actual
+  const todayDayText = document.getElementById("today-day-text");
+  if (todayDayText) {
+    const daysEs = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+    const todayName = daysEs[new Date().getDay()];
+    todayDayText.textContent = `Hoy: Menú del ${todayName}`;
+  }
 
   function updateCatalogNavigationUI(index) {
     tabButtons.forEach((tab, idx) => {

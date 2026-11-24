@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>LOTO IMPERIAL | Alta Gastronomía Oriental</title>
+
+  <!-- PWA & Favicon -->
+  <link rel="icon" type="image/png" href="img/icons/maskable_icon%20(2).png" />
+  <link rel="apple-touch-icon" href="img/icons/maskable_icon%20(2).png" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#120505" />
+  <meta name="description" content="Una experiencia gastronómica única: el corazón de Asia en un solo lugar. Alta cocina oriental en Ciudad de México." />
+
+  <!-- Google Fonts: Cinzel & Plus Jakarta Sans & Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome 6 (Iconos de la versión de GitHub) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Estilos principales -->
+  <link rel="stylesheet" href="style.css?v=5" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            imperial: {
+              bg: "#120505",
+              darker: "#1a0808",
+              card: "#260d0f",
+              cardHover: "#331215",
+              cream: "#F8F5F0",
+              muted: "#C4B5B5",
+              // Paleta Planificada: Vino Vibrante + Oro Dinástico + Verde Jade
+              wine: "#7A171B",
+              wineVibrant: "#991B21",
+              wineLight: "#B3222A",
+              gold: "#FFDA74",
+              goldDark: "#D4AF37",
+              goldGlow: "rgba(255, 218, 116, 0.45)",
+              jade: "#1B4D3E",
+              jadeBright: "#38A385",
+              jadeGlow: "rgba(56, 163, 133, 0.35)",
+            },
+          },
+          fontFamily: {
+            serif: ['"Cinzel"', "serif"],
+            body: ['"Montserrat"', '"Plus Jakarta Sans"', "sans-serif"],
+          },
+          boxShadow: {
+            gold: "0 0 25px rgba(255, 218, 116, 0.3)",
+            goldStrong: "0 0 40px rgba(255, 218, 116, 0.55)",
+            wine: "0 0 30px rgba(153, 27, 33, 0.45)",
+            jade: "0 0 25px rgba(56, 163, 133, 0.35)",
+            deep: "0 20px 50px rgba(0, 0, 0, 0.8)",
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #120505;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #7A171B;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #FFDA74;
+    }
+
+    /* Gold shimmer gradient text */
+    .text-gold-gradient {
+      background: linear-gradient(135deg, #FFEAA7 0%, #FFDA74 50%, #D4AF37 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Patrón sutil oriental preservado para el menú */
+    .asian-pattern {
+      background-image: radial-gradient(rgba(255, 218, 116, 0.08) 1.2px, transparent 1.2px);
+      background-size: 28px 28px;
+    }
+
+    /* Smooth card entrance animation */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-card {
+      animation: fadeSlideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Pulse glow para el logo */
+    @keyframes logoGlow {
+      0%, 100% {
+        filter: drop-shadow(0 0 25px rgba(255, 218, 116, 0.75)) drop-shadow(0 0 50px rgba(153, 27, 33, 0.5));
+        transform: scale(1);
+      }
+      50% {
+        filter: drop-shadow(0 0 40px rgba(255, 218, 116, 0.95)) drop-shadow(0 0 80px rgba(255, 218, 116, 0.4));
+        transform: scale(1.03);
+      }
+    }
+
+    .animate-logo-glow {
+      animation: logoGlow 3.5s ease-in-out infinite;
+    }
+
+    /* BARRA INFERIOR ESTILO GITHUB (Sólida, elegante, sin efecto glass translucido) */
+    .github-bottom-nav {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 92%;
+      max-width: 480px;
+      background: #1c0a0a;
+      border: 1.5px solid #FFDA74;
+      border-radius: 40px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 12px 14px;
+      z-index: 1000;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.85), 0 0 20px rgba(255, 218, 116, 0.25);
+    }
+
+    .github-nav-item {
+      text-decoration: none;
+      color: #b8a0a0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.75rem;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      flex: 1;
+      padding: 4px 0;
+    }
+
+    .github-nav-item i {
+      font-size: 1.35rem;
+      margin-bottom: 5px;
+      color: #b8a0a0;
+      transition: all 0.3s ease;
+    }
+
+    .github-nav-item:hover,
+    .github-nav-item:hover i {
+      color: #FFDA74;
+    }
+
+    .github-nav-item.active,
+    .github-nav-item.active i {
+      color: #FFDA74 !important;
+      transform: translateY(-3px);
+      filter: drop-shadow(0 0 8px rgba(255, 218, 116, 0.6));
+    }
+
+    /* Datepicker icon styling */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(78%) sepia(43%) saturate(654%) hue-rotate(358deg) brightness(92%) contrast(88%);
+      cursor: pointer;
+    }
+
+    /* ============================================================
+       TACTILE LUXURY PAPER FLIPBOOK & REAL-TIME CURL ENGINE
+       ============================================================ */
+    .leather-cover-frame {
+      position: relative;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 218, 116, 0.16), transparent 70%),
+        linear-gradient(145deg, #1c0808 0%, #0d0404 50%, #1c0808 100%);
+      border-radius: 1.75rem;
+      padding: 10px;
+      box-shadow:
+        0 35px 80px rgba(0, 0, 0, 0.92),
+        0 0 0 1px rgba(255, 218, 116, 0.35),
+        inset 0 1px 0 rgba(255, 236, 179, 0.15);
+    }
+
+    @media (min-width: 640px) {
+      .leather-cover-frame {
+        padding: 14px 18px;
+      }
+    }
+
+    /* Thick Stacked Washi/Cotton Paper Edges */
+    .paper-stack-shell {
+      position: relative;
+      border-radius: 1.25rem;
+      background: linear-gradient(135deg, #260d0f 0%, #160808 50%, #260d0f 100%);
+      box-shadow:
+        /* Left multi-sheet stack */
+        -4px 0 0 #331215,
+        -5px 0 0 #140707,
+        -8px 0 0 #2b0e10,
+        -9px 0 0 #140707,
+        -12px 0 0 #220a0b,
+        /* Right multi-sheet stack */
+        4px 0 0 #331215,
+        5px 0 0 #140707,
+        8px 0 0 #2b0e10,
+        9px 0 0 #140707,
+        12px 0 0 #220a0b,
+        /* Deep ambient drop shadow */
+        0 20px 45px rgba(0, 0, 0, 0.85),
+        inset 0 0 70px rgba(0, 0, 0, 0.65);
+      border: 1px solid rgba(255, 218, 116, 0.32);
+    }
+
+    /* Subtle Tactile Cotton Paper Grain */
+    .washi-grain {
+      background-image:
+        radial-gradient(rgba(248, 245, 240, 0.03) 1px, transparent 0),
+        radial-gradient(rgba(255, 218, 116, 0.035) 1px, transparent 0),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.28) 0%, rgba(255, 248, 235, 0.025) 18%, rgba(0, 0, 0, 0.05) 47%, rgba(0, 0, 0, 0.45) 50%, rgba(0, 0, 0, 0.05) 53%, rgba(255, 248, 235, 0.025) 82%, rgba(0, 0, 0, 0.28) 100%);
+      background-size: 18px 18px, 29px 29px, 100% 100%;
+      background-position: 0 0, 9px 14px, 0 0;
+    }
+
+    /* Central Book Gutter Crease (Desktop 2-Page Spread) */
+    @media (min-width: 1024px) {
+      .book-center-gutter {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 68px;
+        transform: translateX(-50%);
+        background: linear-gradient(
+          90deg,
+          rgba(0, 0, 0, 0) 0%,
+          rgba(0, 0, 0, 0.22) 28%,
+          rgba(0, 0, 0, 0.68) 48%,
+          rgba(255, 218, 116, 0.16) 50%,
+          rgba(0, 0, 0, 0.68) 52%,
+          rgba(0, 0, 0, 0.22) 72%,
+          rgba(0, 0, 0, 0) 100%
+        );
+        pointer-events: none;
+        z-index: 15;
+      }
+    }
+
+    /* Woven Crimson & Gold Silk Bookmark Ribbon */
+    .silk-ribbon {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 54px;
+      background: linear-gradient(180deg, #7A171B 0%, #991B21 65%, #7A171B 100%);
+      border-left: 1.5px solid rgba(255, 218, 116, 0.65);
+      border-right: 1.5px solid rgba(255, 218, 116, 0.65);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.75);
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%);
+      z-index: 25;
+      pointer-events: none;
+      transition: transform 0.4s ease;
+    }
+
+    /* Interactive Paper Curl Canvas Overlay */
+    #page-curl-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 30;
+      pointer-events: none;
+      border-radius: 1.25rem;
+    }
+
+    /* Grab Zones on Bottom Corners for Dragging Paper */
+    .corner-grab-zone {
+      position: absolute;
+      bottom: 0;
+      width: 120px;
+      height: 120px;
+      z-index: 35;
+      cursor: grab;
+      touch-action: none;
+    }
+    .corner-grab-zone:active {
+      cursor: grabbing;
+    }
+    .corner-grab-zone.left {
+      left: 0;
+    }
+    .corner-grab-zone.right {
+      right: 0;
+    }
+
+    /* Subtle pulse badge guiding the user to drag or turn the page */
+    @keyframes gentleNudge {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(-4px); }
+    }
+    .animate-nudge {
+      animation: gentleNudge 2.4s ease-in-out infinite;
+    }
+  </style>
+</head>
+
+<body class="bg-imperial-bg text-imperial-cream font-body antialiased selection:bg-imperial-gold selection:text-imperial-bg overflow-x-hidden">
+
+  <!-- =========================================================================
+       PANTALLA DE CARGA - LOTO IMPERIAL
+       ========================================================================= -->
+  <div id="loadingScreen">
+
+    <!-- Fondo con patrón geométrico sutil -->
+    <div class="ls-bg"></div>
+
+    <!-- Borde dorado perimetral -->
+    <div class="ls-border"></div>
+
+    <!-- 4 Esquinas decorativas doradas -->
+    <div class="ls-corner ls-corner--tl"></div>
+    <div class="ls-corner ls-corner--tr"></div>
+    <div class="ls-corner ls-corner--bl"></div>
+    <div class="ls-corner ls-corner--br"></div>
+
+    <!-- Dragón izquierdo -->
+    <div class="ls-dragon ls-dragon--left" aria-hidden="true">
+      <svg viewBox="0 0 170 510" xmlns="http://www.w3.org/2000/svg">
+        <g opacity="0.55">
+          <!-- CUERPO principal - serpentino grueso -->
+          <path d="M 125,32 C 138,62 118,92 102,112 C 86,132 60,152 65,187 C 70,222 108,237 110,268 C 112,299 80,318 78,352 C 76,386 112,406 106,442 C 100,468 78,482 74,502"
+            stroke="#c8972a" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.5"/>
+          <!-- Brillo interior del cuerpo -->
+          <path d="M 125,32 C 138,62 118,92 102,112 C 86,132 60,152 65,187 C 70,222 108,237 110,268 C 112,299 80,318 78,352 C 76,386 112,406 106,442 C 100,468 78,482 74,502"
+            stroke="#FFD44E" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.18"/>
+          <!-- ESCAMAS a lo largo del cuerpo -->
+          <g stroke="#b08030" stroke-width="1" fill="none" opacity="0.55">
+            <path d="M 110,122 Q 120,118 122,126"/><path d="M 106,142 Q 116,138 118,146"/>
+            <path d="M 68,167 Q 58,163 56,171"/><path d="M 66,187 Q 56,183 54,191"/>
+            <path d="M 108,245 Q 118,241 120,249"/><path d="M 110,265 Q 120,261 122,269"/>
+            <path d="M 80,328 Q 70,324 68,332"/><path d="M 78,348 Q 68,344 66,352"/>
+            <path d="M 108,415 Q 118,411 120,419"/><path d="M 104,435 Q 114,431 116,439"/>
+          </g>
+          <!-- ESPINAS DORSALES en las curvas externas -->
+          <g fill="#FFD44E" opacity="0.5">
+            <polygon points="56,163 44,170 56,178"/>
+            <polygon points="112,250 124,256 112,262"/>
+            <polygon points="74,336 62,342 74,350"/>
+            <polygon points="110,424 122,430 110,438"/>
+          </g>
+          <!-- CABEZA - corona -->
+          <path d="M 118,24 C 124,16 132,10 140,8 C 148,6 154,10 152,16 C 148,20 140,20 132,22 Z" fill="#c8972a" opacity="0.65"/>
+          <!-- CABEZA - forma principal -->
+          <path d="M 120,28 C 128,22 138,20 148,20 C 155,20 160,24 158,30 C 155,35 148,34 140,33 C 132,32 126,32 120,30 Z" fill="#c8972a" opacity="0.65"/>
+          <!-- HOCICO alargado apuntando a la derecha -->
+          <path d="M 148,22 C 158,20 166,20 170,22 C 173,24 172,28 169,30 C 164,32 156,30 148,30 Z" fill="#c8972a" opacity="0.6"/>
+          <!-- MANDIBULA inferior -->
+          <path d="M 148,30 C 156,32 164,32 168,32 C 171,34 170,38 166,38 C 158,37 150,35 148,34 Z" fill="#8b5e1a" opacity="0.65"/>
+          <!-- DIENTES -->
+          <g fill="#FFD44E" opacity="0.8">
+            <polygon points="150,30 153,30 151,34"/>
+            <polygon points="155,30 158,30 156,34"/>
+            <polygon points="160,30 163,30 161,34"/>
+          </g>
+          <!-- OJO con pupila y brillo -->
+          <circle cx="140" cy="24" r="4.5" fill="#FFD44E" opacity="0.9"/>
+          <circle cx="141" cy="23" r="2.2" fill="#0d0202"/>
+          <circle cx="140" cy="22" r="0.8" fill="#FFD44E"/>
+          <!-- CUERNOS -->
+          <path d="M 130,18 C 126,10 122,4 124,0 C 128,0 132,8 134,17 Z" fill="#c8972a" opacity="0.65"/>
+          <path d="M 138,16 C 136,8 136,2 139,0 C 142,2 142,8 140,16 Z" fill="#c8972a" opacity="0.65"/>
+          <!-- CRESTA en la cabeza -->
+          <g fill="#FFD44E" opacity="0.45">
+            <polygon points="130,18 127,10 134,16"/>
+            <polygon points="137,16 135,8 141,14"/>
+          </g>
+          <!-- BIGOTES / BARBILLAS -->
+          <path d="M 166,22 Q 173,16 179,12" stroke="#c8972a" stroke-width="1.4" fill="none" opacity="0.6" stroke-linecap="round"/>
+          <path d="M 168,32 Q 175,30 181,25" stroke="#c8972a" stroke-width="1.4" fill="none" opacity="0.6" stroke-linecap="round"/>
+          <path d="M 164,36 Q 168,44 164,50" stroke="#c8972a" stroke-width="1" fill="none" opacity="0.4" stroke-linecap="round"/>
+          <!-- PATA DELANTERA (arriba, hacia la izquierda) -->
+          <path d="M 85,195 C 76,190 65,187 56,185 C 51,184 48,181 50,179 C 59,181 70,184 80,189 Z" fill="#c8972a" opacity="0.55"/>
+          <g stroke="#c8972a" stroke-width="2" fill="none" opacity="0.55" stroke-linecap="round">
+            <path d="M 56,185 L 44,180"/><path d="M 56,185 L 46,183"/>
+            <path d="M 56,185 L 48,189"/><path d="M 56,185 L 52,195"/>
+          </g>
+          <!-- PATA TRASERA (abajo, hacia la derecha) -->
+          <path d="M 80,365 C 90,360 102,356 112,354 C 117,353 120,350 118,348 C 109,350 98,354 88,359 Z" fill="#c8972a" opacity="0.55"/>
+          <g stroke="#c8972a" stroke-width="2" fill="none" opacity="0.55" stroke-linecap="round">
+            <path d="M 112,354 L 124,348"/><path d="M 112,354 L 122,353"/>
+            <path d="M 112,354 L 120,359"/><path d="M 112,354 L 116,365"/>
+          </g>
+          <!-- COLA bifurcada -->
+          <path d="M 78,500 C 68,498 54,496 44,492 C 40,490 40,487 44,486 C 54,489 67,492 78,495 Z" fill="#c8972a" opacity="0.5"/>
+          <path d="M 76,500 C 68,503 56,505 46,502 C 42,500 42,496 46,495 C 56,497 68,498 75,497 Z" fill="#c8972a" opacity="0.4"/>
+          <!-- NUBES decorativas -->
+          <g fill="#c8972a" opacity="0.22">
+            <ellipse cx="28" cy="135" rx="24" ry="10"/>
+            <ellipse cx="46" cy="130" rx="15" ry="8"/>
+            <ellipse cx="12" cy="133" rx="12" ry="7"/>
+            <ellipse cx="22" cy="315" rx="22" ry="9"/>
+            <ellipse cx="40" cy="310" rx="14" ry="7"/>
+            <ellipse cx="8"  cy="313" rx="10" ry="6"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Dragón derecho (mismo SVG, espejado por CSS) -->
+    <div class="ls-dragon ls-dragon--right" aria-hidden="true">
+      <svg viewBox="0 0 170 510" xmlns="http://www.w3.org/2000/svg">
+        <g opacity="0.55">
+          <path d="M 125,32 C 138,62 118,92 102,112 C 86,132 60,152 65,187 C 70,222 108,237 110,268 C 112,299 80,318 78,352 C 76,386 112,406 106,442 C 100,468 78,482 74,502"
+            stroke="#c8972a" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.5"/>
+          <path d="M 125,32 C 138,62 118,92 102,112 C 86,132 60,152 65,187 C 70,222 108,237 110,268 C 112,299 80,318 78,352 C 76,386 112,406 106,442 C 100,468 78,482 74,502"
+            stroke="#FFD44E" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.18"/>
+          <g stroke="#b08030" stroke-width="1" fill="none" opacity="0.55">
+            <path d="M 110,122 Q 120,118 122,126"/><path d="M 106,142 Q 116,138 118,146"/>
+            <path d="M 68,167 Q 58,163 56,171"/><path d="M 66,187 Q 56,183 54,191"/>
+            <path d="M 108,245 Q 118,241 120,249"/><path d="M 110,265 Q 120,261 122,269"/>
+            <path d="M 80,328 Q 70,324 68,332"/><path d="M 78,348 Q 68,344 66,352"/>
+            <path d="M 108,415 Q 118,411 120,419"/><path d="M 104,435 Q 114,431 116,439"/>
+          </g>
+          <g fill="#FFD44E" opacity="0.5">
+            <polygon points="56,163 44,170 56,178"/>
+            <polygon points="112,250 124,256 112,262"/>
+            <polygon points="74,336 62,342 74,350"/>
+            <polygon points="110,424 122,430 110,438"/>
+          </g>
+          <path d="M 118,24 C 124,16 132,10 140,8 C 148,6 154,10 152,16 C 148,20 140,20 132,22 Z" fill="#c8972a" opacity="0.65"/>
+          <path d="M 120,28 C 128,22 138,20 148,20 C 155,20 160,24 158,30 C 155,35 148,34 140,33 C 132,32 126,32 120,30 Z" fill="#c8972a" opacity="0.65"/>
+          <path d="M 148,22 C 158,20 166,20 170,22 C 173,24 172,28 169,30 C 164,32 156,30 148,30 Z" fill="#c8972a" opacity="0.6"/>
+          <path d="M 148,30 C 156,32 164,32 168,32 C 171,34 170,38 166,38 C 158,37 150,35 148,34 Z" fill="#8b5e1a" opacity="0.65"/>
+          <g fill="#FFD44E" opacity="0.8">
+            <polygon points="150,30 153,30 151,34"/>
+            <polygon points="155,30 158,30 156,34"/>
+            <polygon points="160,30 163,30 161,34"/>
+          </g>
+          <circle cx="140" cy="24" r="4.5" fill="#FFD44E" opacity="0.9"/>
+          <circle cx="141" cy="23" r="2.2" fill="#0d0202"/>
+          <circle cx="140" cy="22" r="0.8" fill="#FFD44E"/>
+          <path d="M 130,18 C 126,10 122,4 124,0 C 128,0 132,8 134,17 Z" fill="#c8972a" opacity="0.65"/>
+          <path d="M 138,16 C 136,8 136,2 139,0 C 142,2 142,8 140,16 Z" fill="#c8972a" opacity="0.65"/>
+          <g fill="#FFD44E" opacity="0.45">
+            <polygon points="130,18 127,10 134,16"/>
+            <polygon points="137,16 135,8 141,14"/>
+          </g>
+          <path d="M 166,22 Q 173,16 179,12" stroke="#c8972a" stroke-width="1.4" fill="none" opacity="0.6" stroke-linecap="round"/>
+          <path d="M 168,32 Q 175,30 181,25" stroke="#c8972a" stroke-width="1.4" fill="none" opacity="0.6" stroke-linecap="round"/>
+          <path d="M 164,36 Q 168,44 164,50" stroke="#c8972a" stroke-width="1" fill="none" opacity="0.4" stroke-linecap="round"/>
+          <path d="M 85,195 C 76,190 65,187 56,185 C 51,184 48,181 50,179 C 59,181 70,184 80,189 Z" fill="#c8972a" opacity="0.55"/>
+          <g stroke="#c8972a" stroke-width="2" fill="none" opacity="0.55" stroke-linecap="round">
+            <path d="M 56,185 L 44,180"/><path d="M 56,185 L 46,183"/>
+            <path d="M 56,185 L 48,189"/><path d="M 56,185 L 52,195"/>
+          </g>
+          <path d="M 80,365 C 90,360 102,356 112,354 C 117,353 120,350 118,348 C 109,350 98,354 88,359 Z" fill="#c8972a" opacity="0.55"/>
+          <g stroke="#c8972a" stroke-width="2" fill="none" opacity="0.55" stroke-linecap="round">
+            <path d="M 112,354 L 124,348"/><path d="M 112,354 L 122,353"/>
+            <path d="M 112,354 L 120,359"/><path d="M 112,354 L 116,365"/>
+          </g>
+          <path d="M 78,500 C 68,498 54,496 44,492 C 40,490 40,487 44,486 C 54,489 67,492 78,495 Z" fill="#c8972a" opacity="0.5"/>
+          <path d="M 76,500 C 68,503 56,505 46,502 C 42,500 42,496 46,495 C 56,497 68,498 75,497 Z" fill="#c8972a" opacity="0.4"/>
+          <g fill="#c8972a" opacity="0.22">
+            <ellipse cx="28" cy="135" rx="24" ry="10"/>
+            <ellipse cx="46" cy="130" rx="15" ry="8"/>
+            <ellipse cx="12" cy="133" rx="12" ry="7"/>
+            <ellipse cx="22" cy="315" rx="22" ry="9"/>
+            <ellipse cx="40" cy="310" rx="14" ry="7"/>
+            <ellipse cx="8"  cy="313" rx="10" ry="6"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Nubes CSS flotantes (esquinas inferiores) -->
+    <div class="ls-clouds" aria-hidden="true">
+      <div class="ls-cloud ls-cloud--1"></div>
+      <div class="ls-cloud ls-cloud--2"></div>
+      <div class="ls-cloud ls-cloud--3"></div>
+      <div class="ls-cloud ls-cloud--4"></div>
+    </div>
+
+    <!-- Pétalos de cerezo cayendo -->
+    <div class="ls-petals" aria-hidden="true">
+      <div class="ls-petal ls-petal--1"></div>
+      <div class="ls-petal ls-petal--2"></div>
+      <div class="ls-petal ls-petal--3"></div>
+      <div class="ls-petal ls-petal--4"></div>
+      <div class="ls-petal ls-petal--5"></div>
+    </div>
+
+    <!-- ===== CENTRO ===== -->
+    <div class="loader-content">
+
+      <!-- Halo dorado pulsante detrás del logo -->
+      <div class="ls-halo"></div>
+
+      <!-- Destellos orbitando el logo -->
+      <div class="ls-sparkles" aria-hidden="true">
+        <span class="ls-spark ls-spark--1">?</span>
+        <span class="ls-spark ls-spark--2">?</span>
+        <span class="ls-spark ls-spark--3">?</span>
+        <span class="ls-spark ls-spark--4">?</span>
+        <span class="ls-spark ls-spark--5">?</span>
+        <span class="ls-spark ls-spark--6">?</span>
+      </div>
+
+      <!-- Logo -->
+      <img src="img/icons/LOGO.svg" alt="Loto Imperial" class="loader-logo">
+
+      <!-- Separador dorado ornamental -->
+      <div class="ls-divider" aria-hidden="true">
+        <span class="ls-divider-line"></span>
+        <span class="ls-divider-diamond">?</span>
+        <span class="ls-divider-line"></span>
+      </div>
+
+      <!-- Barra de progreso con adornos laterales -->
+      <div class="ls-bar-wrapper">
+        <span class="ls-bar-ornament ls-bar-ornament--l">?</span>
+        <div class="loader-bar-container">
+          <div id="loaderBar" class="loader-bar"></div>
+        </div>
+        <span class="ls-bar-ornament ls-bar-ornament--r">?</span>
+      </div>
+
+      <!-- Texto imperial -->
+      <p class="loader-text">Preparando su Experiencia Imperial...</p>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PANTALLA OFFLINE FIRST: "CONEXIÓN INTERRUMPIDA" (Basada en tu imagen)
+       ========================================================================= -->
+  <div
+    id="offlineOverlay"
+    class="fixed inset-0 z-[2000] hidden flex-col items-center justify-center px-6 text-center bg-[#0d0406] transition-all duration-500"
+  >
+    <!-- Resplandor sutil de fondo centrado en el amuleto -->
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,218,116,0.14)_0%,rgba(122,23,27,0.15)_45%,transparent_70%)]"></div>
+
+    <div class="relative z-10 max-w-lg mx-auto flex flex-col items-center">
+      <!-- Talismán / Cascabel Dorado con Halo Resplandeciente (Fiel a la imagen) -->
+      <div class="mb-10 relative flex items-center justify-center">
+        <div class="absolute w-36 h-36 rounded-full bg-imperial-gold/30 blur-2xl animate-pulse"></div>
+        <img
+          src="imagenes/cat-bell.png"
+          alt="Loto Imperial - Conexión Perdida"
+          class="relative z-10 w-28 h-28 sm:w-36 sm:h-36 object-contain drop-shadow-[0_0_30px_rgba(255,218,116,0.7)] animate-logo-glow"
+        />
+      </div>
+
+      <!-- Título idéntico a la imagen -->
+      <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold tracking-[0.22em] text-[#FFDA74] mb-8 leading-snug drop-shadow-[0_2px_10px_rgba(255,218,116,0.3)]">
+        CONEXIÓN<br />INTERRUMPIDA
+      </h2>
+
+      <!-- Texto descriptivo idéntico al de la imagen -->
+      <p class="text-[#E6D7D8] text-sm sm:text-base font-light leading-relaxed mb-3 max-w-md">
+        Lamentamos informarle que su conexión con el Imperio se ha perdido.
+      </p>
+      <p class="text-[#B3999B] text-xs sm:text-sm font-light leading-relaxed mb-10 max-w-md">
+        Por favor, verifique su conexión a internet para retomar su experiencia sensorial.
+      </p>
+
+      <!-- Botón rectangular borde dorado (Fiel a la imagen) -->
+      <div class="w-full sm:w-auto flex flex-col gap-4 items-center">
+        <button
+          id="btnRetryConnection"
+          type="button"
+          class="w-full sm:w-72 py-3.5 px-8 border border-[#FFDA74] bg-[#0d0406]/80 text-[#FFDA74] hover:bg-[#FFDA74] hover:text-[#0d0406] text-xs sm:text-sm tracking-[0.25em] uppercase font-medium transition-all duration-300 shadow-[0_0_15px_rgba(255,218,116,0.15)] hover:shadow-[0_0_25px_rgba(255,218,116,0.5)] cursor-pointer flex items-center justify-center gap-2 group"
+        >
+          <i id="retrySpinner" class="fa-solid fa-arrows-rotate group-hover:rotate-180 transition-transform duration-500 text-xs"></i>
+          <span id="retryBtnText">REINTENTAR CONEXIÓN</span>
+        </button>
+
+        <!-- Opción complementaria de PWA Offline para explorar el menú en caché -->
+        <button
+          id="btnBrowseOffline"
+          type="button"
+          class="text-xs uppercase tracking-[0.18em] text-[#FFDA74]/70 hover:text-[#FFDA74] hover:underline transition-colors cursor-pointer flex items-center gap-2 pt-2"
+        >
+          <i class="fa-solid fa-utensils text-[11px]"></i>
+          <span>Explorar menú guardado sin conexión</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pill Flotante cuando el usuario minimiza el aviso offline -->
+  <div
+    id="offlinePill"
+    class="fixed top-6 right-6 z-40 hidden items-center gap-2.5 px-4 py-2 rounded-full bg-[#1c0808] border border-imperial-gold text-imperial-gold text-xs tracking-wider shadow-deep cursor-pointer hover:scale-105 transition-all"
+    title="Haz clic para verificar conexión"
+  >
+    <span class="w-2 h-2 rounded-full bg-imperial-gold animate-ping"></span>
+    <span class="font-semibold text-[11px] uppercase tracking-widest">Modo Sin Conexión</span>
+    <i class="fa-solid fa-wifi-slash text-imperial-gold"></i>
+  </div>
+
+  <!-- Toasts de Notificación -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Canvas de animación GSAP (Fijo, encima de todo al frente, sin ocupar flujo) -->
+  <canvas id="hero-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-30 object-cover"></canvas>
+
+  <!-- =========================================================================
+       1. HERO SECTION (PORTADA CON IMAGEN ORIGINAL DE GITHUB + LOGO MÁS GRANDE)
+       ========================================================================= -->
+  <section
+    id="inicio"
+    class="section hero relative min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-16 pb-28 overflow-hidden"
+  >
+    <!-- IMAGEN ORIGINAL DEL HERO DE GITHUB (WonFun Interior - Mayor Visibilidad) -->
+    <div class="hero-visual absolute inset-0 z-0">
+      <img
+        src="https://www.pagodared.com/blog/wp-content/uploads/2018/02/WonFun-InteriorPR-copy.jpg"
+        alt="Loto Imperial Interior"
+        class="hero-img w-full h-full object-cover object-center scale-105 opacity-65"
+      />
+      <!-- Gradientes calibrados para que la arquitectura y calidez se aprecien claramente -->
+      <div class="overlay absolute inset-0 bg-gradient-to-b from-[#120505]/70 via-[#1c0808]/30 to-[#120505]/95"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(153,27,33,0.15)_0%,rgba(18,5,5,0.7)_85%)]"></div>
+    </div>
+
+    <!-- Hero Content -->
+    <div class="hero-text relative z-10 max-w-4xl mx-auto flex flex-col items-center">
+      <!-- LOGO MÁS GRANDE (Con destellos en Oro y Vino) -->
+      <div class="hero-logo-container mb-6 relative group">
+        <div class="absolute -inset-6 rounded-full bg-imperial-wineVibrant/30 blur-3xl group-hover:bg-imperial-gold/30 transition-all duration-700"></div>
+        <div class="relative w-48 h-48 sm:w-60 sm:h-60 md:w-68 md:h-68 rounded-full bg-[#1c0808]/90 border-2 border-imperial-gold/60 flex items-center justify-center shadow-goldStrong p-6">
+          <img
+            src="LOGO.svg"
+            alt="Loto Imperial Logo"
+            class="hero-logo w-full h-full object-contain filter drop-shadow animate-logo-glow"
+          />
+        </div>
+      </div>
+
+      <!-- Etiqueta con Verde Jade Imperial de contraste -->
+      <div class="inline-flex items-center gap-3 mb-4 px-5 py-2 rounded-full bg-imperial-wine/60 border border-imperial-gold/40 shadow-jade backdrop-blur-sm">
+        <span class="w-2 h-2 rounded-full bg-imperial-jadeBright animate-pulse"></span>
+        <span class="text-[11px] sm:text-xs uppercase tracking-[0.28em] text-imperial-gold font-semibold">
+          Alta Cocina Oriental Contemporánea
+        </span>
+        <span class="w-2 h-2 rounded-full bg-imperial-jadeBright animate-pulse"></span>
+      </div>
+
+      <!-- Título Principal -->
+      <h1 class="hero-title font-serif text-4xl sm:text-6xl md:text-7xl font-bold tracking-[0.18em] sm:tracking-[0.25em] text-gold-gradient drop-shadow mb-6 leading-tight">
+        LOTO IMPERIAL
+      </h1>
+
+      <!-- Divisor Ornamental -->
+      <div class="flex items-center justify-center gap-4 w-full max-w-xs mb-6">
+        <div class="h-px flex-1 bg-gradient-to-r from-transparent to-imperial-gold/80"></div>
+        <div class="w-2.5 h-2.5 rotate-45 border border-imperial-gold bg-imperial-wineVibrant"></div>
+        <div class="h-px flex-1 bg-gradient-to-l from-transparent to-imperial-gold/80"></div>
+      </div>
+
+      <!-- Subtítulo -->
+      <p class="max-w-2xl text-base sm:text-xl text-imperial-cream/95 font-light leading-relaxed mb-10 px-2">
+        Una armonía de sabores milenarios: el corazón de Asia en un solo lugar.
+      </p>
+
+      <!-- Botones de Acción DORADOS (No rojos) con Resplandor Dorado -->
+      <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto justify-center">
+        <a
+          href="#reservaciones"
+          class="btn-premium w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] text-[#120505] font-bold text-xs sm:text-sm tracking-[0.2em] uppercase border border-[#FFE699] shadow-[0_0_25px_rgba(255,218,116,0.65)] hover:shadow-[0_0_40px_rgba(255,218,116,0.95)] hover:brightness-110 active:scale-95 transition-all duration-300"
+        >
+          <span>RESERVAR EXPERIENCIA</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+
+        <a
+          href="#menu"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-4 rounded-xl bg-[#120505]/80 hover:bg-[#FFDA74] text-[#FFDA74] hover:text-[#120505] border-2 border-[#FFDA74] font-bold text-xs sm:text-sm tracking-[0.16em] uppercase shadow-[0_0_15px_rgba(255,218,116,0.35)] hover:shadow-[0_0_30px_rgba(255,218,116,0.85)] transition-all duration-300"
+        >
+          <span>Explorar Carta</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       2. GASTRONOMÍA ORIENTAL • CARTA ENCUADERNADA & HOJEADO REALISTA
+       ========================================================================= -->
+  <section id="menu" class="section relative py-24 sm:py-28 px-3 sm:px-6 lg:px-8 bg-imperial-darker asian-pattern border-t border-imperial-gold/20">
+    <div class="max-w-7xl mx-auto">
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto mb-10">
+        <span class="text-xs uppercase tracking-[0.3em] text-imperial-gold font-semibold block mb-3">
+          Carta Encuadernada • Edición 2026
+        </span>
+        <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold tracking-[0.14em] text-gold-gradient mb-3">
+          GASTRONOMÍA ORIENTAL
+        </h2>
+        <p class="text-imperial-muted text-base sm:text-lg font-light mb-3">
+          Un viaje sensorial desde Japón hasta Tailandia. Arrastre la esquina inferior o elija un capítulo para pasar la hoja
+        </p>
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1c0808] border border-imperial-gold/35 text-[11px] font-semibold text-imperial-gold tracking-widest uppercase shadow-sm">
+          <i data-lucide="coins" class="w-3.5 h-3.5"></i>
+          <span>Precios expresados en Pesos Mexicanos (MXN) • IVA incluido</span>
+        </div>
+      </div>
+
+      <!-- Top Chapter Bookmark Tabs & Sound Toggle -->
+      <div class="flex flex-col lg:flex-row items-center justify-between gap-4 mb-6">
+        <div
+          id="menu-tabs"
+          role="tablist"
+          aria-label="Capítulos del catálogo"
+          class="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5"
+        >
+          <button
+            data-index="0"
+            data-category="japon"
+            class="menu-tab active px-4 sm:px-5 py-2.5 rounded-t-xl rounded-b-md text-xs sm:text-sm font-semibold tracking-wider uppercase transition-all duration-300 bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] text-[#120505] shadow-gold cursor-pointer"
+          >
+            I. Japón
+          </button>
+          <button
+            data-index="1"
+            data-category="china"
+            class="menu-tab px-4 sm:px-5 py-2.5 rounded-t-xl rounded-b-md text-xs sm:text-sm font-medium tracking-wider uppercase transition-all duration-300 bg-[#260d0f] text-imperial-cream/80 border border-imperial-gold/25 hover:border-imperial-gold/60 hover:text-imperial-gold cursor-pointer"
+          >
+            II. China
+          </button>
+          <button
+            data-index="2"
+            data-category="sabores"
+            class="menu-tab px-4 sm:px-5 py-2.5 rounded-t-xl rounded-b-md text-xs sm:text-sm font-medium tracking-wider uppercase transition-all duration-300 bg-[#260d0f] text-imperial-cream/80 border border-imperial-gold/25 hover:border-imperial-gold/60 hover:text-imperial-gold cursor-pointer"
+          >
+            III. Sabores Asiáticos
+          </button>
+          <button
+            data-index="3"
+            data-category="infantil"
+            class="menu-tab px-4 sm:px-5 py-2.5 rounded-t-xl rounded-b-md text-xs sm:text-sm font-medium tracking-wider uppercase transition-all duration-300 bg-[#260d0f] text-imperial-cream/80 border border-imperial-gold/25 hover:border-imperial-gold/60 hover:text-imperial-gold cursor-pointer"
+          >
+            IV. Menú Infantil
+          </button>
+          <button
+            data-index="4"
+            data-category="bebidas"
+            class="menu-tab px-4 sm:px-5 py-2.5 rounded-t-xl rounded-b-md text-xs sm:text-sm font-medium tracking-wider uppercase transition-all duration-300 bg-[#260d0f] text-imperial-cream/80 border border-imperial-gold/25 hover:border-imperial-gold/60 hover:text-imperial-gold cursor-pointer"
+          >
+            V. Sake y Vinos
+          </button>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button id="selection-btn" type="button" onclick="openSelection()"
+            class="relative inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#260d0f]/90 border border-imperial-gold/30 text-xs text-imperial-gold hover:border-imperial-gold transition-all cursor-pointer">
+            <i data-lucide="heart" class="w-4 h-4 text-imperial-gold"></i>
+            <span>Mi selección</span>
+            <span id="selection-count" class="hidden min-w-[18px] h-[18px] px-1 rounded-full bg-imperial-gold text-[#120505] text-[10px] font-bold items-center justify-center leading-[18px] text-center">0</span>
+          </button>
+          <!-- Paper Rustle Sound Toggle -->
+          <button
+            id="paper-sound-toggle"
+            type="button"
+            aria-pressed="true"
+            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#260d0f]/90 border border-imperial-gold/30 text-xs text-imperial-gold hover:border-imperial-gold transition-all cursor-pointer"
+            title="Activar o silenciar sonido sutil de papel al pasar página"
+          >
+            <i id="paper-sound-icon" data-lucide="volume-2" class="w-4 h-4 text-imperial-gold"></i>
+            <span id="paper-sound-label">Sonido de papel: Activo</span>
+          </button>
+          <!-- Day of the Week Pill / Filter -->
+          <div
+            id="today-menu-pill"
+            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#260d0f]/90 border border-imperial-gold/35 text-xs text-imperial-gold"
+            title="Día de la semana actual en Loto Imperial"
+          >
+            <i class="fa-solid fa-calendar-day text-imperial-gold"></i>
+            <span id="today-day-text">Hoy: Menú Imperial</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leather & Gold Bound Open Book Frame -->
+      <div class="leather-cover-frame mx-auto">
+        <!-- Woven Silk Bookmark Ribbon at Center Spine -->
+        <div class="silk-ribbon hidden lg:block" aria-hidden="true"></div>
+
+        <!-- Stacked Paper Sheets Container -->
+        <div
+          id="catalog-book"
+          class="paper-stack-shell washi-grain overflow-hidden select-none"
+        >
+          <!-- Center Spine Gutter Shadow (Desktop 2-page spread) -->
+          <div class="book-center-gutter" aria-hidden="true"></div>
+
+          <!-- Real-Time Geometric Paper Curl Canvas -->
+          <canvas id="page-curl-canvas" aria-hidden="true"></canvas>
+
+          <!-- Interactive Corner Drag Zones (Bottom Left & Bottom Right) -->
+          <div
+            id="grab-corner-left"
+            class="corner-grab-zone left"
+            role="button"
+            tabindex="0"
+            aria-label="Arrastrar o pulsar para regresar a la página anterior"
+            title="Arrastra o haz clic para volver a la página anterior"
+          ></div>
+          <div
+            id="grab-corner-right"
+            class="corner-grab-zone right"
+            role="button"
+            tabindex="0"
+            aria-label="Arrastrar o pulsar para pasar a la siguiente página"
+            title="Arrastra o haz clic para pasar a la siguiente página"
+          ></div>
+
+          <!-- Open Book Double-Page Spread Content -->
+          <div id="book-spread-content" class="relative z-10 p-5 sm:p-8 lg:p-11 transition-opacity duration-200">
+            <!-- Top Running Folio Header -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-5 mb-7 border-b border-imperial-gold/25">
+              <div class="flex items-center gap-3">
+                <span id="chapter-roman" class="px-3 py-1 rounded-md bg-[#120505]/90 border border-imperial-gold/35 font-serif text-xs tracking-[0.25em] text-imperial-gold font-bold">
+                  CAPÍTULO I
+                </span>
+                <span id="chapter-origin" class="text-xs uppercase tracking-[0.26em] text-imperial-muted">
+                  TRADICIÓN NIPONA
+                </span>
+              </div>
+
+              <!-- Selector de subpágina para móvil (1 sola página de 3 platillos a la vez) -->
+              <div id="mobile-subpage-pills" class="flex md:hidden items-center bg-[#140707] p-1 rounded-lg border border-imperial-gold/30 text-xs shadow-inner">
+                <button id="mobile-subpage-btn-0" type="button" class="px-2.5 py-1 rounded font-serif font-bold text-imperial-gold bg-imperial-gold/25 border border-imperial-gold/40 shadow-gold transition-all cursor-pointer">
+                  Pág. 1 (1–3)
+                </button>
+                <button id="mobile-subpage-btn-1" type="button" class="px-2.5 py-1 rounded font-serif text-imperial-muted hover:text-imperial-gold border border-transparent transition-all cursor-pointer">
+                  Pág. 2 (4–6)
+                </button>
+              </div>
+
+              <div class="hidden sm:flex items-center gap-2 text-xs text-imperial-gold/90 animate-nudge">
+                <i data-lucide="hand" class="w-3.5 h-3.5 text-imperial-gold"></i>
+                <span>Arrastra la esquina inferior para hojear</span>
+              </div>
+
+              <div class="flex items-center gap-2 text-xs font-serif tracking-[0.22em] text-imperial-gold">
+                <span id="folio-numbers">FOLIOS 01 – 02</span>
+              </div>
+            </div>
+
+            <!-- Dual Facing Pages Grid (Left Page & Right Page forming an exact 2x3 dish grid) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-14 items-stretch">
+              <!-- LEFT PAGE OF THE OPEN BOOK (Column 1: 3 Rows) -->
+              <div id="book-page-left" class="flex flex-col justify-between md:pr-2 lg:pr-3">
+                <div>
+                  <!-- Left Page Editorial Chapter Intro (Exact Mirror Height with Right Page) -->
+                  <div class="h-[116px] mb-6 pb-4 border-b border-imperial-gold/20 flex flex-col justify-center text-center md:text-left">
+                    <span id="chapter-roman-sub" class="text-[11px] uppercase tracking-[0.26em] text-imperial-gold font-semibold block mb-1.5">
+                      Capítulo I • Esencia Culinaria
+                    </span>
+                    <h3 id="chapter-title" class="font-serif text-lg sm:text-xl lg:text-2xl font-bold tracking-[0.1em] text-gold-gradient mb-1.5 line-clamp-1">
+                      JAPÓN: ARTE Y PRECISIÓN
+                    </h3>
+                    <p id="chapter-subtitle" class="text-xs sm:text-[13px] text-imperial-muted italic font-light leading-snug line-clamp-2">
+                      “Cortes puros, caldos de cocción lenta de doce horas y el respeto absoluto por el ingrediente de temporada.”
+                    </p>
+                  </div>
+
+                  <!-- Left Page Dishes (Column 1: Rows 1, 2, 3) -->
+                  <div id="left-page-dishes" class="grid grid-cols-1 grid-rows-3 gap-4">
+                    <!-- Populated via JS -->
+                  </div>
+                </div>
+
+                <!-- Left Page Bottom Folio -->
+                <div class="mt-6 pt-4 border-t border-imperial-gold/15 flex items-center justify-between text-[11px] font-serif tracking-[0.24em] text-imperial-muted/75">
+                  <span id="left-folio-label">PÁG. 01</span>
+                  <span>LOTO IMPERIAL • PRECIOS EN MXN</span>
+                </div>
+              </div>
+
+              <!-- RIGHT PAGE OF THE OPEN BOOK (Column 2: 3 Rows) -->
+              <div id="book-page-right" class="flex flex-col justify-between md:pl-2 lg:pl-3 border-t-0 md:border-t-0 pt-0 md:pt-0">
+                <div>
+                  <!-- Right Page Mirror Header (Exact Same 116px Height & Structure as Left Page) -->
+                  <div class="h-[116px] mb-6 pb-4 border-b border-imperial-gold/20 flex items-center justify-between gap-4">
+                    <div class="min-w-0 flex-1 text-center md:text-left">
+                      <span class="text-[11px] uppercase tracking-[0.26em] text-imperial-gold font-semibold block mb-1.5">
+                        Selección del Maestro & Maridaje
+                      </span>
+                      <h4 id="chapter-right-heading" class="font-serif text-lg sm:text-xl lg:text-2xl font-bold tracking-[0.1em] text-imperial-cream mb-1.5 line-clamp-1">
+                        CURADURÍA & MARIDAJE
+                      </h4>
+                      <p id="chapter-pairing" class="text-xs sm:text-[13px] text-imperial-muted font-light leading-snug line-clamp-2">
+                        Maridaje sugerido: Dassai 23 Junmai Daiginjo servido a 8°C.
+                      </p>
+                    </div>
+                    <div class="hidden sm:flex w-12 h-12 rounded-full border border-imperial-gold/45 bg-[#120505]/85 items-center justify-center shrink-0 text-imperial-gold font-serif text-sm font-bold shadow-gold">
+                      ?
+                    </div>
+                  </div>
+
+                  <!-- Right Page Dishes (Column 2: Rows 1, 2, 3: Horizontally Mirrored with Left Page) -->
+                  <div id="right-page-dishes" class="grid grid-cols-1 grid-rows-3 gap-4">
+                    <!-- Populated via JS -->
+                  </div>
+                </div>
+
+                <!-- Right Page Bottom Folio -->
+                <div class="mt-6 pt-4 border-t border-imperial-gold/15 flex items-center justify-between text-[11px] font-serif tracking-[0.24em] text-imperial-muted/75">
+                  <span>EDICIÓN 2026 • PRECIOS EN PESOS MEXICANOS (MXN)</span>
+                  <span id="right-folio-label">PÁG. 02</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Catalog Book Controls -->
+            <div class="mt-8 pt-5 border-t border-imperial-gold/25 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <button
+                id="prev-page-btn"
+                type="button"
+                class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl bg-[#140707] hover:bg-[#2a0e10] text-imperial-cream border border-imperial-gold/35 hover:border-imperial-gold text-xs uppercase tracking-[0.18em] font-semibold transition-all cursor-pointer"
+              >
+                <i data-lucide="chevron-left" class="w-4 h-4 text-imperial-gold"></i>
+                <span>Hoja Anterior</span>
+              </button>
+
+              <!-- Chapter Pagination Indicators -->
+              <div id="catalog-dots" class="flex items-center gap-2.5" aria-label="Capítulos del catálogo">
+                <!-- Populated dynamically -->
+              </div>
+
+              <button
+                id="next-page-btn"
+                type="button"
+                class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] text-[#120505] text-xs uppercase tracking-[0.18em] font-bold shadow-gold hover:brightness-105 active:scale-95 transition-all cursor-pointer"
+              >
+                <span>Pasar Hoja</span>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Backup container for programmatic fallback -->
+  <div id="menu-grid" class="hidden"></div>
+
+  <!-- =========================================================================
+       3. RESERVACIONES (SISTEMA HÍBRIDO CONECTADO A SUPABASE Y COLA OFFLINE)
+       ========================================================================= -->
+  <section
+    id="reservaciones"
+    class="section relative py-20 sm:py-28 px-4 sm:px-6 bg-imperial-bg border-t border-imperial-gold/20 overflow-hidden flex flex-col justify-center items-center"
+  >
+    <div class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[580px] h-[580px] rounded-full bg-imperial-wineVibrant/20 blur-[140px]"></div>
+
+    <div class="relative z-10 max-w-3xl mx-auto w-full flex flex-col items-center">
+      <div class="section-header text-center mb-10 w-full">
+        <span class="text-xs uppercase tracking-[0.3em] text-imperial-gold font-semibold block mb-3">
+          Hospitalidad Imperial
+        </span>
+        <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold tracking-[0.14em] text-gold-gradient mb-3">
+          RESERVACIONES
+        </h2>
+        <p class="text-imperial-muted text-base sm:text-lg font-light">
+          Asegure su lugar en nuestra mesa
+        </p>
+      </div>
+
+      <div class="glass-card reservation-card mx-auto w-full rounded-3xl bg-[#1c0808] border-2 border-imperial-gold/40 p-6 sm:p-10 md:p-12 shadow-deep">
+        <form id="premiumReserveForm" class="space-y-6">
+          <div class="input-group">
+            <label for="reserveFullName" class="block text-xs uppercase tracking-[0.18em] text-imperial-gold font-semibold mb-2.5">
+              Nombre Completo
+            </label>
+            <div class="relative">
+              <span class="input-icon-left text-imperial-gold pointer-events-none">
+                <i class="fa-solid fa-user"></i>
+              </span>
+              <input
+                type="text"
+                id="reserveFullName"
+                name="fullName"
+                required
+                placeholder="Ej. Kenji Sato"
+                class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-[#120505] border border-imperial-gold/30 text-imperial-cream placeholder-[#806f6f] focus:outline-none focus:border-imperial-gold focus:ring-1 focus:ring-imperial-gold transition-all"
+              />
+            </div>
+          </div>
+
+          <div class="input-row grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div class="input-group">
+              <label for="reserveDate" class="block text-xs uppercase tracking-[0.18em] text-imperial-gold font-semibold mb-2.5">
+                Fecha
+              </label>
+              <div class="relative">
+                <span class="input-icon-left text-imperial-gold pointer-events-none">
+                  <i class="fa-solid fa-calendar-day"></i>
+                </span>
+                <input
+                  type="date"
+                  id="reserveDate"
+                  name="date"
+                  required
+                  class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-[#120505] border border-imperial-gold/30 text-imperial-cream focus:outline-none focus:border-imperial-gold focus:ring-1 focus:ring-imperial-gold transition-all"
+                />
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="reserveTime" class="block text-xs uppercase tracking-[0.18em] text-imperial-gold font-semibold mb-2.5">
+                Hora
+              </label>
+              <div class="relative">
+                <span class="input-icon-left text-imperial-gold pointer-events-none">
+                  <i class="fa-solid fa-clock"></i>
+                </span>
+                <input
+                  type="time"
+                  id="reserveTime"
+                  name="time"
+                  required
+                  class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-[#120505] border border-imperial-gold/30 text-imperial-cream focus:outline-none focus:border-imperial-gold focus:ring-1 focus:ring-imperial-gold transition-all"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="reserveGuests" class="block text-xs uppercase tracking-[0.18em] text-imperial-gold font-semibold mb-2.5">
+              Invitados
+            </label>
+            <div class="relative">
+              <span class="input-icon-left text-imperial-gold pointer-events-none">
+                <i class="fa-solid fa-users"></i>
+              </span>
+              <select
+                id="reserveGuests"
+                name="guests"
+                required
+                class="w-full pl-12 pr-11 py-3.5 rounded-xl bg-[#120505] border border-imperial-gold/30 text-imperial-cream focus:outline-none focus:border-imperial-gold focus:ring-1 focus:ring-imperial-gold appearance-none transition-all cursor-pointer"
+              >
+                <option value="1">1 Persona</option>
+                <option value="2" selected>2 Personas</option>
+                <option value="4">4 Personas</option>
+                <option value="6">6 Personas</option>
+                <option value="8">Banquete Imperial (8+)</option>
+              </select>
+              <span class="input-icon-right text-imperial-gold pointer-events-none">
+                <i class="fa-solid fa-chevron-down"></i>
+              </span>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="reserveNotes" class="block text-xs uppercase tracking-[0.18em] text-imperial-gold font-semibold mb-2.5">
+              Peticiones Especiales
+            </label>
+            <textarea
+              id="reserveNotes"
+              name="notes"
+              rows="3"
+              placeholder="Alergias o preferencias culinarias..."
+              class="w-full px-4 py-3.5 rounded-xl bg-[#120505] border border-imperial-gold/30 text-imperial-cream placeholder-[#806f6f] focus:outline-none focus:border-imperial-gold focus:ring-1 focus:ring-imperial-gold transition-all resize-none"
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            class="btn-submit w-full py-4 px-6 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] text-[#120505] font-bold text-sm tracking-[0.2em] uppercase border border-[#FFE699] shadow-[0_0_25px_rgba(255,218,116,0.6)] hover:shadow-[0_0_40px_rgba(255,218,116,0.95)] hover:brightness-110 active:scale-[0.99] transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer"
+          >
+            <span>CONFIRMAR RESERVA</span>
+            <i class="fa-solid fa-check-circle"></i>
+          </button>
+        </form>
+
+        <div id="reservaFeedback" class="hidden"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4. CONTACTO & MAPA DE GOOGLE INTERACTIVO
+       ========================================================================= -->
+  <section id="contacto" class="section relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 bg-imperial-darker border-t border-imperial-gold/20 flex flex-col justify-center items-center">
+    <div class="max-w-6xl mx-auto w-full flex flex-col items-center">
+      <div class="section-header text-center mb-12 w-full">
+        <span class="text-xs uppercase tracking-[0.3em] text-imperial-gold font-semibold block mb-3">
+          Encuéntranos
+        </span>
+        <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold tracking-[0.14em] text-gold-gradient mb-3">
+          CONTACTO
+        </h2>
+        <p class="text-imperial-muted text-base sm:text-lg font-light">
+          Estamos listos para recibirle
+        </p>
+      </div>
+
+      <div class="contact-grid mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+        <!-- Columna Izquierda: Datos de Contacto -->
+        <div class="contact-info glass-card rounded-3xl bg-[#1c0808] border-2 border-imperial-gold/30 p-7 sm:p-10 shadow-deep flex flex-col justify-between">
+          <div class="space-y-7">
+            <div>
+              <h3 class="font-serif text-xl sm:text-2xl font-semibold text-imperial-cream tracking-wide mb-2">
+                Distrito Gastronómico Oriental
+              </h3>
+              <p class="text-sm text-imperial-muted leading-relaxed">
+                Disfruta de nuestra mesa imperial, barra de degustación y salones privados para banquetes exclusivos.
+              </p>
+            </div>
+
+            <div class="space-y-5">
+              <div class="info-item flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-[#120505] border border-imperial-gold/40 flex items-center justify-center text-imperial-gold shrink-0">
+                  <i class="fa-solid fa-location-dot text-lg"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs uppercase tracking-[0.18em] text-imperial-gold font-semibold mb-1">
+                    Ubicación
+                  </h4>
+                  <p class="text-imperial-cream text-sm sm:text-base">
+                    Av. Paseo de la Reforma 450, Juárez, Cuauhtémoc, Ciudad de México
+                  </p>
+                </div>
+              </div>
+
+              <div class="info-item flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-[#120505] border border-imperial-gold/40 flex items-center justify-center text-imperial-gold shrink-0">
+                  <i class="fa-solid fa-phone text-lg"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs uppercase tracking-[0.18em] text-imperial-gold font-semibold mb-1">
+                    Teléfono & Concierge
+                  </h4>
+                  <a href="tel:+525588776655" class="text-imperial-cream hover:text-imperial-gold transition-colors text-sm sm:text-base">
+                    +52 55 8877 6655
+                  </a>
+                </div>
+              </div>
+
+              <div class="info-item flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-[#120505] border border-imperial-gold/40 flex items-center justify-center text-imperial-gold shrink-0">
+                  <i class="fa-solid fa-envelope text-lg"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs uppercase tracking-[0.18em] text-imperial-gold font-semibold mb-1">
+                    Email
+                  </h4>
+                  <a href="mailto:concierge@lotoimperial.com" class="text-imperial-cream hover:text-imperial-gold transition-colors text-sm sm:text-base">
+                    concierge@lotoimperial.com
+                  </a>
+                </div>
+              </div>
+
+              <div class="info-item flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-[#120505] border border-imperial-gold/40 flex items-center justify-center text-imperial-gold shrink-0">
+                  <i class="fa-solid fa-clock text-lg"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs uppercase tracking-[0.18em] text-imperial-gold font-semibold mb-1">
+                    Horario de Servicio
+                  </h4>
+                  <p class="text-imperial-cream text-sm sm:text-base">
+                    Mar – Dom: 13:00 – 23:30 hrs
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 pt-6 border-t border-imperial-gold/20 flex items-center justify-between text-xs text-imperial-muted">
+            <span class="flex items-center gap-2">
+              <i class="fa-solid fa-car text-imperial-gold"></i>
+              Valet Parking en puerta
+            </span>
+            <span class="text-imperial-gold font-medium">Dress Code: Smart Casual</span>
+          </div>
+        </div>
+
+        <!-- Columna Derecha: MAPA DE GOOGLE (Paseo de la Reforma, CDMX) -->
+        <div class="map-placeholder glass-card relative rounded-3xl bg-[#1c0808] border-2 border-imperial-gold/30 overflow-hidden shadow-deep min-h-[420px]">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.5937171448697!2d-99.17242132398544!3d19.42781498185012!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1ff4c61944f19%3A0x6b876fc15645eb4!2sPaseo%20de%20la%20Reforma%20450%2C%20Ju%C3%A1rez%2C%20Cuauht%C3%A9moc%2C%2006600%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses!2smx!4v1700000000000!5m2!1ses!2smx"
+            width="100%"
+            height="100%"
+            style="border:0; min-height: 440px;"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       5. SECCIÓN MI CUENTA (USUARIO)
+       ========================================================================= -->
+  <section id="profile" class="section hidden relative py-24 sm:py-28 px-4 sm:px-6 bg-imperial-bg border-t border-imperial-gold/20">
+    <div class="max-w-4xl mx-auto w-full">
+      <div class="section-header text-center mb-10">
+        <h2 id="profileTitle" class="font-serif text-3xl sm:text-4xl font-bold text-gold-gradient mb-2">Mi Cuenta</h2>
+        <p class="text-imperial-muted text-sm sm:text-base">Gestione sus reservaciones y datos personales</p>
+      </div>
+
+      <div class="glass-card profile-card rounded-3xl bg-[#1c0808] border-2 border-imperial-gold/40 p-8 shadow-deep">
+        <div id="userInfo" class="user-info-summary text-center pb-8 border-b border-imperial-gold/25 mb-8">
+          <h3 id="userName" class="font-serif text-2xl sm:text-3xl font-bold text-imperial-gold mb-1">Cargando...</h3>
+          <p id="userEmail" class="text-imperial-muted text-sm mb-4"></p>
+          <button
+            id="btnLogoutUser"
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-imperial-gold text-imperial-gold hover:bg-imperial-gold hover:text-imperial-bg text-xs uppercase tracking-wider font-semibold transition-all cursor-pointer"
+          >
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Cerrar Sesión</span>
+          </button>
+        </div>
+
+        <div class="reservations-list">
+          <h4 class="font-serif text-xl font-semibold text-center text-imperial-cream mb-6">Mis Reservaciones</h4>
+          <div id="userReservationsGrid" class="menu-grid grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Dinámico -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       6. PANEL DE CONTROL IMPERIAL (ADMINISTRADOR)
+       ========================================================================= -->
+  <section id="admin" class="section hidden relative py-24 sm:py-28 px-4 sm:px-6 bg-imperial-bg border-t border-imperial-gold/20">
+    <div class="max-w-6xl mx-auto w-full">
+      <div class="section-header text-center mb-8">
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-gold-gradient mb-2">Panel de Control Imperial</h2>
+        <p class="text-imperial-muted text-sm sm:text-base">Gestión de reservaciones, carta gastronómica y menús semanales</p>
+      </div>
+
+      <!-- Barra Superior de Navegación de Módulos Admin -->
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-imperial-gold/30">
+        <div class="flex flex-wrap gap-2 sm:gap-3" id="adminModuleTabs">
+          <button
+            type="button"
+            id="tabAdminReservations"
+            data-target="adminPanelReservations"
+            class="admin-module-btn active px-4 sm:px-5 py-2.5 rounded-xl font-serif text-xs sm:text-sm font-semibold tracking-wider uppercase transition-all duration-300 bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] text-[#120505] shadow-gold cursor-pointer"
+          >
+            <i class="fa-solid fa-calendar-check mr-2"></i>Reservaciones
+          </button>
+          <button
+            type="button"
+            id="tabAdminDishes"
+            data-target="adminPanelDishes"
+            class="admin-module-btn px-4 sm:px-5 py-2.5 rounded-xl font-serif text-xs sm:text-sm font-medium tracking-wider uppercase transition-all duration-300 bg-[#260d0f] text-imperial-cream/80 border border-imperial-gold/30 hover:border-imperial-gold hover:text-imperial-gold cursor-pointer"
+          >
+            <i class="fa-solid fa-bowl-food mr-2"></i>Platillos
+          </button>
+          <button
+            type="button"
+            id="tabAdminDailyMenu"
+            data-target="adminPanelDailyMenu"
+            class="admin-module-btn px-4 sm:px-5 py-2.5 rounded-xl font-serif text-xs sm:text-sm font-medium tracking-wider uppercase transition-all duration-300 bg-[#260d0f] text-imperial-cream/80 border border-imperial-gold/30 hover:border-imperial-gold hover:text-imperial-gold cursor-pointer"
+          >
+            <i class="fa-solid fa-calendar-week mr-2"></i>Menús por Día
+          </button>
+        </div>
+
+        <button
+          id="btnLogoutAdmin"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-red-500/50 text-red-400 hover:bg-red-500 hover:text-white text-xs uppercase tracking-wider font-semibold transition-all cursor-pointer"
+          title="Cerrar Sesión"
+        >
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span>Cerrar Sesión</span>
+        </button>
+      </div>
+
+      <!-- MÓDULO 1: RESERVACIONES -->
+      <div id="adminPanelReservations" class="admin-module-content">
+        <div class="glass-card admin-card rounded-3xl bg-[#1c0808] border-2 border-imperial-gold/40 p-6 sm:p-10 shadow-deep">
+          <div class="admin-controls flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-imperial-gold/25 mb-8">
+            <div class="flex items-center gap-3">
+              <h3 class="font-serif text-lg sm:text-xl font-semibold text-imperial-cream">Reservaciones</h3>
+              <select
+                id="adminStatusFilter"
+                class="bg-[#120505] border border-imperial-gold/40 text-imperial-gold text-xs sm:text-sm rounded-xl px-3 py-2 outline-none cursor-pointer"
+              >
+                <option value="pendiente">Pendientes</option>
+                <option value="completada">Completadas</option>
+                <option value="cancelada">Canceladas</option>
+                <option value="todas">Todas</option>
+              </select>
+            </div>
+
+            <div class="search-box flex items-center gap-2">
+              <input
+                type="text"
+                id="adminSearchCode"
+                placeholder="Buscar código..."
+                class="bg-[#120505] border border-imperial-gold/40 text-imperial-cream text-xs sm:text-sm rounded-xl px-3 py-2 outline-none focus:border-imperial-gold"
+              />
+              <button
+                id="btnSearchCode"
+                class="px-4 py-2 rounded-xl bg-imperial-gold text-imperial-bg font-semibold text-xs uppercase tracking-wider hover:brightness-105 transition-all cursor-pointer"
+              >
+                Buscar
+              </button>
+            </div>
+          </div>
+
+          <div id="adminReservationsGrid" class="grid grid-cols-1 gap-4">
+            <!-- Reservaciones administrables -->
+          </div>
+        </div>
+      </div>
+
+      <!-- MÓDULO 2: GESTIÓN DE PLATILLOS (REGISTRAR, EDITAR, ELIMINAR) -->
+      <div id="adminPanelDishes" class="admin-module-content hidden">
+        <div class="glass-card admin-card rounded-3xl bg-[#1c0808] border-2 border-imperial-gold/40 p-6 sm:p-10 shadow-deep mb-8">
+          <div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-imperial-gold/25 mb-6">
+            <div>
+              <h3 class="font-serif text-lg sm:text-xl font-semibold text-imperial-cream flex items-center gap-2">
+                <i class="fa-solid fa-utensils text-imperial-gold"></i>
+                <span id="adminDishFormTitle">Registrar Nuevo Platillo Imperial</span>
+              </h3>
+              <p class="text-xs text-imperial-muted mt-1">Completa los datos del platillo para agregarlo a la carta oficial.</p>
+            </div>
+            <button
+              type="button"
+              id="btnToggleDishForm"
+              class="px-4 py-2 rounded-xl bg-imperial-gold/20 border border-imperial-gold text-imperial-gold hover:bg-imperial-gold hover:text-imperial-bg text-xs uppercase tracking-wider font-semibold transition-all cursor-pointer"
+            >
+              <i class="fa-solid fa-plus mr-1.5"></i>Nuevo Platillo
+            </button>
+          </div>
+
+          <!-- Formulario de Registro / Edición -->
+          <form id="adminDishForm" class="space-y-5">
+            <input type="hidden" id="dishEditId" value="" />
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Nombre -->
+              <div class="md:col-span-2">
+                <label class="block text-xs font-serif uppercase tracking-wider text-imperial-gold mb-1.5">Nombre del Platillo *</label>
+                <input
+                  type="text"
+                  id="dishName"
+                  required
+                  placeholder="Ej: Ramen Tonkotsu de Trufa Negra"
+                  class="w-full bg-[#120505] border border-imperial-gold/40 rounded-xl px-4 py-2.5 text-sm text-imperial-cream outline-none focus:border-imperial-gold"
+                />
+              </div>
+
+              <!-- Precio -->
+              <div>
+                <label class="block text-xs font-serif uppercase tracking-wider text-imperial-gold mb-1.5">Precio (MXN) *</label>
+                <input
+                  type="text"
+                  id="dishPrice"
+                  required
+                  placeholder="Ej: $320 MXN o 320"
+                  class="w-full bg-[#120505] border border-imperial-gold/40 rounded-xl px-4 py-2.5 text-sm text-imperial-cream outline-none focus:border-imperial-gold"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Categoría -->
+              <div>
+                <label class="block text-xs font-serif uppercase tracking-wider text-imperial-gold mb-1.5">Categoría *</label>
+                <select
+                  id="dishCategory"
+                  required
+                  class="w-full bg-[#120505] border border-imperial-gold/40 rounded-xl px-3 py-2.5 text-sm text-imperial-cream outline-none focus:border-imperial-gold cursor-pointer"
+                >
+                  <option value="japones">Japón (Tradición Nipona)</option>
+                  <option value="chino">China (Fuego Imperial)</option>
+                  <option value="sudeste">Sudeste Asiático (Especias del Reino)</option>
+                  <option value="infantil">Menú Infantil (Pequeños Emperadores)</option>
+                  <option value="bebidas">Cava & Coctelería Imperial</option>
+                </select>
+              </div>
+
+              <!-- Ingrediente Principal -->
+              <div>
+                <label class="block text-xs font-serif uppercase tracking-wider text-imperial-gold mb-1.5">Ingrediente Principal *</label>
+                <select
+                  id="dishMainIngredient"
+                  required
+                  class="w-full bg-[#120505] border border-imperial-gold/40 rounded-xl px-3 py-2.5 text-sm text-imperial-cream outline-none focus:border-imperial-gold cursor-pointer"
+                >
+                  <option value="Carne">Carne / Wagyu / Cerdo</option>
+                  <option value="Pescado">Pescado / Salmón / Atún</option>
+                  <option value="Mariscos">Mariscos / Camarón / Langosta</option>
+                  <option value="Pato">Pato Laqueado</option>
+                  <option value="Aves">Pollo / Aves</option>
+                  <option value="Vegetariano">Vegetariano / Tofu</option>
+                  <option value="Arroz y Fideos">Arroz y Fideos</option>
+                  <option value="Postre">Postre / Dulce Imperial</option>
+                  <option value="Coctelería">Coctelería / Sake / Vino</option>
+                </select>
+              </div>
+
+              <!-- URL de Imagen -->
+              <div>
+                <label class="block text-xs font-serif uppercase tracking-wider text-imperial-gold mb-1.5">URL de Imagen</label>
+                <input
+                  type="text"
+                  id="dishImageUrl"
+                  placeholder="img/menu/mi-platillo.jpeg o URL web"
+                  class="w-full bg-[#120505] border border-imperial-gold/40 rounded-xl px-4 py-2.5 text-sm text-imperial-cream outline-none focus:border-imperial-gold"
+                />
+              </div>
+            </div>
+
+            <!-- Descripción gourmet -->
+            <div>
+              <label class="block text-xs font-serif uppercase tracking-wider text-imperial-gold mb-1.5">Descripción Gourmet *</label>
+              <textarea
+                id="dishDesc"
+                rows="2"
+                required
+                placeholder="Breve reseña poética y de notas culinarias para el menú..."
+                class="w-full bg-[#120505] border border-imperial-gold/40 rounded-xl px-4 py-2.5 text-sm text-imperial-cream outline-none focus:border-imperial-gold"
+              ></textarea>
+            </div>
+
+            <!-- Ingredientes detallados -->
+            <div>
+              <label class="block text-xs font-serif uppercase tracking-wider text-imperial-gold mb-1.5">Ingredientes Detallados (Separados por comas)</label>
+              <textarea
+                id="dishIngredients"
+                rows="2"
+                placeholder="Fideos alcalinos frescos, caldo tonkotsu de 18 horas, panceta chashu, trufa negra, cebollín..."
+                class="w-full bg-[#120505] border border-imperial-gold/40 rounded-xl px-4 py-2.5 text-sm text-imperial-cream outline-none focus:border-imperial-gold"
+              ></textarea>
+            </div>
+
+            <!-- Días de la semana disponibles -->
+            <div class="p-4 rounded-2xl bg-[#140707] border border-imperial-gold/25">
+              <label class="block text-xs font-serif uppercase tracking-wider text-imperial-gold mb-2.5">
+                <i class="fa-solid fa-calendar-days mr-1.5"></i>Días de la Semana Disponibles
+              </label>
+              <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2 text-xs">
+                <label class="flex items-center gap-1.5 cursor-pointer bg-[#260d0f]/60 p-2 rounded-lg border border-imperial-gold/20 hover:border-imperial-gold">
+                  <input type="checkbox" name="dishDay" value="todos" id="dayCheckTodos" checked class="accent-amber-500" />
+                  <span class="font-medium text-imperial-cream">Todos</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer bg-[#260d0f]/60 p-2 rounded-lg border border-imperial-gold/20 hover:border-imperial-gold">
+                  <input type="checkbox" name="dishDay" value="lunes" class="day-single-check accent-amber-500" />
+                  <span class="text-imperial-muted">Lun</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer bg-[#260d0f]/60 p-2 rounded-lg border border-imperial-gold/20 hover:border-imperial-gold">
+                  <input type="checkbox" name="dishDay" value="martes" class="day-single-check accent-amber-500" />
+                  <span class="text-imperial-muted">Mar</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer bg-[#260d0f]/60 p-2 rounded-lg border border-imperial-gold/20 hover:border-imperial-gold">
+                  <input type="checkbox" name="dishDay" value="miercoles" class="day-single-check accent-amber-500" />
+                  <span class="text-imperial-muted">Mié</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer bg-[#260d0f]/60 p-2 rounded-lg border border-imperial-gold/20 hover:border-imperial-gold">
+                  <input type="checkbox" name="dishDay" value="jueves" class="day-single-check accent-amber-500" />
+                  <span class="text-imperial-muted">Jue</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer bg-[#260d0f]/60 p-2 rounded-lg border border-imperial-gold/20 hover:border-imperial-gold">
+                  <input type="checkbox" name="dishDay" value="viernes" class="day-single-check accent-amber-500" />
+                  <span class="text-imperial-muted">Vie</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer bg-[#260d0f]/60 p-2 rounded-lg border border-imperial-gold/20 hover:border-imperial-gold">
+                  <input type="checkbox" name="dishDay" value="sabado" class="day-single-check accent-amber-500" />
+                  <span class="text-imperial-muted">Sáb</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer bg-[#260d0f]/60 p-2 rounded-lg border border-imperial-gold/20 hover:border-imperial-gold">
+                  <input type="checkbox" name="dishDay" value="domingo" class="day-single-check accent-amber-500" />
+                  <span class="text-imperial-muted">Dom</span>
+                </label>
+              </div>
+
+              <!-- Especial del día toggle -->
+              <div class="mt-3 pt-3 border-t border-imperial-gold/15 flex items-center gap-3">
+                <input type="checkbox" id="dishIsSpecial" class="w-4 h-4 accent-amber-500 cursor-pointer" />
+                <label for="dishIsSpecial" class="text-xs text-imperial-cream cursor-pointer font-medium flex items-center gap-1.5">
+                  <span class="text-imperial-gold font-bold">?</span> Marcar como <strong>Especial / Recomendación del Chef</strong>
+                </label>
+              </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="flex items-center justify-end gap-3 pt-3">
+              <button
+                type="button"
+                id="btnCancelDishEdit"
+                class="hidden px-5 py-2.5 rounded-xl border border-imperial-muted/40 text-imperial-muted hover:text-imperial-cream text-xs uppercase tracking-wider font-semibold transition-all cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                id="btnSaveDish"
+                class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] text-[#120505] font-serif font-bold text-xs uppercase tracking-wider shadow-gold hover:brightness-105 active:scale-95 transition-all cursor-pointer"
+              >
+                <i class="fa-solid fa-floppy-disk mr-1.5"></i>Guardar Platillo
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Lista de Platillos Registrados -->
+        <div class="glass-card admin-card rounded-3xl bg-[#1c0808] border-2 border-imperial-gold/40 p-6 sm:p-10 shadow-deep">
+          <div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-imperial-gold/25 mb-6">
+            <div class="flex items-center gap-3">
+              <h3 class="font-serif text-lg sm:text-xl font-semibold text-imperial-cream">Catálogo de Platillos</h3>
+              <span id="adminDishesCount" class="text-xs px-2.5 py-1 rounded-full bg-imperial-gold/20 text-imperial-gold font-bold">0 platillos</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <input
+                type="text"
+                id="adminSearchDish"
+                placeholder="Filtrar platillos..."
+                class="bg-[#120505] border border-imperial-gold/40 text-imperial-cream text-xs sm:text-sm rounded-xl px-3 py-2 outline-none focus:border-imperial-gold"
+              />
+            </div>
+          </div>
+
+          <div id="adminDishesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Renderizado dinámico de platillos -->
+          </div>
+        </div>
+      </div>
+
+      <!-- MÓDULO 3: MENÚS POR DÍA DE LA SEMANA -->
+      <div id="adminPanelDailyMenu" class="admin-module-content hidden">
+        <div class="glass-card admin-card rounded-3xl bg-[#1c0808] border-2 border-imperial-gold/40 p-6 sm:p-10 shadow-deep">
+          <div class="pb-6 border-b border-imperial-gold/25 mb-6">
+            <h3 class="font-serif text-lg sm:text-xl font-semibold text-imperial-cream mb-1 flex items-center gap-2">
+              <i class="fa-solid fa-calendar-check text-imperial-gold"></i>
+              <span>Curaduría de Menú por Día de la Semana</span>
+            </h3>
+            <p class="text-xs sm:text-sm text-imperial-muted">Selecciona un día de la semana para activar, desactivar o destacar platillos específicos para ese día.</p>
+
+            <!-- Selector de Días de la Semana -->
+            <div class="flex flex-wrap gap-2 mt-4" id="adminWeekDaySelector">
+              <button type="button" data-day="lunes" class="day-tab-btn active px-4 py-2 rounded-xl text-xs font-serif uppercase tracking-wider font-semibold border border-imperial-gold bg-imperial-gold text-[#120505] shadow-gold transition-all cursor-pointer">Lunes</button>
+              <button type="button" data-day="martes" class="day-tab-btn px-4 py-2 rounded-xl text-xs font-serif uppercase tracking-wider font-semibold border border-imperial-gold/30 bg-[#260d0f] text-imperial-cream hover:border-imperial-gold transition-all cursor-pointer">Martes</button>
+              <button type="button" data-day="miercoles" class="day-tab-btn px-4 py-2 rounded-xl text-xs font-serif uppercase tracking-wider font-semibold border border-imperial-gold/30 bg-[#260d0f] text-imperial-cream hover:border-imperial-gold transition-all cursor-pointer">Miércoles</button>
+              <button type="button" data-day="jueves" class="day-tab-btn px-4 py-2 rounded-xl text-xs font-serif uppercase tracking-wider font-semibold border border-imperial-gold/30 bg-[#260d0f] text-imperial-cream hover:border-imperial-gold transition-all cursor-pointer">Jueves</button>
+              <button type="button" data-day="viernes" class="day-tab-btn px-4 py-2 rounded-xl text-xs font-serif uppercase tracking-wider font-semibold border border-imperial-gold/30 bg-[#260d0f] text-imperial-cream hover:border-imperial-gold transition-all cursor-pointer">Viernes</button>
+              <button type="button" data-day="sabado" class="day-tab-btn px-4 py-2 rounded-xl text-xs font-serif uppercase tracking-wider font-semibold border border-imperial-gold/30 bg-[#260d0f] text-imperial-cream hover:border-imperial-gold transition-all cursor-pointer">Sábado</button>
+              <button type="button" data-day="domingo" class="day-tab-btn px-4 py-2 rounded-xl text-xs font-serif uppercase tracking-wider font-semibold border border-imperial-gold/30 bg-[#260d0f] text-imperial-cream hover:border-imperial-gold transition-all cursor-pointer">Domingo</button>
+            </div>
+          </div>
+
+          <!-- Cabecera del día seleccionado -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-imperial-gold/20">
+            <div>
+              <span id="selectedDayTitle" class="font-serif text-base sm:text-lg font-bold text-imperial-gold uppercase tracking-wider">Menú del Lunes</span>
+              <span id="selectedDayCount" class="text-xs text-imperial-muted ml-2">(Cargando platillos...)</span>
+            </div>
+            <span class="text-xs text-imperial-muted italic hidden sm:inline">Platillos que se servirán en este día de la semana</span>
+          </div>
+
+          <!-- Grid de Platillos Activos en este Día -->
+          <div id="adminDailyDishesList" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            <!-- Populated via JS -->
+          </div>
+
+          <!-- SECCIÓN: AGREGAR PLATILLOS AL DÍA -->
+          <div class="mt-8 pt-6 border-t border-imperial-gold/25">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <div>
+                <h4 class="font-serif text-sm sm:text-base font-bold text-imperial-cream flex items-center gap-2">
+                  <i class="fa-solid fa-circle-plus text-emerald-400"></i>
+                  <span>Agregar Platillos a este Día</span>
+                </h4>
+                <p class="text-xs text-imperial-muted">Platillos del catálogo no incluidos actualmente en este día</p>
+              </div>
+              <div class="w-full sm:w-auto">
+                <input
+                  type="text"
+                  id="adminDailySearchAvailable"
+                  placeholder="Buscar en el catálogo..."
+                  class="w-full sm:w-60 bg-[#120505] border border-imperial-gold/30 rounded-xl px-3 py-1.5 text-xs text-imperial-cream placeholder-imperial-muted/60 outline-none focus:border-imperial-gold"
+                />
+              </div>
+            </div>
+
+            <!-- Grid de Platillos Disponibles para Agregar -->
+            <div id="adminDailyAvailableList" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       7. FOOTER
+       ========================================================================= -->
+  <footer class="bg-[#0c0303] border-t border-imperial-gold/20 py-12 px-4 sm:px-6 pb-28">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-3">
+        <span class="font-serif text-lg tracking-[0.22em] font-bold text-gold-gradient">
+          LOTO IMPERIAL
+        </span>
+        <span class="hidden sm:inline text-imperial-muted/40">|</span>
+        <span class="hidden sm:inline text-xs text-imperial-muted">
+          Alta Gastronomía Oriental
+        </span>
+      </div>
+
+      <p class="text-xs text-imperial-muted text-center">
+        © 2026 Loto Imperial. Todos los derechos reservados. Ciudad de México.
+      </p>
+
+      <div class="flex items-center gap-3">
+        <a
+          href="#inicio"
+          aria-label="Instagram"
+          class="w-10 h-10 rounded-full bg-[#1c0808] border border-imperial-gold/30 flex items-center justify-center text-imperial-cream hover:text-imperial-gold hover:border-imperial-gold transition-all"
+        >
+          <i class="fa-brands fa-instagram"></i>
+        </a>
+        <a
+          href="#inicio"
+          aria-label="Facebook"
+          class="w-10 h-10 rounded-full bg-[#1c0808] border border-imperial-gold/30 flex items-center justify-center text-imperial-cream hover:text-imperial-gold hover:border-imperial-gold transition-all"
+        >
+          <i class="fa-brands fa-facebook"></i>
+        </a>
+        <a
+          href="#reservaciones"
+          aria-label="Reservar"
+          class="w-10 h-10 rounded-full bg-[#1c0808] border border-imperial-gold/30 flex items-center justify-center text-imperial-cream hover:text-imperial-gold hover:border-imperial-gold transition-all"
+        >
+          <i class="fa-solid fa-utensils"></i>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       CHATBOT CONCIERGE VIRTUAL: TOGUI (ASISTENTE IMPERIAL DE LOTO IMPERIAL)
+       ========================================================================= -->
+  <!-- Burbuja Flotante de Togui (Sin punto verde) -->
+  <div
+    id="chat-bubble"
+    class="fixed bottom-[95px] right-6 z-[2200] flex items-center justify-center cursor-pointer group"
+    title="Habla con Togui, tu Concierge Imperial"
+  >
+    <div class="relative w-14 h-14 rounded-full bg-[#1c0808] border-2 border-imperial-gold flex items-center justify-center shadow-[0_0_20px_rgba(255,218,116,0.6)] group-hover:shadow-[0_0_35px_rgba(255,218,116,0.95)] group-hover:scale-110 transition-all duration-300 overflow-hidden">
+      <img
+        src="img/icons/maskable_icon (2).png"
+        alt="Togui"
+        class="w-full h-full object-cover"
+      />
+    </div>
+  </div>
+
+  <!-- Ventana de Chat de Togui (Cabecera y Burbujas Doradas) -->
+  <div
+    id="chat-window"
+    class="fixed bottom-[105px] right-6 z-[2200] w-[360px] max-w-[90vw] h-[520px] rounded-3xl bg-[#140607]/95 border-2 border-imperial-gold/60 backdrop-blur-xl shadow-deep hidden flex-col overflow-hidden transition-all duration-300"
+  >
+    <!-- Encabezado Dorado Imperial (Sin punto verde) -->
+    <div class="chat-header bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] p-4 flex items-center justify-between border-b border-[#FFE699] text-[#120505] shadow-[0_2px_15px_rgba(255,218,116,0.3)]">
+      <div class="flex items-center gap-3">
+        <div class="relative w-10 h-10 rounded-full bg-[#120505] border-2 border-[#120505] flex items-center justify-center overflow-hidden shadow-sm">
+          <img src="img/icons/maskable_icon (2).png" alt="Togui Avatar" class="w-full h-full object-cover" />
+        </div>
+        <div>
+          <h4 class="font-serif text-sm font-bold text-[#120505] tracking-wider">TOGUI</h4>
+          <span class="text-[11px] text-[#2b1805] font-semibold tracking-wide">
+            Concierge Imperial
+          </span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <!-- Control Text-to-Speech (Voz del Dispositivo) -->
+        <button
+          id="toggleVoice"
+          type="button"
+          class="text-[#120505]/80 hover:text-[#120505] text-sm cursor-pointer p-1.5 transition-colors"
+          title="Voz de Togui activada (clic para silenciar)"
+        >
+          <i id="voiceIcon" class="fa-solid fa-volume-high text-[#120505]"></i>
+        </button>
+        <button
+          id="closeChat"
+          type="button"
+          class="close-chat text-[#120505]/80 hover:text-[#120505] text-lg cursor-pointer p-1.5 transition-colors"
+          title="Cerrar chat"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Cuerpo de Mensajes con Burbujas Doradas -->
+    <div id="chatBody" class="chat-body flex-1 p-4 overflow-y-auto flex flex-col gap-3 text-xs sm:text-sm">
+      <div class="chat-msg ai-msg bg-gradient-to-br from-[#2a1b08] to-[#1c1205] text-[#FFE8A3] border border-[#FFDA74]/70 p-3.5 rounded-2xl rounded-tl-none leading-relaxed shadow-[0_0_15px_rgba(255,218,116,0.25)]">
+        ¡Saludos de honor! Soy <strong class="text-white font-bold">Togui</strong>, tu mayordomo y guía gastronómico en <span class="font-bold underline text-white">Loto Imperial</span>. ???<br /><br />
+        ¿En qué deleite puedo orientarle hoy?
+      </div>
+    </div>
+
+    <!-- Píldoras de Opciones Rápidas -->
+    <div class="chat-options px-3 pt-2 pb-1 bg-[#120505]/80 border-t border-imperial-gold/15 flex flex-wrap gap-1.5 justify-center">
+      <button
+        type="button"
+        class="chat-opt-btn text-[11px] px-3 py-1.5 rounded-full border border-imperial-gold/50 text-imperial-gold bg-transparent hover:bg-imperial-gold hover:text-imperial-bg transition-all cursor-pointer font-medium"
+        data-action="menu"
+      >
+        ?? Recomendar Platillo
+      </button>
+      <button
+        type="button"
+        class="chat-opt-btn text-[11px] px-3 py-1.5 rounded-full border border-imperial-gold/50 text-imperial-gold bg-transparent hover:bg-imperial-gold hover:text-imperial-bg transition-all cursor-pointer font-medium"
+        data-action="reserva"
+      >
+        ?? Reservar Mesa
+      </button>
+      <button
+        type="button"
+        class="chat-opt-btn text-[11px] px-3 py-1.5 rounded-full border border-imperial-gold/50 text-imperial-gold bg-transparent hover:bg-imperial-gold hover:text-imperial-bg transition-all cursor-pointer font-medium"
+        data-action="ubicacion"
+      >
+        ?? Ubicación y Horarios
+      </button>
+      <button
+        type="button"
+        class="chat-opt-btn text-[11px] px-3 py-1.5 rounded-full border border-imperial-gold/50 text-imperial-gold bg-transparent hover:bg-imperial-gold hover:text-imperial-bg transition-all cursor-pointer font-medium"
+        data-action="bebidas"
+      >
+        ?? Cava y Sakes
+      </button>
+    </div>
+
+    <!-- Formulario de Entrada de Mensaje -->
+    <form id="chatForm" class="p-3 bg-[#0d0405] border-t border-imperial-gold/25 flex items-center gap-2">
+      <input
+        type="text"
+        id="chatInput"
+        placeholder="Escribe tu consulta a Togui..."
+        class="flex-1 px-3.5 py-2.5 rounded-xl bg-[#1a0809] border border-imperial-gold/30 text-imperial-cream placeholder-[#8c7878] text-xs focus:outline-none focus:border-imperial-gold"
+        autocomplete="off"
+      />
+      <button
+        type="submit"
+        id="btnSendChat"
+        class="w-9 h-9 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] text-[#120505] flex items-center justify-center font-bold text-xs hover:brightness-110 active:scale-95 shadow-[0_0_15px_rgba(255,218,116,0.6)] cursor-pointer shrink-0 transition-all"
+        title="Enviar mensaje"
+      >
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
+
+  <!-- =========================================================================
+       BARRA DE NAVEGACIÓN INFERIOR ESTILO GITHUB (RESTAURADA EXACTA)
+       ========================================================================= -->
+  <nav class="bottom-nav github-bottom-nav">
+    <a href="#inicio" class="nav-item github-nav-item active" data-target="inicio">
+      <i class="fa-solid fa-house"></i>
+      <span>Inicio</span>
+    </a>
+    <a href="#menu" class="nav-item github-nav-item" data-target="menu">
+      <i class="fa-solid fa-utensils"></i>
+      <span>Menú</span>
+    </a>
+    <a href="#reservaciones" class="nav-item github-nav-item" data-target="reservaciones">
+      <i class="fa-solid fa-calendar-check"></i>
+      <span>Reserva</span>
+    </a>
+    <a href="#contacto" class="nav-item github-nav-item" data-target="contacto">
+      <i class="fa-solid fa-envelope"></i>
+      <span>Contacto</span>
+    </a>
+    <a href="#" id="navAccount" class="nav-item github-nav-item" data-target="profile">
+      <i class="fa-solid fa-user"></i>
+      <span id="accountLabel">Cuenta</span>
+    </a>
+  </nav>
+
+  <!-- =========================================================================
+       MODAL DE AUTENTICACIÓN (LOGIN / REGISTRO)
+       ========================================================================= -->
+  <div id="authModal" class="modal hidden fixed inset-0 z-[2500] flex items-center justify-center bg-black/85 backdrop-blur-md px-4">
+    <div class="modal-content glass-card relative w-full max-w-md rounded-3xl bg-[#1c0808] border-2 border-imperial-gold/50 p-8 shadow-deep">
+      <button class="close-modal absolute top-5 right-5 text-imperial-muted hover:text-imperial-gold text-xl cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="auth-tabs flex border-b border-imperial-gold/25 mb-6">
+        <button id="tabLogin" class="auth-tab active flex-1 py-3 font-serif uppercase tracking-wider text-sm border-b-2 border-imperial-gold text-imperial-gold font-bold">
+          Ingresar
+        </button>
+        <button id="tabRegister" class="auth-tab flex-1 py-3 font-serif uppercase tracking-wider text-sm border-b-2 border-transparent text-imperial-muted hover:text-imperial-cream">
+          Registrarse
+        </button>
+      </div>
+
+      <form id="authForm" class="space-y-4">
+        <div class="input-group">
+          <label class="block text-xs uppercase tracking-wider text-imperial-gold font-semibold mb-1.5">Correo Electrónico</label>
+          <input
+            type="email"
+            id="authEmail"
+            required
+            class="w-full px-4 py-3 rounded-xl bg-[#120505] border border-imperial-gold/30 text-imperial-cream outline-none focus:border-imperial-gold text-sm"
+          />
+        </div>
+
+        <div class="input-group">
+          <label class="block text-xs uppercase tracking-wider text-imperial-gold font-semibold mb-1.5">Contraseña</label>
+          <input
+            type="password"
+            id="authPassword"
+            required
+            class="w-full px-4 py-3 rounded-xl bg-[#120505] border border-imperial-gold/30 text-imperial-cream outline-none focus:border-imperial-gold text-sm"
+          />
+        </div>
+
+        <div id="registerFields" class="hidden">
+          <div class="input-group">
+            <label class="block text-xs uppercase tracking-wider text-imperial-gold font-semibold mb-1.5">Nombre Completo</label>
+            <input
+              type="text"
+              id="authFullName"
+              class="w-full px-4 py-3 rounded-xl bg-[#120505] border border-imperial-gold/30 text-imperial-cream outline-none focus:border-imperial-gold text-sm"
+            />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          id="authSubmitBtn"
+          class="btn-submit w-full py-3.5 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#FFDA74] to-[#D4AF37] text-[#120505] font-bold text-xs uppercase tracking-widest border border-[#FFE699] shadow-[0_0_25px_rgba(255,218,116,0.6)] hover:shadow-[0_0_35px_rgba(255,218,116,0.95)] hover:brightness-110 transition-all mt-4 cursor-pointer"
+        >
+          Ingresar
+        </button>
+      </form>
+
+      <div id="authFeedback" class="hidden text-center text-xs mt-3"></div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL DE DETALLE DE PLATILLO Y MI SELECCIÓN
+       ========================================================================= -->
+  <dialog id="dish-dialog" aria-label="Detalle del menú"
+    class="m-auto w-[92%] max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-[#1c0808] text-imperial-cream border-2 border-imperial-gold/40 shadow-deep p-0 backdrop:bg-black/75">
+    <button type="button" aria-label="Cerrar" onclick="this.closest('dialog').close()"
+      class="absolute top-3 right-3 z-10 p-2 rounded-full bg-[#120505]/90 border border-imperial-gold/50 text-imperial-gold hover:bg-[#260d0f] cursor-pointer">
+      <i data-lucide="x" class="w-4 h-4"></i>
+    </button>
+    <div id="dish-dialog-body"></div>
+  </dialog>
+
+  <!-- LIBRERÍAS DE ANIMACIÓN Y SUPABASE -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Limpiar reservas offline corruptas (sin perfil en Supabase) -->
+  <script>
+    (function() {
+      try {
+        // Si hay reservas offline antiguas con created_at que fallan FK,
+        // las limpiamos del localStorage para evitar el bucle de error 409
+        const raw = localStorage.getItem('loto_offline_reservations');
+        if (raw) {
+          const queue = JSON.parse(raw);
+          // Limpiar created_at de cada item para que Supabase lo genere
+          const cleaned = queue.map(function(r) {
+            var o = Object.assign({}, r);
+            delete o.created_at;
+            return o;
+          });
+          localStorage.setItem('loto_offline_reservations', JSON.stringify(cleaned));
+        }
+      } catch(e) {}
+    })();
+  </script>
+
+  <!-- MÓDULO PRINCIPAL DE LA APLICACIÓN -->
+  <script type="module" src="app.js"></script>
+
+  <!-- =====================================================================
+       OVERLAY DE CELEBRACIÓN — RESERVACIÓN CONFIRMADA
+       ===================================================================== -->
+  <div id="reservationSuccess" class="res-success-overlay" aria-hidden="true">
+
+    <!-- Partículas / fuegos artificiales -->
+    <canvas id="fireworksCanvas" class="res-fireworks-canvas"></canvas>
+
+    <!-- Tarjeta central -->
+    <div class="res-success-card">
+
+      <!-- Sello imperial animado -->
+      <div class="res-seal">
+        <svg class="res-seal-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <!-- Círculo exterior decorativo -->
+          <circle cx="60" cy="60" r="56" fill="none" stroke="#c8972a" stroke-width="2" stroke-dasharray="6 3" opacity="0.6"/>
+          <!-- Círculo interior -->
+          <circle cx="60" cy="60" r="46" fill="none" stroke="#c8972a" stroke-width="1.5" opacity="0.4"/>
+          <!-- Relleno del sello -->
+          <circle cx="60" cy="60" r="44" fill="rgba(200,151,42,0.12)"/>
+          <!-- Check animado -->
+          <path class="res-check-path" d="M 36,62 L 52,78 L 84,42"
+            fill="none" stroke="#FFD44E" stroke-width="5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Destellos en el sello -->
+          <g fill="#FFD44E" opacity="0.7">
+            <polygon points="60,10 62,16 68,16 63,20 65,26 60,22 55,26 57,20 52,16 58,16"/>
+            <polygon points="10,60 13,64 17,64 14,67 15,71 11,69 7,71 8,67 5,64 9,64" transform="scale(0.7) translate(8,25)"/>
+            <polygon points="10,60 13,64 17,64 14,67 15,71 11,69 7,71 8,67 5,64 9,64" transform="scale(0.7) translate(90,25)"/>
+          </g>
+        </svg>
+        <!-- Anillo giratorio exterior -->
+        <div class="res-seal-ring"></div>
+      </div>
+
+      <!-- Título -->
+      <h2 class="res-title">¡Reservación Confirmada!</h2>
+      <p class="res-subtitle">Su experiencia imperial ha sido reservada</p>
+
+      <!-- Código especial -->
+      <div class="res-code-display">
+        <span class="res-code-label">Código Imperial</span>
+        <div class="res-code-value" id="resSuccessCode">——</div>
+        <span class="res-code-hint">Preséntelo al llegar al restaurante</span>
+      </div>
+
+      <!-- Detalles de la reserva -->
+      <div class="res-details" id="resSuccessDetails"></div>
+
+      <!-- Botón cerrar -->
+      <button class="res-close-btn" id="resSuccessClose">
+        <span>Continuar</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       ESCUDO DE ORIENTACIÓN IMPERIAL (SOLO EN TELÉFONOS EN HORIZONTAL)
+       ========================================================================= -->
+  <aside id="orientation-shield" class="orientation-shield" aria-hidden="true">
+    <div class="orientation-shield-card">
+      <div class="orientation-icon-wrapper">
+        <svg class="orientation-phone-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="18" y="8" width="28" height="48" rx="5" stroke="#FFDA74" stroke-width="2.5" fill="#1c0808"/>
+          <rect x="22" y="14" width="20" height="34" rx="2" fill="rgba(255,218,116,0.12)"/>
+          <line x1="28" y1="11" x2="36" y2="11" stroke="#FFDA74" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="32" cy="51" r="2" fill="#FFDA74"/>
+          <path d="M50 24C53 28 54 33 52 38C50 43 45 47 40 48" stroke="#D4AF37" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="3 3"/>
+          <path d="M42 51L38 48L42 44" fill="#D4AF37"/>
+        </svg>
+      </div>
+
+      <div class="orientation-brand">
+        <span class="orientation-tag">LOTO IMPERIAL</span>
+        <h2 class="orientation-title">EXPERIENCIA VERTICAL</h2>
+        <p class="orientation-desc">
+          Para disfrutar la gastronomía, la carta interactiva y las reservaciones con la máxima elegancia, por favor <strong>gira tu dispositivo a posición vertical</strong>.
+        </p>
+      </div>
+
+      <div class="orientation-lotus-ornament">
+        <span>?</span>
+      </div>
+    </div>
+  </aside>
+</body>
+</html>
+

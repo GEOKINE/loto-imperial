@@ -64,6 +64,16 @@ async function initializeApp() {
     initBookMenu();
     updateLoaderProgress(35, "Carta imperial cargada...");
 
+    // Exponer función de recarga del menú cliente para usar desde el admin
+    window.__reloadCustomerMenu = async () => {
+        try {
+            const menuData = await fetchMenuData();
+            if (menuData) initBookMenu(menuData);
+        } catch (e) {
+            console.warn('[Menu] Error al recargar menú:', e);
+        }
+    };
+
     // Sincronización en segundo plano con Supabase / Caché local
     fetchMenuData().then(menuData => {
         if (menuData) {
@@ -541,6 +551,565 @@ async function initializeApp() {
             }
         }
     });
+
+    // ==========================================
+    // 1.1 ADMINISTRACIÓN DE MÓDULOS (TABS ADMIN)
+    // ==========================================
+    const adminModuleTabs = document.querySelectorAll('.admin-module-btn');
+    adminModuleTabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            adminModuleTabs.forEach(b => {
+                b.classList.remove('active', 'bg-gradient-to-r', 'from-[#D4AF37]', 'via-[#FFDA74]', 'to-[#D4AF37]', 'text-[#120505]', 'shadow-gold');
+                b.classList.add('bg-[#260d0f]', 'text-imperial-cream/80');
+            });
+            btn.classList.add('active', 'bg-gradient-to-r', 'from-[#D4AF37]', 'via-[#FFDA74]', 'to-[#D4AF37]', 'text-[#120505]', 'shadow-gold');
+            btn.classList.remove('bg-[#260d0f]', 'text-imperial-cream/80');
+
+            const targetId = btn.getAttribute('data-target');
+            document.querySelectorAll('.admin-module-content').forEach(p => p.classList.add('hidden'));
+            const targetPanel = document.getElementById(targetId);
+            if (targetPanel) targetPanel.classList.remove('hidden');
+
+            if (targetId === 'adminPanelDishes') loadAdminDishes();
+            else if (targetId === 'adminPanelDailyMenu') loadAdminDailyMenu(currentAdminDay);
+        });
+    });
+
+    // ==========================================
+    // 1.2 GESTIÓN DE PLATILLOS (REGISTRAR, EDITAR, ELIMINAR)
+    // ==========================================
+    let cachedAdminDishes = [];
+    const categoryNameToId = {
+        'japones': 1,
+        'chino': 2,
+        'sudeste': 3,
+        'infantil': 4,
+        'bebidas': 5
+    };
+    const categoryIdToName = {
+        1: 'Japón',
+        2: 'China',
+        3: 'Sudeste Asiático',
+        4: 'Infantil',
+        5: 'Cava & Bebidas'
+    };
+
+    // Toggle de formulario
+    const btnToggleDishForm = document.getElementById('btnToggleDishForm');
+    const adminDishForm = document.getElementById('adminDishForm');
+    const btnCancelDishEdit = document.getElementById('btnCancelDishEdit');
+
+    btnToggleDishForm?.addEventListener('click', () => {
+        resetDishForm();
+        adminDishForm?.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    btnCancelDishEdit?.addEventListener('click', () => {
+        resetDishForm();
+    });
+
+    // Manejo de checkbox "Todos" vs días individuales
+    const dayCheckTodos = document.getElementById('dayCheckTodos');
+    const daySingleChecks = document.querySelectorAll('.day-single-check');
+    dayCheckTodos?.addEventListener('change', () => {
+        if (dayCheckTodos.checked) {
+            daySingleChecks.forEach(c => c.checked = false);
+        }
+    });
+    daySingleChecks.forEach(c => {
+        c.addEventListener('change', () => {
+            if (c.checked && dayCheckTodos) dayCheckTodos.checked = false;
+        });
+    });
+
+    function resetDishForm() {
+        if (!adminDishForm) return;
+        adminDishForm.reset();
+        document.getElementById('dishEditId').value = '';
+        document.getElementById('adminDishFormTitle').textContent = 'Registrar Nuevo Platillo Imperial';
+        document.getElementById('btnSaveDish').innerHTML = '<i class="fa-solid fa-floppy-disk mr-1.5"></i>Guardar Platillo';
+        btnCancelDishEdit?.classList.add('hidden');
+        if (dayCheckTodos) dayCheckTodos.checked = true;
+        // Ocultar preview de imagen al resetear
+        const previewRow = document.getElementById('dishImagePreviewRow');
+        if (previewRow) previewRow.classList.add('hidden');
+    }
+
+    // --- Preview de imagen del platillo ---
+    const btnPreviewImage = document.getElementById('btnPreviewImage');
+    const btnClearImage = document.getElementById('btnClearImage');
+    const dishImageUrlInput = document.getElementById('dishImageUrl');
+    const dishImagePreviewRow = document.getElementById('dishImagePreviewRow');
+    const dishImagePreviewEl = document.getElementById('dishImagePreview');
+    const dishImagePreviewError = document.getElementById('dishImagePreviewError');
+
+    function showImagePreview(url) {
+        if (!url || !dishImagePreviewRow) return;
+        dishImagePreviewEl.src = url;
+        dishImagePreviewError?.classList.add('hidden');
+        dishImagePreviewRow.classList.remove('hidden');
+        dishImagePreviewEl.onerror = () => {
+            dishImagePreviewError?.classList.remove('hidden');
+        };
+        dishImagePreviewEl.onload = () => {
+            dishImagePreviewError?.classList.add('hidden');
+        };
+    }
+
+    btnPreviewImage?.addEventListener('click', () => {
+        const url = dishImageUrlInput?.value.trim();
+        if (url) showImagePreview(url);
+    });
+
+    // Preview automático al escribir (con debounce de 600ms)
+    let previewDebounce;
+    dishImageUrlInput?.addEventListener('input', () => {
+        clearTimeout(previewDebounce);
+        const url = dishImageUrlInput.value.trim();
+        if (!url) {
+            dishImagePreviewRow?.classList.add('hidden');
+            return;
+        }
+        previewDebounce = setTimeout(() => showImagePreview(url), 600);
+    });
+
+    btnClearImage?.addEventListener('click', () => {
+        if (dishImageUrlInput) dishImageUrlInput.value = '';
+        dishImagePreviewRow?.classList.add('hidden');
+    });
+
+    async function loadAdminDishes() {
+        const listEl = document.getElementById('adminDishesList');
+        const countEl = document.getElementById('adminDishesCount');
+        if (!listEl) return;
+        listEl.innerHTML = '<p class="col-span-full text-center text-imperial-muted py-8">Cargando platillos de la carta imperial...</p>';
+
+        try {
+            const { data, error } = await supabase
+                .from('menu_items')
+                .select('*, menu_categories(name)')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            cachedAdminDishes = data || [];
+            if (countEl) countEl.textContent = `${cachedAdminDishes.length} platillos`;
+            renderAdminDishesList(cachedAdminDishes);
+        } catch (err) {
+            console.error('[Admin] Error al cargar platillos:', err);
+            listEl.innerHTML = `<p class="col-span-full text-center text-red-400 py-6">Error al cargar platillos: ${err.message}</p>`;
+        }
+    }
+
+    function renderAdminDishesList(dishes) {
+        const listEl = document.getElementById('adminDishesList');
+        if (!listEl) return;
+        listEl.innerHTML = '';
+
+        if (!dishes || dishes.length === 0) {
+            listEl.innerHTML = '<p class="col-span-full text-center text-imperial-muted py-8">No se encontraron platillos registrados.</p>';
+            return;
+        }
+
+        const daysList = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+
+        dishes.forEach(dish => {
+            const card = document.createElement('div');
+            card.className = 'admin-dish-card';
+
+            const catLabel = dish.menu_categories?.name || categoryIdToName[dish.category_id] || 'Platillo';
+            const dishImg = dish.image_url ? (dish.image_url.startsWith('http') || dish.image_url.startsWith('./') ? dish.image_url : './' + dish.image_url) : 'https://placehold.co/320x200/260d0f/D4AF37?text=' + encodeURIComponent(dish.name);
+            const daysRaw = (dish.available_days || 'todos').toLowerCase();
+            const isAllDays = daysRaw === 'todos';
+
+            const daysChipsHtml = daysList.map(d => {
+                const isActive = isAllDays || daysRaw.includes(d);
+                return `<span class="day-chip ${isActive ? 'active-day' : 'inactive-day'}">${d.slice(0, 3)}</span>`;
+            }).join('');
+
+            card.innerHTML = `
+                <div>
+                    <div class="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-3 bg-[#120505] border border-imperial-gold/20">
+                        <img src="${dishImg}" alt="${dish.name}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/320x200/260d0f/D4AF37?text=${encodeURIComponent(dish.name)}'" />
+                        ${dish.is_daily_special ? `<span class="absolute top-2 right-2 special-badge-star shadow-md"><i class="fa-solid fa-star"></i> Especial</span>` : ''}
+                        <span class="absolute bottom-2 left-2 text-[10px] font-serif uppercase tracking-wider px-2 py-0.5 rounded bg-[#120505]/90 border border-imperial-gold/40 text-imperial-gold font-bold">
+                            ${catLabel}
+                        </span>
+                    </div>
+
+                    <div class="flex items-start justify-between gap-2 mb-1.5">
+                        <h4 class="font-serif font-bold text-sm text-imperial-cream leading-tight">${dish.name}</h4>
+                        <span class="font-serif font-bold text-sm text-imperial-gold shrink-0">${dish.price}</span>
+                    </div>
+
+                    <p class="text-xs text-imperial-muted line-clamp-2 mb-2 font-light">${dish.description || 'Sin descripción'}</p>
+
+                    <div class="flex items-center gap-1 mb-2.5">
+                        <span class="text-[10px] text-imperial-muted">Ingrediente:</span>
+                        <span class="text-[10px] font-semibold text-imperial-gold">${dish.main_ingredient || 'Principal'}</span>
+                    </div>
+
+                    <div class="flex flex-wrap gap-1 mb-3">
+                        ${daysChipsHtml}
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-3 border-t border-imperial-gold/15">
+                    <button type="button" class="btn-edit-dish px-3 py-1.5 rounded-lg border border-imperial-gold/40 text-imperial-gold hover:bg-imperial-gold hover:text-imperial-bg text-xs font-semibold transition-all cursor-pointer" data-id="${dish.id}">
+                        <i class="fa-solid fa-pen-to-square mr-1"></i>Editar
+                    </button>
+                    <button type="button" class="btn-delete-dish px-3 py-1.5 rounded-lg border border-red-500/40 text-red-400 hover:bg-red-500 hover:text-white text-xs font-semibold transition-all cursor-pointer" data-id="${dish.id}" data-name="${dish.name}">
+                        <i class="fa-solid fa-trash mr-1"></i>Eliminar
+                    </button>
+                </div>
+            `;
+            listEl.appendChild(card);
+        });
+
+        // Event listeners para editar
+        listEl.querySelectorAll('.btn-edit-dish').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.getAttribute('data-id');
+                const dish = cachedAdminDishes.find(d => d.id === id);
+                if (dish) populateDishFormForEdit(dish);
+            });
+        });
+
+        // Event listeners para eliminar
+        listEl.querySelectorAll('.btn-delete-dish').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = btn.getAttribute('data-id');
+                const name = btn.getAttribute('data-name');
+                if (confirm(`¿Estás seguro de que deseas eliminar permanentemente el platillo "${name}" de la carta imperial?`)) {
+                    await deleteAdminDish(id, name);
+                }
+            });
+        });
+    }
+
+    function populateDishFormForEdit(dish) {
+        document.getElementById('dishEditId').value = dish.id;
+        document.getElementById('dishName').value = dish.name;
+        document.getElementById('dishPrice').value = dish.price;
+        document.getElementById('dishDesc').value = dish.description || '';
+        document.getElementById('dishIngredients').value = dish.ingredients || '';
+        document.getElementById('dishImageUrl').value = dish.image_url || '';
+        document.getElementById('dishMainIngredient').value = dish.main_ingredient || 'Carne';
+        document.getElementById('dishIsSpecial').checked = Boolean(dish.is_daily_special);
+
+        // Categoría
+        const catName = dish.menu_categories?.name || Object.keys(categoryNameToId).find(k => categoryNameToId[k] === dish.category_id) || 'japones';
+        document.getElementById('dishCategory').value = catName;
+
+        // Días
+        const days = (dish.available_days || 'todos').toLowerCase();
+        if (days === 'todos') {
+            if (dayCheckTodos) dayCheckTodos.checked = true;
+            daySingleChecks.forEach(c => c.checked = false);
+        } else {
+            if (dayCheckTodos) dayCheckTodos.checked = false;
+            daySingleChecks.forEach(c => {
+                c.checked = days.includes(c.value);
+            });
+        }
+
+        document.getElementById('adminDishFormTitle').textContent = `Editar Platillo: ${dish.name}`;
+        document.getElementById('btnSaveDish').innerHTML = '<i class="fa-solid fa-check mr-1.5"></i>Actualizar Platillo';
+        btnCancelDishEdit?.classList.remove('hidden');
+
+        adminDishForm?.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function deleteAdminDish(id, name) {
+        try {
+            const { error } = await supabase.from('menu_items').delete().eq('id', id);
+            if (error) throw error;
+            showNotification(`Platillo "${name}" eliminado de la carta.`, 'success');
+            localStorage.removeItem('loto_imperial_menu');
+            await loadAdminDishes();
+        } catch (err) {
+            console.error('[Admin] Error al eliminar:', err);
+            showNotification(`No se pudo eliminar el platillo: ${err.message}`, 'error');
+        }
+    }
+
+    // Buscador de platillos
+    document.getElementById('adminSearchDish')?.addEventListener('input', (e) => {
+        const val = e.target.value.toLowerCase().trim();
+        const filtered = cachedAdminDishes.filter(d => 
+            d.name.toLowerCase().includes(val) || 
+            (d.description && d.description.toLowerCase().includes(val)) ||
+            (d.main_ingredient && d.main_ingredient.toLowerCase().includes(val))
+        );
+        renderAdminDishesList(filtered);
+    });
+
+    // Envío del formulario (Crear / Actualizar)
+    adminDishForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const saveBtn = document.getElementById('btnSaveDish');
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Guardando...';
+
+        try {
+            const editId = document.getElementById('dishEditId').value.trim();
+            const name = document.getElementById('dishName').value.trim();
+            let price = document.getElementById('dishPrice').value.trim();
+            if (!price.startsWith('$')) price = '$' + price;
+            if (!price.toLowerCase().includes('mxn')) price = price + ' MXN';
+
+            const catKey = document.getElementById('dishCategory').value;
+            const category_id = categoryNameToId[catKey] || 1;
+            const main_ingredient = document.getElementById('dishMainIngredient').value;
+            const description = document.getElementById('dishDesc').value.trim();
+            const ingredients = document.getElementById('dishIngredients').value.trim();
+            const image_url = document.getElementById('dishImageUrl').value.trim() || 'img/menu/sashimi deluxe.jpeg';
+            const is_daily_special = document.getElementById('dishIsSpecial').checked;
+
+            // Determinar días
+            let available_days = 'todos';
+            if (!dayCheckTodos?.checked) {
+                const selectedDays = Array.from(daySingleChecks).filter(c => c.checked).map(c => c.value);
+                available_days = selectedDays.length > 0 ? selectedDays.join(',') : 'todos';
+            }
+
+            const dishPayload = {
+                name,
+                price,
+                category_id,
+                main_ingredient,
+                description,
+                ingredients,
+                image_url,
+                available_days,
+                is_daily_special
+            };
+
+            if (editId) {
+                // Actualizar
+                const { error } = await supabase.from('menu_items').update(dishPayload).eq('id', editId);
+                if (error) throw error;
+                showNotification(`Platillo "${name}" actualizado exitosamente.`, 'success');
+            } else {
+                // Crear nuevo
+                const { error } = await supabase.from('menu_items').insert([dishPayload]);
+                if (error) throw error;
+                showNotification(`¡Nuevo platillo "${name}" registrado en la carta imperial!`, 'success');
+            }
+
+            resetDishForm();
+            localStorage.removeItem('loto_imperial_menu');
+            await loadAdminDishes();
+        } catch (err) {
+            console.error('[Admin] Error al guardar platillo:', err);
+            showNotification(`Error al guardar platillo: ${err.message}`, 'error');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-1.5"></i>Guardar Platillo';
+        }
+    });
+
+    // ==========================================
+    // 1.3 MENÚ POR DÍA DE LA SEMANA (CURADURÍA)
+    // ==========================================
+    let currentAdminDay = 'lunes';
+    const dayButtons = document.querySelectorAll('#adminWeekDaySelector .day-tab-btn');
+    dayButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            dayButtons.forEach(b => {
+                b.classList.remove('active', 'bg-imperial-gold', 'text-[#120505]', 'shadow-gold', 'border-imperial-gold');
+                b.classList.add('bg-[#260d0f]', 'text-imperial-cream', 'border-imperial-gold/30');
+            });
+            btn.classList.add('active', 'bg-imperial-gold', 'text-[#120505]', 'shadow-gold', 'border-imperial-gold');
+            btn.classList.remove('bg-[#260d0f]', 'text-imperial-cream', 'border-imperial-gold/30');
+
+            currentAdminDay = btn.getAttribute('data-day');
+            loadAdminDailyMenu(currentAdminDay);
+        });
+    });
+
+    async function loadAdminDailyMenu(dayName = 'lunes') {
+        const titleEl = document.getElementById('selectedDayTitle');
+        const countEl = document.getElementById('selectedDayCount');
+        const listEl = document.getElementById('adminDailyDishesList');
+        const availableListEl = document.getElementById('adminDailyAvailableList');
+        if (!listEl) return;
+
+        const dayCapitalized = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+        if (titleEl) titleEl.textContent = `Menú del ${dayCapitalized}`;
+        listEl.innerHTML = '<p class="col-span-full text-center text-imperial-muted py-6">Cargando platillos para este día...</p>';
+        if (availableListEl) availableListEl.innerHTML = '';
+
+        try {
+            // Siempre refrescamos la caché para obtener los días actualizados
+            const { data, error } = await supabase.from('menu_items').select('*, menu_categories(name)').order('name');
+            if (error) throw error;
+            cachedAdminDishes = data || [];
+
+            renderAdminDayPanels(dayName);
+
+        } catch (err) {
+            console.error('[Admin] Error en loadAdminDailyMenu:', err);
+            listEl.innerHTML = `<p class="col-span-full text-center text-red-400 py-6">Error: ${err.message}</p>`;
+        }
+    }
+
+    function renderAdminDayPanels(dayName) {
+        const listEl = document.getElementById('adminDailyDishesList');
+        const availableListEl = document.getElementById('adminDailyAvailableList');
+        const countEl = document.getElementById('selectedDayCount');
+        if (!listEl) return;
+
+        listEl.innerHTML = '';
+        if (availableListEl) availableListEl.innerHTML = '';
+
+        const activeDishes = [];
+        const inactiveDishes = [];
+
+        cachedAdminDishes.forEach(dish => {
+            const days = (dish.available_days || 'todos').toLowerCase();
+            const isActive = days === 'todos' || days.includes(dayName);
+            if (isActive) activeDishes.push(dish);
+            else inactiveDishes.push(dish);
+        });
+
+        if (countEl) countEl.textContent = `(${activeDishes.length} platillos activos)`;
+
+        // ---- Render platos ACTIVOS (con switch para quitar) ----
+        if (activeDishes.length === 0) {
+            listEl.innerHTML = '<p class="col-span-full text-center text-imperial-muted py-4">Ningún platillo activo para este día.</p>';
+        } else {
+            activeDishes.forEach(dish => {
+                const row = document.createElement('div');
+                row.dataset.dishId = dish.id;
+                row.className = 'flex items-center justify-between p-3 rounded-xl bg-[#140707] border border-imperial-gold/40 transition-all duration-300';
+                row.innerHTML = `
+                    <div class="flex items-center gap-3 min-w-0 pr-2">
+                        <div class="w-12 h-12 rounded-lg overflow-hidden bg-[#120505] border border-imperial-gold/30 shrink-0">
+                            <img src="${dish.image_url ? (dish.image_url.startsWith('http') || dish.image_url.startsWith('./') ? dish.image_url : './' + dish.image_url) : 'https://placehold.co/100/260d0f/D4AF37'}" alt="${dish.name}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100/260d0f/D4AF37'" />
+                        </div>
+                        <div class="min-w-0">
+                            <h5 class="font-serif font-bold text-sm text-imperial-cream truncate">${dish.name}</h5>
+                            <span class="text-xs text-imperial-gold font-medium">${dish.price}</span>
+                            <span class="text-[10px] text-imperial-muted ml-2">${dish.menu_categories?.name || ''}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 shrink-0">
+                        <label class="imperial-switch" title="Desactivar para este día">
+                            <input type="checkbox" class="toggle-day-dish" data-id="${dish.id}" checked />
+                            <span class="imperial-slider"></span>
+                        </label>
+                    </div>
+                `;
+                listEl.appendChild(row);
+            });
+        }
+
+        // ---- Render platos DISPONIBLES para agregar ----
+        if (availableListEl) {
+            const searchInput = document.getElementById('adminDailySearchAvailable');
+            const filterText = (searchInput ? searchInput.value : '').toLowerCase();
+
+            const toShow = inactiveDishes.filter(d =>
+                !filterText || d.name.toLowerCase().includes(filterText) || (d.menu_categories?.name || '').toLowerCase().includes(filterText)
+            );
+
+            if (toShow.length === 0) {
+                availableListEl.innerHTML = '<p class="col-span-full text-center text-imperial-muted py-4">Todos los platillos del catálogo ya están activos para este día.</p>';
+            } else {
+                toShow.forEach(dish => {
+                    const row = document.createElement('div');
+                    row.dataset.dishId = dish.id;
+                    row.className = 'flex items-center justify-between p-3 rounded-xl bg-[#0d0404] border border-imperial-gold/15 hover:border-imperial-gold/40 transition-all duration-300';
+                    row.innerHTML = `
+                        <div class="flex items-center gap-3 min-w-0 pr-2">
+                            <div class="w-12 h-12 rounded-lg overflow-hidden bg-[#120505] border border-imperial-gold/20 shrink-0">
+                                <img src="${dish.image_url ? (dish.image_url.startsWith('http') || dish.image_url.startsWith('./') ? dish.image_url : './' + dish.image_url) : 'https://placehold.co/100/260d0f/D4AF37'}" alt="${dish.name}" class="w-full h-full object-cover opacity-60" onerror="this.src='https://placehold.co/100/260d0f/D4AF37'" />
+                            </div>
+                            <div class="min-w-0">
+                                <h5 class="font-serif font-bold text-sm text-imperial-cream/60 truncate">${dish.name}</h5>
+                                <span class="text-xs text-imperial-gold/50 font-medium">${dish.price}</span>
+                                <span class="text-[10px] text-imperial-muted/60 ml-2">${dish.menu_categories?.name || ''}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <label class="imperial-switch" title="Activar para este día">
+                                <input type="checkbox" class="toggle-day-dish" data-id="${dish.id}" />
+                                <span class="imperial-slider"></span>
+                            </label>
+                        </div>
+                    `;
+                    availableListEl.appendChild(row);
+                });
+            }
+        }
+
+        // ---- Event listeners para todos los toggles ----
+        document.querySelectorAll('.toggle-day-dish').forEach(toggle => {
+            toggle.addEventListener('change', async (e) => {
+                const dishId = e.target.getAttribute('data-id');
+                const isChecked = e.target.checked;
+                // Animación de desvanecido antes de desaparecer
+                const parentRow = e.target.closest('[data-dish-id]');
+                if (parentRow) {
+                    parentRow.style.opacity = '0.4';
+                    parentRow.style.pointerEvents = 'none';
+                }
+                await toggleDishForDay(dishId, dayName, isChecked);
+                // Re-render completo del panel para reflejar el cambio
+                renderAdminDayPanels(dayName);
+            });
+        });
+
+        // ---- Filtro de búsqueda en platillos disponibles ----
+        const searchInput = document.getElementById('adminDailySearchAvailable');
+        if (searchInput) {
+            searchInput.oninput = () => renderAdminDayPanels(dayName);
+        }
+    }
+
+    async function toggleDishForDay(dishId, dayName, shouldBeActive) {
+        const dish = cachedAdminDishes.find(d => d.id === dishId);
+        if (!dish) return;
+
+        let currentDays = (dish.available_days || 'todos').toLowerCase();
+        const allDays = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+        let daysArray = [];
+
+        if (currentDays === 'todos') {
+            daysArray = [...allDays];
+        } else {
+            daysArray = currentDays.split(',').map(s => s.trim()).filter(Boolean);
+        }
+
+        if (shouldBeActive) {
+            if (!daysArray.includes(dayName)) daysArray.push(dayName);
+        } else {
+            daysArray = daysArray.filter(d => d !== dayName);
+        }
+
+        const newDaysStr = daysArray.length === 7 ? 'todos' : daysArray.join(',');
+
+        try {
+            const { error } = await supabase.from('menu_items').update({ available_days: newDaysStr }).eq('id', dishId);
+            if (error) throw error;
+            dish.available_days = newDaysStr;
+            localStorage.removeItem('loto_imperial_menu');
+            showNotification(`Platillo ${shouldBeActive ? 'activado' : 'desactivado'} para el ${dayName}.`, 'success');
+            // Actualizar el menú del cliente en segundo plano
+            if (typeof window.__reloadCustomerMenu === 'function') {
+                window.__reloadCustomerMenu();
+            }
+            const activeCount = cachedAdminDishes.filter(d => {
+                const dDays = (d.available_days || 'todos').toLowerCase();
+                return dDays === 'todos' || dDays.includes(dayName);
+            }).length;
+            const countEl = document.getElementById('selectedDayCount');
+            if (countEl) countEl.textContent = `(${activeCount} platillos activos)`;
+        } catch (err) {
+            console.error('[Admin] Error al actualizar disponibilidad de día:', err);
+            showNotification(`Error: ${err.message}`, 'error');
+        }
+    }
 
     // 2. Menu Animations
     if (document.querySelector('#menu .leather-cover-frame')) {
